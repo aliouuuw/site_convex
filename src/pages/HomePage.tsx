@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageSlider } from './ImageSlider';
+import { ImageSlider } from '../components/ImageSlider';
 
 const schoolLevels = [
   {
@@ -90,10 +90,10 @@ const HomePage: React.FC = () => {
                 collège.
               </p>
               <div className="hero-actions-background">
-                <a href="/programs" className="btn btn-primary-hero">
+                <a href="#programs" className="btn btn-primary-hero">
                   Nos programmes
                 </a>
-                <a href="/visit" className="btn btn-secondary-hero">
+                <a href="/contact" className="btn btn-secondary-hero">
                   Planifier une visite
                 </a>
               </div>
@@ -153,7 +153,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Programs - Simplified Grid */}
-        <section className="programs-simplified">
+        <section className="programs-simplified" id="programs" >
           <div className="container">
             <div className="section-header-creative">
               <div className="section-number">01</div>
@@ -253,7 +253,7 @@ const HomePage: React.FC = () => {
                   </div>
                 </div>
 
-                <a href="/about" className="btn btn-primary">
+                <a href="/histoire" className="btn btn-primary">
                   Découvrir notre histoire
                 </a>
               </div>
@@ -393,7 +393,7 @@ const HomePage: React.FC = () => {
                   <div className="cta-card-icon">📅</div>
                   <h3>Planifier une visite</h3>
                   <p>Découvrez nos installations</p>
-                  <a href="/visit" className="btn btn-primary">
+                  <a href="/contact" className="btn btn-primary">
                     Réserver
                   </a>
                 </div>

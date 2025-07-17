@@ -151,7 +151,7 @@ npm install @types/react-router-dom --save-dev
 **Files to Create:**
 - `src/pages/BlogPage.tsx`
 - `src/pages/BlogPostPage.tsx`
-- `src/components/blog/BlogCard.tsx`
+- `src/components/journal/BlogCard.tsx`
 - `src/components/forms/NewsletterForm.tsx`
 
 **Acceptance Criteria:**
@@ -267,7 +267,7 @@ npm install @types/react-router-dom --save-dev
 - **Dependencies**: Frontend Foundation
 
 **Files to Create:**
-- `convex/blog.ts`
+- `convex/journal.ts`
 - `convex/programs.ts`
 - `convex/content.ts`
 - Updated `convex/schema.ts`

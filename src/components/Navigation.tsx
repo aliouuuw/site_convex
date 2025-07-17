@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { FaChevronUp } from "react-icons/fa";
 
 const Navigation = () => {
@@ -17,17 +18,17 @@ const Navigation = () => {
   const aboutLinks = [
     {
       name: "Notre Histoire",
-      href: "/about",
+      href: "/histoire",
       description: "Découvrez notre parcours et nos valeurs",
     },
     {
       name: "Notre Équipe",
-      href: "/team",
+      href: "/equipe",
       description: "Rencontrez nos enseignants",
     },
     {
       name: "Journal de l'école",
-      href: "/blog",
+      href: "/journal",
       description: "Actualités et vie scolaire",
     },
     {
@@ -52,7 +53,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
-          <a href="/" className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-3">
             <img
               src="/images/logo.svg"
               alt="Les Hirondelles"
@@ -60,16 +61,16 @@ const Navigation = () => {
               height={40}
             />
             <span className="font-semibold text-lg">Les Hirondelles</span>
-          </a>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-8">
-            <a
-              href="/"
+            <NavLink
+              to="/"
               className="text-gray-600 hover:text-gray-900 hover:underline transition-colors"
             >
               Accueil
-            </a>
+            </NavLink>
 
             {/* About Dropdown */}
             <div
@@ -106,9 +107,9 @@ const Navigation = () => {
               >
                 <div className="px-4 py-2">
                   {aboutLinks.map((link) => (
-                    <a
+                    <Link
                       key={link.href}
-                      href={link.href}
+                      to={link.href}
                       className="group flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors focus:outline-none focus:bg-gray-50 focus:text-blue-600"
                     >
                       <div className="flex flex-col h-[45px]">
@@ -132,7 +133,7 @@ const Navigation = () => {
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -173,9 +174,9 @@ const Navigation = () => {
               >
                 <div className="px-4 py-2">
                   {programLinks.map((program) => (
-                    <a
+                    <Link
                       key={program.href}
-                      href={program.href}
+                      to={program.href}
                       className="group flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors focus:outline-none focus:bg-gray-50 focus:text-blue-600"
                     >
                       <div className="flex flex-col h-[45px]">
@@ -199,28 +200,28 @@ const Navigation = () => {
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                    </a>
+                    </Link>
                   ))}
                 </div>
               </div>
             </div>
 
-            <a
-              href="/contact"
+            <NavLink
+              to="/contact"
               className="text-gray-600 hover:text-gray-900 hover:underline transition-colors"
             >
               Contact
-            </a>
+            </NavLink>
           </nav>
 
           {/* CTA Button & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
-            <a
-              href="/inscription"
+            <Link
+              to="/inscription"
               className="hidden lg:inline-flex btn btn-primary"
             >
               Inscription
-            </a>
+            </Link>
 
             {/* Mobile Menu Button */}
             <button
@@ -252,13 +253,13 @@ const Navigation = () => {
         {isMobileMenuOpen && (
           <div className="lg:hidden py-4">
             <div className="flex flex-col space-y-3">
-              <a
-                href="/"
+              <NavLink
+                to="/"
                 className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:underline"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Accueil
-              </a>
+              </NavLink>
 
               {/* Mobile About Dropdown */}
               <div className="px-4 py-2">
@@ -280,9 +281,9 @@ const Navigation = () => {
                 {isAboutOpen && (
                   <div className="mt-2 ml-4 space-y-2">
                     {aboutLinks.map((link) => (
-                      <a
+                      <Link
                         key={link.href}
-                        href={link.href}
+                        to={link.href}
                         className="block py-2 text-gray-600 hover:text-gray-900 hover:bg-slate-100/50 px-2 transition-colors"
                         onClick={() => {
                           setIsAboutOpen(false);
@@ -312,7 +313,7 @@ const Navigation = () => {
                             </span>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 )}
@@ -338,9 +339,9 @@ const Navigation = () => {
                 {isProgramsOpen && (
                   <div className="mt-2 ml-4 space-y-2">
                     {programLinks.map((program) => (
-                      <a
+                      <Link
                         key={program.href}
-                        href={program.href}
+                        to={program.href}
                         className="block py-2 text-gray-600 hover:text-gray-900 hover:bg-slate-100/50 px-2 transition-colors"
                         onClick={() => {
                           setIsProgramsOpen(false);
@@ -371,27 +372,27 @@ const Navigation = () => {
                             </span>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 )}
               </div>
 
-              <a
-                href="/contact"
+              <NavLink
+                to="/contact"
                 className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:underline"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Contact
-              </a>
+              </NavLink>
 
-              <a
-                href="/inscription"
+              <Link
+                to="/inscription"
                 className="mx-4 btn btn-primary text-center hover:underline"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Inscription
-              </a>
+              </Link>
             </div>
           </div>
         )}

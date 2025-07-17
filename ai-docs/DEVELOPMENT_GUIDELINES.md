@@ -719,8 +719,8 @@ const AppRouter: React.FC = () => (
   <Suspense fallback={<LoadingSpinner />}>
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/about" element={<AboutPage />} />
-      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/histoire" element={<AboutPage />} />
+      <Route path="/journal" element={<BlogPage />} />
     </Routes>
   </Suspense>
 );

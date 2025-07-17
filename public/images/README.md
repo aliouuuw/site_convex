@@ -45,14 +45,14 @@ This directory contains placeholder images for the Les Hirondelles school websit
 - `about/history-4.jpg` - Historical milestone 4
 - `about/history-5.jpg` - Historical milestone 5
 
-### Blog Images
-- `blog/blog-hero.jpg` - Blog page hero image
-- `blog/rentree-scolaire.jpg` - School year start article image
-- `blog/maths-competition.jpg` - Math competition article image
-- `blog/cultural-day.jpg` - Cultural day article image
-- `blog/multimedia-room.jpg` - Multimedia room article image
-- `blog/exchange-program.jpg` - Exchange program article image
-- `blog/eco-project.jpg` - Eco project article image
+### Journal Images
+- `journal/journal-hero.jpg` - Journal page hero image
+- `journal/rentree-scolaire.jpg` - School year start article image
+- `journal/maths-competition.jpg` - Math competition article image
+- `journal/cultural-day.jpg` - Cultural day article image
+- `journal/multimedia-room.jpg` - Multimedia room article image
+- `journal/exchange-program.jpg` - Exchange program article image
+- `journal/eco-project.jpg` - Eco project article image
 
 ### Contact Page Images
 - `contact/contact-hero.jpg` - Contact page hero image

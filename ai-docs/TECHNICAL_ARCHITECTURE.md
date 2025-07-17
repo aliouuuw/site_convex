@@ -334,9 +334,9 @@ const useNumbers = () => {
 // Planned routing structure (TO IMPLEMENT)
 const routes = [
   { path: '/', component: HomePage },
-  { path: '/about', component: AboutPage },
-  { path: '/blog', component: BlogPage },
-  { path: '/blog/:id', component: BlogPostPage },
+  { path: '/histoire', component: AboutPage },
+  { path: '/journal', component: BlogPage },
+  { path: '/journal/:id', component: BlogPostPage },
   { path: '/contact', component: ContactPage },
   { path: '/inscription', component: AdmissionsPage },
   { path: '/programs/preschool', component: PreschoolPage },

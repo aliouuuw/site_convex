@@ -29,9 +29,9 @@
 ### Current Pages
 ```
 /                     - Homepage with hero, programs, mission, news, testimonials
-/about               - School history, values, leadership team
-/blog                - News and events listing
-/blog/[id]           - Individual blog post
+               - School history, values, leadership team
+/journal                - News and events listing
+/journal/[id]           - Individual blog post
 /contact             - Contact information and form
 /inscription         - Admissions process and pre-registration
 /programs/preschool  - Preschool program (3-5 years)

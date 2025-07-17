@@ -29,10 +29,10 @@ const Footer: React.FC = () => {
             <h4>Navigation</h4>
             <ul className="footer-links">
               <li>
-                <a href="/about">À propos</a>
+                <a href="/histoire">À propos</a>
               </li>
               <li>
-                <a href="/programs">Programmes</a>
+                <a href="#programs">Programmes</a>
               </li>
               <li>
                 <a href="/contact">Contact</a>

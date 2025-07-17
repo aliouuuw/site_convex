@@ -591,7 +591,7 @@ main (production)
 ├── develop (integration)
 └── feature/* (feature branches)
     ├── feature/homepage-redesign
-    ├── feature/blog-improvements
+    ├── feature/journal-improvements
     └── feature/contact-form-update
 ```
 
