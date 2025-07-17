@@ -1,0 +1,16 @@
+<svg width="30" height="40" viewBox="0 0 30 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="15" cy="20" r="14" fill="#00538d"/>
+
+  <!-- Stylized swallow/bird shape -->
+  <path d="M8 18 C12 14, 18 14, 22 18 C20 22, 16 24, 15 26 C14 24, 10 22, 8 18 Z" fill="#ffce1b"/>
+
+  <!-- Wing detail -->
+  <path d="M10 17 C13 15, 17 15, 20 17 C18 19, 15 20, 15 21 C15 20, 12 19, 10 17 Z" fill="#00538d"/>
+
+  <!-- Small accent dot for eye -->
+  <circle cx="15" cy="16" r="1" fill="#ffce1b"/>
+
+  <!-- Bottom accent line -->
+  <rect x="10" y="35" width="10" height="2" rx="1" fill="#ffce1b"/>
+</svg>
