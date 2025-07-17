@@ -2,18 +2,26 @@
 
 ## Project Context
 
-### Current System
+### Original System (To Be Migrated From)
 - **Framework**: Next.js with App Router
-- **CMS**: Sanity (implied from migration description)
+- **CMS**: Sanity (headless CMS)
 - **Styling**: Custom CSS with Tailwind utility classes
 - **Content**: French language educational institution website
 - **Institution**: Les Hirondelles - Private school in Dakar, Senegal
 
-### Target System
+### Current Project State
+- **Framework**: React + Vite ✅ (Configured)
+- **Backend/CMS**: Convex ✅ (Basic setup complete)
+- **Authentication**: Convex Auth ✅ (Working auth flow)
+- **Styling**: Tailwind CSS ✅ (Configured)
+- **TypeScript**: ✅ (Configured)
+- **Development Environment**: ✅ (Working)
+
+### Target System (In Progress)
 - **Framework**: React + Vite
 - **Backend/CMS**: Convex with integrated content management
-- **Authentication**: Convex Auth (already installed)
-- **Styling**: Maintain existing custom CSS system
+- **Authentication**: Convex Auth (for admin panel)
+- **Styling**: Custom CSS system + Tailwind utilities
 - **Features**: Content management panel for non-technical users
 
 ## Website Structure
@@ -62,51 +70,84 @@
 - Role-based permissions for content editing
 - Safe content validation and sanitization
 
-## Migration Goals
+## Current Status & Next Steps
 
-### Phase 1: Frontend Duplication
-1. Set up React + Vite project structure
-2. Migrate all existing pages and components
-3. Preserve current styling and design system
-4. Ensure feature parity with existing site
-5. Test responsive design and functionality
+### ✅ Completed Setup
+1. React + Vite project initialized with TypeScript
+2. Convex backend configured and working
+3. Convex Auth implemented with email/password flow
+4. Tailwind CSS configured
+5. Basic development environment running
+6. ESLint and Prettier configured
 
-### Phase 2: Convex Integration
-1. Design Convex schema for content types
-2. Implement data fetching and caching
-3. Create content management interface
-4. Integrate Convex Auth for admin access
-5. Data migration from current system
+### 🔄 Phase 1: Frontend Migration (In Progress)
+**Immediate Next Steps:**
+1. **Install missing dependencies**:
+   - `react-router-dom` (routing)
+   - `react-icons` (icon system)
+   - Additional UI libraries as needed
 
-### Phase 3: Content Management Panel
-1. Build intuitive admin dashboard
-2. Create content editing interfaces
-3. Implement image upload and management
-4. Add user management and permissions
-5. Testing and training documentation
+2. **Create proper folder structure**:
+   - `/src/components/` (reusable components)
+   - `/src/pages/` (page components)
+   - `/src/hooks/` (custom hooks)
+   - `/src/utils/` (utility functions)
+   - `/src/types/` (TypeScript definitions)
+   - `/src/styles/` (CSS files)
+
+3. **Migrate core components**:
+   - Navigation/Header component
+   - Footer component
+   - Layout wrapper
+   - Basic routing structure
+
+4. **Migrate homepage sections**:
+   - Hero section with image slider
+   - Programs overview
+   - Mission section
+   - News/testimonials
+
+### 📋 Phase 2: Content Schema & Data (Upcoming)
+1. Design Convex schema for all content types
+2. Create content management functions
+3. Implement data fetching hooks
+4. Build admin interface components
+5. Content migration strategy
+
+### 🎯 Phase 3: Full CMS Features (Future)
+1. Rich text editor integration
+2. Image upload and management
+3. User roles and permissions
+4. Content workflow (draft/publish)
+5. SEO management tools
 
 ## Success Criteria
 
-### Functional Requirements
-- [ ] All existing pages render correctly
-- [ ] Responsive design works across devices
-- [ ] Contact forms and interactions function
-- [ ] SEO meta tags and structure preserved
-- [ ] Fast loading times maintained
+### Phase 1 Requirements (Frontend Migration)
+- [ ] Install required dependencies (react-router-dom, react-icons)
+- [ ] Create proper project folder structure
+- [ ] Migrate existing design system and styles
+- [ ] Build responsive navigation component
+- [ ] Create homepage with all sections
+- [ ] Implement routing for all pages
+- [ ] Ensure mobile responsiveness
+- [ ] Test cross-browser compatibility
 
-### Content Management Requirements
-- [ ] Non-technical staff can edit content easily
-- [ ] Blog posts can be created, edited, and published
-- [ ] Program information can be updated
-- [ ] Contact information and forms can be modified
-- [ ] Image galleries can be managed
+### Phase 2 Requirements (Convex Integration)
+- [ ] Design comprehensive Convex schema
+- [ ] Implement content fetching with real-time updates
+- [ ] Create admin authentication flow
+- [ ] Build basic content management interface
+- [ ] Migrate existing content to Convex
 
-### Technical Requirements
-- [ ] Clean, maintainable code structure
-- [ ] Proper error handling and loading states
-- [ ] Secure authentication and authorization
-- [ ] Data validation and sanitization
-- [ ] Backup and recovery procedures
+### Phase 3 Requirements (Full CMS)
+- [ ] Rich content editing capabilities
+- [ ] Image upload and optimization
+- [ ] User roles and permissions system
+- [ ] Content workflow management
+- [ ] SEO tools and meta tag management
+- [ ] Performance optimization
+- [ ] Backup and recovery system
 
 ## Key Stakeholders
 
@@ -139,20 +180,46 @@
 - Content backup and verification procedures
 - SEO monitoring and optimization
 
-## Timeline Considerations
+## Immediate Timeline (Next 2 Weeks)
 
-### Development Phases
-1. **Setup & Basic Migration** (1-2 weeks)
-2. **Content Integration** (2-3 weeks)
-3. **CMS Development** (2-3 weeks)
-4. **Testing & Refinement** (1-2 weeks)
-5. **Deployment & Training** (1 week)
+### Week 1: Foundation & Structure
+**Days 1-2: Project Setup Completion**
+- Install missing dependencies (react-router-dom, react-icons)
+- Create proper folder structure following architecture docs
+- Set up routing configuration
 
-### Dependencies
-- Convex schema design and implementation
-- Content audit and organization
-- User training and documentation
-- DNS and hosting setup for new system
+**Days 3-5: Core Components**
+- Build navigation/header component
+- Create layout wrapper component
+- Implement footer component
+- Set up basic routing structure
+
+**Days 6-7: Homepage Foundation**
+- Create hero section component
+- Build image slider component
+- Start programs section
+
+### Week 2: Content Migration
+**Days 1-3: Homepage Completion**
+- Complete all homepage sections
+- Implement responsive design
+- Add animations and interactions
+
+**Days 4-5: Additional Pages**
+- About page structure
+- Contact page with forms
+- Basic program pages
+
+**Days 6-7: Polish & Testing**
+- Cross-browser testing
+- Mobile responsiveness
+- Performance optimization
+
+### Next Phase Dependencies
+- Complete Convex schema design
+- Content audit from existing site
+- Admin interface wireframes
+- Content migration strategy
 
 ## Success Metrics
 
