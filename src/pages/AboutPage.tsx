@@ -11,19 +11,18 @@ const AboutPage: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-6 max-w-6xl relative z-10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
+          <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-7 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-px bg-accent"></div>
                 <span className="text-sm font-semibold text-primary tracking-wider uppercase">
-                  À propos
+                  Histoire
                 </span>
               </div>
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <span className="block text-gray-900">Notre Histoire</span>
-                  <span className="block text-primary">& Vision</span>
+                  <span className="block text-gray-900">Notre Histoire & Vision</span>
                 </h1>
 
                 <div className="max-w-xl">

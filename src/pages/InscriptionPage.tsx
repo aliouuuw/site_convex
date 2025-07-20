@@ -11,7 +11,7 @@ const InscriptionPage: React.FC = () => {
         </div>
 
         <div className="container mx-auto px-6 max-w-6xl relative z-10">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
+          <div className="grid lg:grid-cols-12 gap-12">
             <div className="lg:col-span-7 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-px bg-accent"></div>

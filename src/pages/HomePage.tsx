@@ -81,9 +81,7 @@ const HomePage: React.FC = () => {
                 <span>Excellence depuis 20+ ans</span>
               </div>
               <h1 className="hero-title-background">
-                Former les leaders
-                <br />
-                <span className="hero-subtitle">de demain</span>
+                Former les leaders de demain
               </h1>
               <p className="hero-description-background">
                 Excellence académique et valeurs humaines du préscolaire au
@@ -411,7 +409,7 @@ const HomePage: React.FC = () => {
                   <p>Posez vos questions</p>
                   <a
                     href="/contact"
-                    className="font-family-poppins font-medium text-[0.875rem] px-[2rem] py-[1rem] tracking-[0.025em] text-white border-1 border-white hover:underline transition-all duration-300 translate-y-0 hover:translate-y-[-1px]"
+                    className="btn btn-secondary"
                   >
                     Discuter
                   </a>

@@ -12,6 +12,8 @@ import BlogDetailPage from "./pages/BlogDetailPage";
 import PreschoolPage from "./pages/PreschoolPage";
 import PrimaryPage from "./pages/PrimaryPage";
 import MiddleschoolPage from "./pages/MiddleschoolPage";
+import GalleryPage from "./pages/GalleryPage";
+import EquipePage from "./pages/EquipePage";
 
 export default function App() {
   return (
@@ -34,6 +36,8 @@ export default function App() {
             <Route path="/programs/preschool" element={<PreschoolPage />} />
             <Route path="/programs/primary" element={<PrimaryPage />} />
             <Route path="/programs/middleschool" element={<MiddleschoolPage />} />
+            <Route path="/gallery" element={<GalleryPage />} />
+            <Route path="/equipe" element={<EquipePage />} />
             
             {/* Catch-all route for 404 */}
             <Route path="*" element={<NotFoundPage />} />

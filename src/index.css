@@ -1391,7 +1391,7 @@ html {
 .hero-content-background {
   position: relative;
   z-index: 2;
-  max-width: 650px;
+  max-width: 70%;
   color: var(--white);
   width: 100%;
   padding-top: var(--header-height);

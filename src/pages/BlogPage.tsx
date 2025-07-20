@@ -89,12 +89,12 @@ const BlogPage: React.FC = () => {
           </div>
 
           <div className="container mx-auto px-6 max-w-6xl relative z-10">
-            <div className="grid lg:grid-cols-12 gap-12 items-center">
+            <div className="grid lg:grid-cols-12 gap-12">
               <div className="lg:col-span-7 space-y-8">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-px bg-accent"></div>
                   <span className="text-sm font-semibold text-primary tracking-wider uppercase">
-                    Blog
+                    Journal
                   </span>
                 </div>
 
@@ -262,7 +262,6 @@ const BlogPage: React.FC = () => {
             <div className="text-center">
               <div className="bg-gray-50 p-12 border-l-4 border-accent">
                 <div className="flex items-start gap-4 justify-center">
-                  <div className="text-4xl text-accent leading-none">✉</div>
                   <div className="text-center">
                     <h2 className="text-3xl font-bold mb-4 text-gray-900">
                       Restez informé
