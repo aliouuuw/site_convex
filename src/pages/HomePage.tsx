@@ -78,12 +78,12 @@ const HomePage: React.FC = () => {
           <div className="container z-20">
             <div className="hero-content-background">
               <div className="hero-badge-elegant">
-                <span>Excellence depuis 20+ ans</span>
+                <span data-live-edit-id="hero.badge">Excellence depuis 20+ ans</span>
               </div>
-              <h1 className="hero-title-background">
+              <h1 className="hero-title-background" data-live-edit-id="hero.title">
                 Former les leaders de demain
               </h1>
-              <p className="hero-description-background">
+              <p className="hero-description-background" data-live-edit-id="hero.description">
                 Excellence académique et valeurs humaines du préscolaire au
                 collège.
               </p>
@@ -97,16 +97,16 @@ const HomePage: React.FC = () => {
               </div>
               <div className="hero-stats-inline">
                 <div className="hero-stat-inline">
-                  <span className="stat-number-inline">500+</span>
-                  <span className="stat-label-inline">Élèves</span>
+                  <span className="stat-number-inline" data-live-edit-id="hero.stats.students">500+</span>
+                  <span className="stat-label-inline" data-live-edit-id="hero.stats.students.label">Élèves</span>
                 </div>
                 <div className="hero-stat-inline">
-                  <span className="stat-number-inline">98%</span>
-                  <span className="stat-label-inline">Réussite</span>
+                  <span className="stat-number-inline" data-live-edit-id="hero.stats.success">98%</span>
+                  <span className="stat-label-inline" data-live-edit-id="hero.stats.success.label">Réussite</span>
                 </div>
                 <div className="hero-stat-inline">
-                  <span className="stat-number-inline">20+</span>
-                  <span className="stat-label-inline">Années</span>
+                  <span className="stat-number-inline" data-live-edit-id="hero.stats.years">20+</span>
+                  <span className="stat-label-inline" data-live-edit-id="hero.stats.years.label">Années</span>
                 </div>
               </div>
             </div>
@@ -156,8 +156,8 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">01</div>
               <div>
-                <h2 className="section-title-creative">Nos Programmes</h2>
-                <p className="section-description-creative">
+                <h2 className="section-title-creative" data-live-edit-id="programs.title">Nos Programmes</h2>
+                <p className="section-description-creative" data-live-edit-id="programs.description">
                   Un parcours éducatif complet qui accompagne chaque élève vers
                   l&apos;excellence
                 </p>
@@ -206,8 +206,8 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">02</div>
               <div>
-                <h2 className="section-title-creative">Notre Mission</h2>
-                <p className="section-description-creative">
+                <h2 className="section-title-creative" data-live-edit-id="mission.title">Notre Mission</h2>
+                <p className="section-description-creative" data-live-edit-id="mission.description">
                   Former les citoyens de demain avec excellence et bienveillance
                 </p>
               </div>
@@ -215,13 +215,13 @@ const HomePage: React.FC = () => {
 
             <div className="mission-grid">
               <div className="mission-content-simplified">
-                <p className="mission-text-large">
+                <p className="mission-text-large" data-live-edit-id="mission.main">
                   Nous nous engageons à offrir une éducation de qualité qui
                   forme les citoyens de demain, cultivant l&apos;excellence
                   académique tout en développant les valeurs humaines
                   essentielles.
                 </p>
-                <p className="mission-text-regular">
+                <p className="mission-text-regular" data-live-edit-id="mission.secondary">
                   Depuis notre création, nous accompagnons chaque élève dans son
                   épanouissement personnel et sa réussite scolaire, de la
                   maternelle au collège.
@@ -275,8 +275,8 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">03</div>
               <div>
-                <h2 className="section-title-creative">Actualités</h2>
-                <p className="section-description-creative">
+                <h2 className="section-title-creative" data-live-edit-id="news.title">Actualités</h2>
+                <p className="section-description-creative" data-live-edit-id="news.description">
                   Découvrez la vie dynamique de notre école
                 </p>
               </div>

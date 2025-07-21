@@ -22,11 +22,11 @@ const AboutPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <span className="block text-gray-900">Notre Histoire & Vision</span>
+                  <span className="block text-gray-900" data-live-edit-id="about.title">Notre Histoire & Vision</span>
                 </h1>
 
                 <div className="max-w-xl">
-                  <p className="text-xl text-gray-600 leading-relaxed mb-6">
+                  <p className="text-xl text-gray-600 leading-relaxed mb-6" data-live-edit-id="about.intro">
                     Depuis plus de deux décennies, nous cultivons l'excellence
                     éducative au cœur du Sénégal, formant les leaders de demain
                     avec passion et dévouement.
@@ -48,11 +48,11 @@ const AboutPage: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <div className="text-4xl text-primary leading-none">"</div>
                   <div>
-                    <p className="text-lg italic text-gray-700 mb-3">
+                    <p className="text-lg italic text-gray-700 mb-3" data-live-edit-id="about.quote">
                       Former les citoyens de demain en alliant excellence
                       académique, valeurs humaines et ouverture sur le monde.
                     </p>
-                    <div className="text-sm font-semibold text-primary">
+                    <div className="text-sm font-semibold text-primary" data-live-edit-id="about.quote.author">
                       — Notre Mission Fondamentale
                     </div>
                   </div>
@@ -82,8 +82,8 @@ const AboutPage: React.FC = () => {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="section-header-creative mb-16">
             <div>
-              <h2 className="section-title-creative">Notre Mission</h2>
-              <p className="section-description-creative">
+              <h2 className="section-title-creative" data-live-edit-id="about.mission.title">Notre Mission</h2>
+              <p className="section-description-creative" data-live-edit-id="about.mission.description">
                 Les valeurs qui guident notre approche éducative
               </p>
             </div>

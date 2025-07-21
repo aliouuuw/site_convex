@@ -1,6 +1,9 @@
 import React from 'react';
+import { useContent } from '../components/ContentProvider';
 
 const ContactPage: React.FC = () => {
+  const content = useContent();
+  
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
       {/* Hero Section */}
@@ -21,12 +24,12 @@ const ContactPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <span className="block text-gray-900">Contactez-nous</span>
+                  <span className="block text-gray-900" data-live-edit-id="contact.title">{content.get('contact.title', 'Contactez-nous')}</span>
                 </h1>
 
                 <div className="max-w-xl">
-                  <p className="text-xl text-gray-600 leading-relaxed mb-6">
-                    Nous sommes là pour répondre à toutes vos questions concernant l'éducation de votre enfant. N'hésitez pas à nous contacter par le moyen qui vous convient le mieux.
+                  <p className="text-xl text-gray-600 leading-relaxed mb-6" data-live-edit-id="contact.description">
+                    {content.get('contact.description', 'Nous sommes là pour répondre à toutes vos questions concernant l\'éducation de votre enfant. N\'hésitez pas à nous contacter par le moyen qui vous convient le mieux.')}
                   </p>
                 </div>
               </div>
@@ -79,9 +82,9 @@ const ContactPage: React.FC = () => {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="section-header-creative mb-16">
             <div>
-              <h2 className="section-title-creative">Nos Coordonnées</h2>
-              <p className="section-description-creative">
-                Plusieurs moyens de nous joindre pour votre commodité
+              <h2 className="section-title-creative" data-live-edit-id="contact.coordinates.title">{content.get('contact.coordinates.title', 'Nos Coordonnées')}</h2>
+              <p className="section-description-creative" data-live-edit-id="contact.coordinates.description">
+                {content.get('contact.coordinates.description', 'Plusieurs moyens de nous joindre pour votre commodité')}
               </p>
             </div>
           </div>

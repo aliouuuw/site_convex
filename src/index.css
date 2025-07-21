@@ -1895,3 +1895,105 @@ html {
     padding: 2rem;
   }
 }
+
+/* Live Edit Functionality Styles */
+/* Edit Mode Toggle Button */
+.edit-mode-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.edit-mode-toggle.active {
+  background-color: #e74c3c;
+}
+
+.edit-mode-toggle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.edit-mode-toggle .icon {
+  font-size: 16px;
+}
+
+.edit-mode-toggle .count {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* Editable Elements */
+.live-edit-mode .live-edit-element {
+  position: relative;
+  outline: 2px dashed var(--primary);
+  cursor: pointer;
+  transition:
+    outline-offset 0.2s ease,
+    outline-color 0.2s ease;
+  outline-offset: 2px;
+}
+
+.live-edit-mode .live-edit-element:hover {
+  outline: 2px dashed var(--accent);
+  outline-offset: 4px;
+}
+
+.live-edit-mode .live-edit-element::before {
+  content: "✏️";
+  position: absolute;
+  top: -18px;
+  right: -5px;
+  background: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.live-edit-mode .live-edit-element:hover::before {
+  opacity: 1;
+}
+
+/* Inline Editor */
+.live-edit-input {
+  background-color: white;
+  border: 2px solid var(--primary);
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  outline: none;
+  border-radius: 4px;
+}
+
+.live-edit-input:focus {
+  border-color: var(--accent);
+}

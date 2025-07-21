@@ -10,4 +10,11 @@ export default defineSchema({
   numbers: defineTable({
     value: v.number(),
   }),
+  content: defineTable({
+    id: v.string(),
+    content: v.string(),
+    type: v.union(v.literal("text"), v.literal("image")),
+    page: v.string(),
+    lastModified: v.number(),
+  }).index("by_content_id", ["id"]).index("by_page", ["page"]),
 });
