@@ -16,6 +16,10 @@ import PrimaryPage from "./pages/PrimaryPage";
 import MiddleschoolPage from "./pages/MiddleschoolPage";
 import GalleryPage from "./pages/GalleryPage";
 import EquipePage from "./pages/EquipePage";
+// Admin pages
+import BlogAdminPage from "./pages/admin/BlogAdminPage";
+import MediaAdminPage from "./pages/admin/MediaAdminPage";
+import TeamAdminPage from "./pages/admin/TeamAdminPage";
 
 export default function App() {
   return (
@@ -44,6 +48,12 @@ export default function App() {
               />
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/equipe" element={<EquipePage />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin" element={<BlogAdminPage />} />
+              <Route path="/admin/blog" element={<BlogAdminPage />} />
+              <Route path="/admin/media" element={<MediaAdminPage />} />
+              <Route path="/admin/team" element={<TeamAdminPage />} />
 
               {/* Catch-all route for 404 */}
               <Route path="*" element={<NotFoundPage />} />
