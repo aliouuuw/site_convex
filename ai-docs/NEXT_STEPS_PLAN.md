@@ -41,49 +41,51 @@ This document outlines how to handle structured content (Blog, Team, Gallery, Ev
 
 ## Concrete Next Steps (Phased)
 
-Phase 1: Foundation (Short)
-1. Add Convex schemas:
-   - `blog_posts`, `team_members`, `media` (and indexes).
-   - Queries: `listPublishedBlogPosts`, `getBlogBySlug`, `listTeamMembers`, `searchMedia`.
-   - Mutations: `createBlogPost`, `updateBlogPost`, `publishBlogPost`, `deleteBlogPost`, media CRUD.
-2. Add `/admin` shell (protected): sidebar + placeholder cards for modules.
-3. Wire role-based access in client and Convex (temporary hardcoded roles ok initially).
+**Phase 1: Foundation & Initial Admin UI (Complete)**
+- **[DONE]** Add Convex schemas and core queries/mutations for `blog_posts`, `team_members`, and `media`.
+- **[DONE]** Scaffold a protected `/admin` shell with a sidebar and placeholder pages.
+- **[DONE]** Implement basic, styled CRUD forms (Create/Read/Update) for Blog, Team, and Media modules.
 
-Phase 2: Blog Module
-4. Admin UI for Blog: list, create/edit form (title, slug, excerpt, content, cover, category, featured, status, publishedAt), preview link.
-5. Public Blog pages:
-   - `BlogPage`: read `listPublishedBlogPosts` with pagination; keep featured support.
-   - `BlogDetailPage`: read `getBlogBySlug` with `?preview=true` support.
-   - Remove inline edit for blog content entirely.
+**Phase 2: Admin UX & Safety Enhancements (Next Up)**
+1.  **Implement User Feedback:**
+    -   Add toast notifications for success/error on all form submissions.
+    -   Show loading states on buttons during mutation execution.
+2.  **Add Deletion with Confirmation:**
+    -   Implement `deleteBlogPost`, `deleteTeamMember`, and `deleteMedia` mutations.
+    -   Add "Delete" buttons to the admin UI.
+    -   Implement a confirmation dialog to prevent accidental deletion.
+3.  **Improve Form Error Handling:**
+    -   Display server-side validation errors directly in the forms (e.g., for a non-unique slug).
 
-Phase 3: Media Library (UploadThing)
-6. Media admin with UploadThing integration:
-   - Implement UploadThing uploader and callbacks.
-   - Store metadata in `media` collection, enable search/filter and re-use.
-   - Use media picker in Blog/Team admin forms.
+**Phase 3: Feature Completion & Business Logic**
+1.  **Complete Blog Module:**
+    -   Create a new Convex query to fetch *all* posts (drafts and published) for the admin view.
+    -   Add "Publish" and "Unpublish" buttons.
+    -   Display status badges ("Draft", "Published") on each post card.
+2.  **Integrate Media Library (UploadThing):**
+    -   Implement the UploadThing uploader in the Media module.
+    -   Build a reusable media picker component.
+    -   Replace the "Cover Image" and "Photo URL" text inputs with the new media picker.
+3.  **Complete Team Module:**
+    -   Display the member's photo in the list, with a fallback to the initial.
 
-Phase 4: Team Module
-7. Team admin: order drag/drop, visible toggle, photo selection from media library.
-8. Public team page refactor to read from `team_members`.
+**Phase 4: Public Page Integration**
+1.  **Refactor Blog Pages:**
+    -   Update the public `/journal` page to use `listPublishedBlogPosts`.
+    -   Update the `/journal/:slug` page to use `getBlogBySlug`.
+    -   Implement preview mode for drafts.
+2.  **Refactor Team Page:**
+    -   Update the public `/equipe` page to use `listTeamMembers`.
 
-Phase 5: Hardening & UX
-9. Auth integration (Convex auth): real roles, server guards, `preview` access.
-10. Editor quality-of-life: autosave in admin, optimistic updates, toasts.
-11. Optional: Events module with calendar list and detail pages.
+**Phase 5: Advanced Features & Final Polish**
+1.  **Rich Text Editor:** Integrate TipTap into the blog post form for a true WYSIWYG experience.
+2.  **Drag-and-Drop Reordering:** Implement drag-and-drop for the team member list.
+3.  **Authentication:** Replace temporary role checks with a full Convex authentication system.
+4.  **Editor QoL:** Add autosave, optimistic updates, and other quality-of-life improvements.
 
-## Key Decisions to Align On
-- Media provider: UploadThing (single provider).
-- Rich text editor: TipTap in admin for blog content.
-- Slug strategy: auto-generate from title, ensure uniqueness via Convex index.
-- Preview mode policy: query param + role-gated.
-
-## Immediate Tasks Checklist
-- [ ] Create Convex collections and queries/mutations for blog/team/media
-- [ ] Scaffold `/admin` layout (protected)
-- [ ] Implement Blog Admin CRUD
-- [ ] Switch Blog public pages to read from Convex
-- [ ] Implement Media Library with UploadThing and wire media picker
-- [ ] Implement Team Admin and refactor team page
-- [ ] Add role-based guards and preview handling
-
-This plan keeps inline live-edit for simple page content and moves complex/structured content into focused admin modules, using UploadThing as the single media pipeline for consistent, developer-friendly DX.
+## Immediate Tasks Checklist for Next Session
+- [ ] **UX:** Install a toast library (e.g., `react-hot-toast`) and add success/error notifications to all forms.
+- [ ] **UX:** Add loading states to form submission buttons.
+- [ ] **Deletion:** Implement `deleteBlogPost` mutation and add a delete button with a confirmation dialog.
+- [ ] **Blog Admin:** Create and use a new query to show all posts (drafts and published) in the admin list.
+- [ ] **Blog Admin:** Add status badges and publish/unpublish buttons.
