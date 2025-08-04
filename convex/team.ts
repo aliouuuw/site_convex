@@ -15,6 +15,19 @@ export const listTeamMembers = query({
   },
 });
 
+export const listAllTeamMembers = query({
+  args: {},
+  handler: async (ctx) => {
+    // TODO: role check once auth wired - only admins/editors should see this
+    const members = await ctx.db
+      .query("team_members")
+      .withIndex("by_order", (q) => q.gt("order", -Infinity))
+      .order("asc")
+      .collect();
+    return members;
+  },
+});
+
 export const createTeamMember = mutation({
   args: {
     name: v.string(),

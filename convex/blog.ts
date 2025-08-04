@@ -58,6 +58,37 @@ export const listPublishedBlogPosts = query({
   },
 });
 
+export const listAllBlogPosts = query({
+  args: {
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    // TODO: role check once auth wired - only admins/editors should see this
+    const limit = Math.min(args.limit ?? 50, 100);
+
+    const posts = await ctx.db
+      .query("blog_posts")
+      .order("desc")
+      .take(limit);
+
+    return posts.map((p) => ({
+      _id: p._id,
+      slug: p.slug,
+      title: p.title,
+      excerpt: p.excerpt,
+      coverImage: p.coverImage,
+      author: p.author,
+      category: p.category,
+      tags: p.tags ?? [],
+      featured: !!p.featured,
+      status: p.status,
+      publishedAt: p.publishedAt,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }));
+  },
+});
+
 export const getBlogBySlug = query({
   args: {
     slug: v.string(),
@@ -156,6 +187,14 @@ export const publishBlogPost = mutation({
   args: { id: v.id("blog_posts"), publishedAt: v.optional(v.number()) },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, { status: "published", publishedAt: args.publishedAt ?? now(), updatedAt: now() });
+    return null;
+  },
+});
+
+export const unpublishBlogPost = mutation({
+  args: { id: v.id("blog_posts") },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { status: "draft", updatedAt: now() });
     return null;
   },
 });
