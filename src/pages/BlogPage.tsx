@@ -1,83 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
-// Sample blog data - In a real app, this would come from your CMS or API
-const blogPosts = [
-  {
-    id: 1,
-    title: "Rentrée Scolaire 2024-2025 : Tout ce qu'il faut savoir",
-    excerpt:
-      "Découvrez les dates importantes, les nouveautés et les informations essentielles pour préparer la rentrée scolaire.",
-    date: "2024-03-15",
-    category: "Actualités",
-    image: "/images/blog/rentree-scolaire.jpg",
-    author: "Direction Les Hirondelles",
-    featured: true,
-  },
-  {
-    id: 2,
-    title: "Nos élèves brillent au Concours National de Mathématiques",
-    excerpt:
-      "Félicitations à nos élèves qui ont remporté plusieurs prix lors du concours national.",
-    date: "2024-03-10",
-    category: "Succès",
-    image: "/images/blog/maths-competition.jpg",
-    author: "Département de Mathématiques",
-  },
-  {
-    id: 3,
-    title: "Journée Culturelle : Célébration de la Diversité",
-    excerpt:
-      "Retour sur notre journée culturelle annuelle qui met à l'honneur les traditions sénégalaises.",
-    date: "2024-03-05",
-    category: "Événements",
-    image: "/images/blog/cultural-day.jpg",
-    author: "Équipe Pédagogique",
-  },
-  {
-    id: 4,
-    title: "Innovation Pédagogique : Nouvelle Salle Multimédia",
-    excerpt:
-      "Notre établissement s'équipe d'une nouvelle salle multimédia pour enrichir l'expérience d'apprentissage.",
-    date: "2024-02-28",
-    category: "Infrastructure",
-    image: "/images/blog/multimedia-room.jpg",
-    author: "Service Technique",
-  },
-  {
-    id: 5,
-    title: "Succès de notre Programme d'Échange Linguistique",
-    excerpt:
-      "Nos élèves ont participé à un échange enrichissant avec une école partenaire.",
-    date: "2024-02-20",
-    category: "International",
-    image: "/images/blog/exchange-program.jpg",
-    author: "Département des Langues",
-  },
-  {
-    id: 6,
-    title: "Les Hirondelles s'engage pour l'environnement",
-    excerpt:
-      "Découvrez nos initiatives écologiques et nos projets de développement durable.",
-    date: "2024-02-15",
-    category: "Environnement",
-    image: "/images/blog/eco-project.jpg",
-    author: "Club Environnement",
-  },
-];
-
-const formatDate = (dateString: string) => {
+const formatDate = (timestamp: number | string) => {
+  const date = typeof timestamp === 'string' ? new Date(timestamp) : new Date(timestamp);
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
   };
-  return new Date(dateString).toLocaleDateString("fr-FR", options);
+  return date.toLocaleDateString("fr-FR", options);
 };
 
 const BlogPage: React.FC = () => {
-  const featuredPost = blogPosts.find((post) => post.featured);
-  const regularPosts = blogPosts.filter((post) => !post.featured);
+  const blogPosts = useQuery(api.blog.listPublishedBlogPosts, { limit: 50 });
+  const featuredPosts = blogPosts?.filter((post: any) => post.featured) || [];
+  const regularPosts = blogPosts?.filter((post: any) => !post.featured) || [];
+  const featuredPost = featuredPosts[0];
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
@@ -148,32 +88,35 @@ const BlogPage: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="relative h-64 md:h-auto">
                     <img
-                      src={featuredPost.image}
+                      src={featuredPost.coverImage || "/images/blog/default-blog.jpg"}
                       alt={featuredPost.title}
                       className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/blog/default-blog.jpg";
+                      }}
                     />
                   </div>
                   <div className="p-8 md:p-12 flex flex-col justify-center">
                     <div className="flex items-center gap-4 mb-4">
                       <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
-                        {featuredPost.category}
+                        {featuredPost.category || "Non classé"}
                       </span>
                       <time className="text-gray-500 text-sm">
-                        {formatDate(featuredPost.date)}
+                        {formatDate(featuredPost.publishedAt)}
                       </time>
                     </div>
                     <h3 className="text-3xl font-bold mb-4 text-gray-900">
                       {featuredPost.title}
                     </h3>
                     <p className="text-gray-600 mb-6 leading-relaxed">
-                      {featuredPost.excerpt}
+                      {featuredPost.excerpt || 'Aucun résumé disponible'}
                     </p>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-500 text-sm">
-                        Par {featuredPost.author}
+                        Par {featuredPost.author || "Auteur inconnu"}
                       </span>
                       <Link
-                        to={`/journal/${featuredPost.id}`}
+                        to={`/journal/${featuredPost.slug}`}
                         className="btn btn-primary"
                       >
                         Lire la suite
@@ -202,35 +145,38 @@ const BlogPage: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {regularPosts.map((post) => (
+              {regularPosts.map((post: any) => (
                 <article
-                  key={post.id}
+                  key={post._id}
                   className="card overflow-hidden transition-all duration-300 hover:transform hover:-translate-y-1"
                 >
                   <div className="card-image">
                     <img
-                      src={post.image}
+                      src={post.coverImage || "/images/blog/default-blog.jpg"}
                       alt={post.title}
                       width={400}
                       height={250}
                       className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/blog/default-blog.jpg";
+                      }}
                     />
                   </div>
                   <div className="card-content p-6">
                     <div className="card-meta mb-4">
-                      <span className="card-tag">{post.category}</span>
+                      <span className="card-tag">{post.category || "Non classé"}</span>
                       <time className="text-gray-500 text-sm">
-                        {formatDate(post.date)}
+                        {formatDate(post.publishedAt)}
                       </time>
                     </div>
                     <h3 className="card-title mb-3">{post.title}</h3>
-                    <p className="card-description mb-4">{post.excerpt}</p>
+                    <p className="card-description mb-4">{post.excerpt || post.contentHtml?.substring(0, 150) + '...'}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-gray-500 text-sm">
-                        Par {post.author}
+                        Par {post.author || "Auteur inconnu"}
                       </span>
                       <Link
-                        to={`/journal/${post.id}`}
+                        to={`/journal/${post.slug}`}
                         className="text-primary hover:text-primary/80 font-medium text-sm flex items-center gap-1"
                       >
                         Lire la suite

@@ -19,6 +19,7 @@ import GalleryPage from "./pages/GalleryPage";
 import EquipePage from "./pages/EquipePage";
 // Admin pages
 import BlogAdminPage from "./pages/admin/BlogAdminPage";
+import BlogEditorPage from "./pages/admin/BlogEditorPage";
 import MediaAdminPage from "./pages/admin/MediaAdminPage";
 import TeamAdminPage from "./pages/admin/TeamAdminPage";
 
@@ -38,7 +39,7 @@ export default function App() {
 
               {/* Blog Routes */}
               <Route path="/journal" element={<BlogPage />} />
-              <Route path="/journal/:id" element={<BlogDetailPage />} />
+              <Route path="/journal/:slug" element={<BlogDetailPage />} />
 
               {/* Program Routes */}
               <Route path="/programs/preschool" element={<PreschoolPage />} />
@@ -53,6 +54,8 @@ export default function App() {
               {/* Admin Routes */}
               <Route path="/admin" element={<BlogAdminPage />} />
               <Route path="/admin/blog" element={<BlogAdminPage />} />
+              <Route path="/admin/blog/create" element={<BlogEditorPage />} />
+              <Route path="/admin/blog/edit/:slug" element={<BlogEditorPage />} />
               <Route path="/admin/media" element={<MediaAdminPage />} />
               <Route path="/admin/team" element={<TeamAdminPage />} />
 

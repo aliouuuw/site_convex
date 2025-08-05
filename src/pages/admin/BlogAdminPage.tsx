@@ -1,277 +1,10 @@
 import AdminLayout from "./AdminLayout";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../../components/ConfirmDialog";
-
-interface BlogPostFormProps {
-  post?: any;
-  onClose: () => void;
-  onSave: () => void;
-}
-
-function BlogPostForm({ post, onClose, onSave }: BlogPostFormProps) {
-  const [title, setTitle] = useState(post?.title || "");
-  const [slug, setSlug] = useState(post?.slug || "");
-  const [excerpt, setExcerpt] = useState(post?.excerpt || "");
-  const [contentHtml, setContentHtml] = useState(post?.contentHtml || "");
-  const [coverImage, setCoverImage] = useState(post?.coverImage || "");
-  const [author, setAuthor] = useState(post?.author || "");
-  const [category, setCategory] = useState(post?.category || "");
-  const [tags, setTags] = useState(post?.tags?.join(", ") || "");
-  const [featured, setFeatured] = useState(post?.featured || false);
-  const [status, setStatus] = useState(post?.status || "draft");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const createPost = useMutation(api.blog.createBlogPost);
-  const updatePost = useMutation(api.blog.updateBlogPost);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    const postData = {
-      slug,
-      title,
-      excerpt: excerpt || undefined,
-      contentHtml: contentHtml || undefined,
-      coverImage: coverImage || undefined,
-      author: author || undefined,
-      category: category || undefined,
-      tags: tags
-        ? tags.split(",").map((t: string) => t.trim()).filter(Boolean)
-        : undefined,
-      featured,
-      status,
-    };
-
-    try {
-      if (post) {
-        await updatePost({ id: post._id, ...postData });
-        toast.success("Blog post updated successfully!");
-      } else {
-        await createPost(postData);
-        toast.success("Blog post created successfully!");
-      }
-      onSave();
-      onClose();
-    } catch (error: any) {
-      console.error("Error saving post:", error);
-      const errorMessage = error?.message || "Failed to save blog post";
-      setError(errorMessage);
-      toast.error(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const generateSlug = () => {
-    const generated = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-    setSlug(generated);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-lg border border-gray-200">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {post ? "Edit Blog Post" : "Create New Blog Post"}
-          </h2>
-        </div>
-
-        <form onSubmit={(e) => { void handleSubmit(e); }} className="p-6 space-y-4">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md">
-              {error}
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Title *
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Slug *
-              </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={slug}
-                  onChange={(e) => setSlug(e.target.value)}
-                  required
-                  disabled={isSubmitting}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-                />
-                <button
-                  type="button"
-                  onClick={generateSlug}
-                  disabled={!title || isSubmitting}
-                  className="btn btn-secondary disabled:opacity-50"
-                >
-                  Generate
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                disabled={isSubmitting}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-              >
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Excerpt
-            </label>
-            <textarea
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              rows={3}
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-              placeholder="Brief description of the post..."
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Content (HTML)
-            </label>
-            <textarea
-              value={contentHtml}
-              onChange={(e) => setContentHtml(e.target.value)}
-              rows={8}
-              disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100 font-mono text-sm"
-              placeholder="<p>Your content here...</p>"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Cover Image URL
-              </label>
-              <input
-                type="url"
-                value={coverImage}
-                onChange={(e) => setCoverImage(e.target.value)}
-                disabled={isSubmitting}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-                placeholder="https://..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Author
-              </label>
-              <input
-                type="text"
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
-                disabled={isSubmitting}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category
-              </label>
-              <input
-                type="text"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                disabled={isSubmitting}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tags (comma-separated)
-              </label>
-              <input
-                type="text"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                disabled={isSubmitting}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-                placeholder="tag1, tag2, tag3"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="featured"
-              checked={featured}
-              onChange={(e) => setFeatured(e.target.checked)}
-              disabled={isSubmitting}
-              className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded"
-            />
-            <label htmlFor="featured" className="ml-2 block text-sm text-gray-700">
-              Featured post
-            </label>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="btn btn-secondary disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting || !title.trim() || !slug.trim()}
-              className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              {isSubmitting && (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              )}
-              {isSubmitting ? "Saving..." : (post ? "Update Post" : "Create Post")}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
 
 function StatusBadge({ status }: { status: string }) {
   const styles = {
@@ -287,27 +20,23 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function BlogAdminPage() {
-  const [showForm, setShowForm] = useState(false);
-  const [editingPost, setEditingPost] = useState<any>(null);
+  const navigate = useNavigate();
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; post: any }>({
     isOpen: false,
     post: null,
   });
 
-  // Use the new listAllBlogPosts query instead of listPublishedBlogPosts
   const posts = useQuery(api.blog.listAllBlogPosts, { limit: 50 });
   const deletePost = useMutation(api.blog.deleteBlogPost);
   const publishPost = useMutation(api.blog.publishBlogPost);
   const unpublishPost = useMutation(api.blog.unpublishBlogPost);
 
   const handleCreate = () => {
-    setEditingPost(null);
-    setShowForm(true);
+    void navigate("/admin/blog/create");
   };
 
   const handleEdit = (post: any) => {
-    setEditingPost(post);
-    setShowForm(true);
+    void navigate(`/admin/blog/edit/${post.slug}`);
   };
 
   const handleDelete = (post: any) => {
@@ -359,7 +88,7 @@ export default function BlogAdminPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2>Blog Posts</h2>
+          <h1 className="text-xl font-bold text-gray-900">Blog Posts</h1>
           <button
             onClick={handleCreate}
             className="btn btn-primary"
@@ -469,16 +198,6 @@ export default function BlogAdminPage() {
               </table>
             </div>
           </div>
-        )}
-
-        {showForm && (
-          <BlogPostForm
-            post={editingPost}
-            onClose={() => setShowForm(false)}
-            onSave={() => {
-              // The form will close itself and show a toast
-            }}
-          />
         )}
 
         <ConfirmDialog

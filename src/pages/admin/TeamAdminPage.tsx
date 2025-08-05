@@ -275,7 +275,7 @@ export default function TeamAdminPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2>Team Members</h2>
+          <h1 className="text-xl font-bold text-gray-900">Team Members</h1>
           <button
             onClick={handleCreate}
             className="btn btn-primary"

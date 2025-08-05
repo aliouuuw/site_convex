@@ -20,6 +20,7 @@ import type * as http from "../http.js";
 import type * as media from "../media.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as team from "../team.js";
+import type * as uploadthing from "../uploadthing.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   media: typeof media;
   myFunctions: typeof myFunctions;
   team: typeof team;
+  uploadthing: typeof uploadthing;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

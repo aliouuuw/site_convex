@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { FaChevronUp } from "react-icons/fa";
 
 const Navigation = () => {
@@ -9,6 +9,14 @@ const Navigation = () => {
   const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
   const [isDesktopAboutOpen, setIsDesktopAboutOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isAdminPage, setIsAdminPage] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsAdminPage(location.pathname.startsWith("/admin"));
+  }, [location]);
+
+  console.log("isAdminPage:", isAdminPage);
 
   // Check for edit mode from URL
   useEffect(() => {
@@ -124,7 +132,7 @@ const Navigation = () => {
                 }`}
               >
                 <div className="px-4 py-2">
-                  {aboutLinks.map((link) => (
+                      {aboutLinks.map((link) => (
                     <Link
                       key={link.href}
                       to={link.href}
@@ -234,12 +242,14 @@ const Navigation = () => {
 
           {/* CTA Button & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
-            <Link
-              to="/inscription"
-              className="hidden lg:inline-flex btn btn-primary"
-            >
-              Inscription
-            </Link>
+            {!isAdminPage && (
+              <Link
+                to="/inscription"
+                className="hidden lg:inline-flex btn btn-primary"
+              >
+                Inscription
+              </Link>
+            )}
 
             {/* Mobile Menu Button */}
             <button
@@ -404,13 +414,15 @@ const Navigation = () => {
                 Contact
               </NavLink>
 
-              <Link
-                to="/inscription"
-                className="mx-4 btn btn-primary text-center hover:underline"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                Inscription
-              </Link>
+              {!isAdminPage && (
+                <Link
+                  to="/inscription"
+                  className="mx-4 btn btn-primary text-center hover:underline"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Inscription
+                </Link>
+              )}
             </div>
           </div>
         )}

@@ -54,10 +54,10 @@ export default defineSchema({
     .index("by_visible_order", ["visible", "order"]) // list visible in order
     .index("by_order", ["order"]),
 
-  // New: Media library entries (UploadThing-backed)
+  // New: Media library entries (supports multiple providers)
   media: defineTable({
     url: v.string(),
-    provider: v.literal("uploadthing"),
+    provider: v.union(v.literal("uploadthing"), v.literal("convex")),
     type: v.union(v.literal("image"), v.literal("video")),
     alt: v.optional(v.string()),
     width: v.optional(v.number()),

@@ -29,6 +29,30 @@ export const searchMedia = query({
   },
 });
 
+export const uploadMedia = mutation({
+  args: {
+    url: v.string(),
+    type: v.union(v.literal("image"), v.literal("video")),
+    alt: v.optional(v.string()),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const id = await ctx.db.insert("media", {
+      url: args.url,
+      provider: "convex",
+      type: args.type,
+      alt: args.alt,
+      width: args.width,
+      height: args.height,
+      tags: args.tags,
+      createdAt: now(),
+    });
+    return id;
+  },
+});
+
 export const upsertMedia = mutation({
   args: {
     url: v.string(),
@@ -41,7 +65,7 @@ export const upsertMedia = mutation({
   handler: async (ctx, args) => {
     const id = await ctx.db.insert("media", {
       url: args.url,
-      provider: "uploadthing",
+      provider: "convex",
       type: args.type,
       alt: args.alt,
       width: args.width,

@@ -1,65 +1,64 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useQuery } from 'convex/react';
+import { api } from '../../convex/_generated/api';
 
-// This would typically come from your CMS or API
-const blogPost = {
-  id: 1,
-  title: "Rentrée Scolaire 2024-2025 : Tout ce qu'il faut savoir",
-  content: `
-    <p>Chers parents et élèves,</p>
-
-    <p>Nous sommes ravis de vous présenter les informations essentielles pour la rentrée scolaire 2024-2025. Cette année s'annonce riche en nouveautés et en projets passionnants pour notre communauté éducative.</p>
-
-    <h3>Dates importantes</h3>
-    <ul>
-      <li>Rentrée administrative : 2 septembre 2024</li>
-      <li>Rentrée des classes : 4 septembre 2024</li>
-      <li>Réunion parents-professeurs : 7 septembre 2024</li>
-    </ul>
-
-    <h3>Nouveautés de l'année</h3>
-    <p>Cette année, nous mettons en place plusieurs innovations pédagogiques :</p>
-    <ul>
-      <li>Nouvelle salle multimédia équipée des dernières technologies</li>
-      <li>Programme renforcé en langues étrangères</li>
-      <li>Ateliers de coding dès le primaire</li>
-    </ul>
-
-    <h3>Fournitures scolaires</h3>
-    <p>Les listes de fournitures sont disponibles sur l'espace parent. Nous avons veillé à optimiser les listes pour éviter les achats superflus.</p>
-
-    <h3>Services périscolaires</h3>
-    <p>Nous maintenons et enrichissons notre offre d'activités périscolaires :</p>
-    <ul>
-      <li>Étude dirigée de 16h à 18h</li>
-      <li>Activités sportives et culturelles</li>
-      <li>Club sciences et environnement</li>
-    </ul>
-
-    <p>Pour toute question, n'hésitez pas à contacter le secrétariat. Nous vous souhaitons une excellente rentrée scolaire !</p>
-  `,
-  date: "2024-03-15",
-  category: "Actualités",
-  image: "/images/blog/rentree-scolaire.jpg",
-  author: "Direction Les Hirondelles",
-  authorRole: "Direction de l'établissement",
-  readTime: "5 min",
-};
-
-const formatDate = (dateString: string) => {
+const formatDate = (timestamp: number) => {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
   };
-  return new Date(dateString).toLocaleDateString("fr-FR", options);
+  return new Date(timestamp).toLocaleDateString("fr-FR", options);
+};
+
+const getFormattedDate = (post: any) => {
+  const timestamp = (post.publishedAt as number) || (post.createdAt as number);
+  if (timestamp) return formatDate(timestamp);
+  return 'Date inconnue';
 };
 
 const BlogDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { slug } = useParams<{ slug: string }>();
+  const blogPost = useQuery(api.blog.getBlogBySlug, slug ? { slug, preview: true } : "skip");
   
-  // In a real app, you would fetch the post based on the ID
-  if (id !== "1") {
+  // Handle case where slug is undefined
+  if (!slug) {
+    return (
+      <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Article Introuvable
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl leading-relaxed mb-8">
+              Désolé, l'URL de l'article est invalide.
+            </p>
+            <Link to="/journal" className="btn btn-primary">
+              Retour aux actualités
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state
+  if (blogPost === undefined) {
+    return (
+      <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <span className="ml-3 text-gray-600 mt-4">Chargement de l'article...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Post not found
+  if (blogPost === null) {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
         <div className="container mx-auto px-6 max-w-4xl">
@@ -79,6 +78,14 @@ const BlogDetailPage: React.FC = () => {
     );
   }
 
+  // Calculate estimated reading time
+  const calculateReadTime = (content: string) => {
+    const wordsPerMinute = 100;
+    const words = content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    return `${minutes} min`;
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
       <main>
@@ -94,7 +101,7 @@ const BlogDetailPage: React.FC = () => {
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-px bg-accent"></div>
                   <span className="text-sm font-semibold text-primary tracking-wider uppercase">
-                    {blogPost.category}
+                    {blogPost.category || "Non classé"}
                   </span>
                 </div>
 
@@ -107,9 +114,9 @@ const BlogDetailPage: React.FC = () => {
 
                   <div className="flex items-center gap-6 text-gray-600">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm">Par {blogPost.author}</span>
+                      <span className="text-sm">Par {blogPost.author || "Auteur inconnu"}</span>
                       <span className="text-gray-400">•</span>
-                      <span className="text-sm">{blogPost.authorRole}</span>
+                      <span className="text-sm">Publié le {blogPost ? getFormattedDate(blogPost) : 'Date inconnue'}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <svg
@@ -126,15 +133,9 @@ const BlogDetailPage: React.FC = () => {
                         />
                       </svg>
                       <span className="text-sm">
-                        {blogPost.readTime} de lecture
+                        {calculateReadTime(blogPost.contentHtml || '')} de lecture
                       </span>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <time className="text-gray-500 text-sm">
-                      {formatDate(blogPost.date)}
-                    </time>
                   </div>
                 </div>
               </div>
@@ -143,9 +144,12 @@ const BlogDetailPage: React.FC = () => {
                 <div className="relative">
                   <div className="relative h-[400px] w-full">
                     <img
-                      src={blogPost.image}
+                      src={blogPost.coverImage || "/images/blog/default-blog.jpg"}
                       alt={blogPost.title}
                       className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/blog/default-blog.jpg";
+                      }}
                     />
                   </div>
                   <div className="absolute -top-6 -left-6 w-12 h-12 bg-accent"></div>
@@ -157,15 +161,24 @@ const BlogDetailPage: React.FC = () => {
         </section>
 
         {/* Article Content */}
-        <section className="py-24 bg-white">
+        <section className="bg-white pb-8">
           <div className="container mx-auto px-6 max-w-4xl">
             <article className="prose prose-lg max-w-none">
               <div
-                className="text-gray-700 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: blogPost.content }}
+                className="text-gray-700"
+                // TipTap outputs semantic HTML including <p>, <br>, <ul>/<ol>, etc.
+                // We should inject it as-is without transforming newlines to <br/>.
+                // Preserve whitespace and ensure long words wrap.
+                dangerouslySetInnerHTML={{
+                  __html:
+                    blogPost.contentHtml && blogPost.contentHtml.trim().length > 0
+                      ? blogPost.contentHtml
+                      : "<p>Aucun contenu disponible pour cet article.</p>",
+                }}
                 style={{
-                  fontSize: "1.125rem",
-                  lineHeight: "1.75",
+                  whiteSpace: "normal",
+                  overflowWrap: "anywhere",
+                  wordBreak: "break-word",
                 }}
               />
             </article>
@@ -229,7 +242,7 @@ const BlogDetailPage: React.FC = () => {
           </div>
         </section>
 
-        {/* Related Articles or Newsletter CTA */}
+        {/* Newsletter CTA */}
         <section className="py-24 bg-gray-50">
           <div className="container mx-auto px-6 max-w-4xl">
             <div className="text-center">
@@ -242,7 +255,7 @@ const BlogDetailPage: React.FC = () => {
                     </h2>
                     <p className="text-gray-600 mb-8">
                       Inscrivez-vous à notre newsletter pour recevoir les
-                      dernières actualités de l&apos;école directement dans
+                      dernières actualités de l'école directement dans
                       votre boîte mail.
                     </p>
                     <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -253,7 +266,7 @@ const BlogDetailPage: React.FC = () => {
                         required
                       />
                       <button type="submit" className="btn btn-primary">
-                        S&apos;inscrire
+                        S'inscrire
                       </button>
                     </form>
                   </div>

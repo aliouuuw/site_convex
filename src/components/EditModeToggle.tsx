@@ -17,6 +17,7 @@ export default function EditModeToggle({ liveEdit }: EditModeToggleProps) {
       const elements = document.querySelectorAll("[data-live-edit-id]");
       const count = elements.length;
       setEditableCount(count);
+      // TODO: Replace with a more robust logging system if needed, render is infinite
       console.log(`Found ${count} editable elements on page`);
     };
 

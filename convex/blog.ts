@@ -4,7 +4,7 @@ import { v } from "convex/values";
 const now = () => Date.now();
 
 // Helpers
-const blogPostDoc = {
+const _blogPostDoc = {
   _id: v.id("blog_posts"),
   _creationTime: v.number(),
   slug: v.string(),
@@ -96,10 +96,47 @@ export const getBlogBySlug = query({
   },
   handler: async (ctx, args) => {
     const { slug, preview } = args;
+    
     const q = ctx.db.query("blog_posts").withIndex("by_slug", (q) => q.eq("slug", slug));
-    const post = await q.unique();
-    if (!post) return null;
+    const posts = await q.take(1);
+    
+    if (posts.length === 0) return null;
+    
+    const post = posts[0];
+    
     if (!preview && post.status !== "published") return null;
+    
+    return post;
+  },
+});
+
+// Add a query specifically for editing that bypasses status checks
+export const getBlogPostForEdit = query({
+  args: {
+    slug: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const { slug } = args;
+        
+    const q = ctx.db.query("blog_posts").withIndex("by_slug", (q) => q.eq("slug", slug));
+    const posts = await q.take(1);
+    
+    if (posts.length === 0) {
+      console.log("getBlogPostForEdit - No posts found for slug:", slug);
+      return null;
+    }
+    
+    return posts[0];
+  },
+});
+
+export const getBlogPost = query({
+  args: {
+    id: v.id("blog_posts"),
+  },
+  handler: async (ctx, args) => {
+    const post = await ctx.db.get(args.id);
+    if (!post) return null;
     return post;
   },
 });
@@ -123,8 +160,8 @@ export const createBlogPost = mutation({
     const existing = await ctx.db
       .query("blog_posts")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
-      .unique();
-    if (existing) throw new Error("Slug already exists");
+      .take(1);
+    if (existing.length > 0) throw new Error("Slug already exists");
 
     const doc = {
       slug: args.slug,
@@ -160,6 +197,7 @@ export const updateBlogPost = mutation({
     featured: v.optional(v.boolean()),
     status: v.optional(v.union(v.literal("draft"), v.literal("published"))),
     publishedAt: v.optional(v.number()),
+    slug: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     // TODO: role check once auth wired
@@ -175,6 +213,7 @@ export const updateBlogPost = mutation({
       "featured",
       "status",
       "publishedAt",
+      "slug",
     ]) {
       if (args[k as keyof typeof args] !== undefined) updates[k] = (args as any)[k];
     }
