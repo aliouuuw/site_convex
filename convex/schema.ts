@@ -62,6 +62,7 @@ export default defineSchema({
   media: defineTable({
     url: v.string(), // Uploadthing file URL
     name: v.string(), // Original filename
+    title: v.optional(v.string()), // Custom title for the media
     size: v.number(), // File size in bytes
     type: v.union(v.literal("image"), v.literal("video")),
     alt: v.optional(v.string()),

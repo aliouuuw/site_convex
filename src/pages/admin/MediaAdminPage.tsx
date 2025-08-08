@@ -1,7 +1,7 @@
 import AdminLayout from "./AdminLayout";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../../components/ConfirmDialog";
 import MediaPicker from "../../components/MediaPicker";
@@ -9,11 +9,13 @@ import MediaPicker from "../../components/MediaPicker";
 interface MediaUploadFormProps {
   onClose: () => void;
   onSave: () => void;
+  editingMedia?: any;
 }
 
-function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
+function MediaUploadForm({ onClose, onSave, editingMedia }: MediaUploadFormProps) {
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [type, setType] = useState<"image" | "video">("image");
   const [alt, setAlt] = useState("");
   const [width, setWidth] = useState<number | undefined>();
@@ -27,6 +29,7 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
   const resetForm = () => {
     setUrl("");
     setName("");
+    setTitle("");
     setType("image");
     setAlt("");
     setWidth(undefined);
@@ -36,6 +39,24 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
     setError(null);
     setMediaId(null);
   };
+
+  // Reset form when editingMedia changes
+  useEffect(() => {
+    if (editingMedia) {
+      setUrl(editingMedia.url);
+      setName(editingMedia.name);
+      setTitle(editingMedia.title || "");
+      setType(editingMedia.type);
+      setAlt(editingMedia.alt || "");
+      setWidth(editingMedia.width);
+      setHeight(editingMedia.height);
+      setSize(editingMedia.size);
+      setTags(editingMedia.tags?.join(", ") || "");
+      setMediaId(editingMedia._id);
+    } else {
+      resetForm();
+    }
+  }, [editingMedia]);
 
   const storeMediaRecord = useMutation(api.media.storeMediaRecord);
   const updateMediaRecord = useMutation(api.media.updateMediaRecord);
@@ -48,6 +69,7 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
     const mediaData = {
       url,
       name,
+      title: title || undefined,
       type,
       alt: alt || undefined,
       width,
@@ -67,6 +89,7 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
           height,
           tags: tags ? tags.split(",").map((t: string) => t.trim()).filter(Boolean) : undefined,
           type,
+          title: title || undefined,
         });
         toast.success("Media details updated successfully!");
       } else {
@@ -89,9 +112,11 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-lg border border-gray-200">
+      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-lg border border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">{mediaId ? "Add Media Details" : "Upload Media"}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {mediaId ? "Edit Media Details" : "Upload Media"}
+          </h2>
         </div>
         
         <form onSubmit={(e) => { void handleSubmit(e); }} className="p-6 space-y-4">
@@ -126,6 +151,20 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
                 toast.error(`Upload failed: ${error.message}`);
               }}
               className="w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Title
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              disabled={isSubmitting}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
+              placeholder="Enter a custom title for the media"
             />
           </div>
 
@@ -250,13 +289,13 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !url.trim() || !name.trim()}
+              disabled={isSubmitting || (!mediaId && (!url.trim() || !name.trim()))}
               className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSubmitting && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               )}
-              {isSubmitting ? "Saving..." : mediaId ? "Save Details" : "Upload Media"}
+              {isSubmitting ? "Saving..." : mediaId ? "Update Details" : "Upload Media"}
             </button>
           </div>
         </form>
@@ -275,11 +314,18 @@ export default function MediaAdminPage() {
     isOpen: false,
     media: null,
   });
+  const [editingMedia, setEditingMedia] = useState<any>(null);
 
   const media = useQuery(api.media.searchMedia, { limit: 50 });
   const deleteMediaMutation = useMutation(api.media.deleteMedia);
 
   const handleUpload = () => {
+    setEditingMedia(null);
+    setShowForm(true);
+  };
+
+  const handleEdit = (mediaItem: any) => {
+    setEditingMedia(mediaItem);
     setShowForm(true);
   };
 
@@ -408,14 +454,27 @@ export default function MediaAdminPage() {
                     }`}>
                       {item.type}
                     </span>
-                    <button
-                      onClick={() => handleDelete(item)}
-                      className="text-red-600 hover:text-red-800 text-sm font-medium"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item)}
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                   
+                  {item.title && (
+                    <p className="text-sm font-medium text-gray-900 mb-1 truncate" title={item.title}>
+                      {item.title}
+                    </p>
+                  )}
                   {item.alt && (
                     <p className="text-sm text-gray-600 mb-2 truncate" title={item.alt}>
                       {item.alt}
@@ -443,24 +502,24 @@ export default function MediaAdminPage() {
                     </div>
                   )}
                   
-                    <div className="mt-3 pt-3 border-t border-gray-100">
+                  <div className="mt-3 pt-3 border-t border-gray-100">
                     <button
                       onClick={() =>
-                      void (async () => {
-                        try {
-                        await navigator.clipboard.writeText(item.url);
-                        toast.success("URL copied to clipboard!");
-                        } catch (error) {
-                        console.error("Failed to copy URL:", error);
-                        toast.error("Failed to copy URL");
-                        }
-                      })()
+                        void (async () => {
+                          try {
+                            await navigator.clipboard.writeText(item.url);
+                            toast.success("URL copied to clipboard!");
+                          } catch (error) {
+                            console.error("Failed to copy URL:", error);
+                            toast.error("Failed to copy URL");
+                          }
+                        })()
                       }
                       className="text-primary hover:text-primary/80 text-sm font-medium hover:cursor-pointer hover:underline"
                     >
                       Copy URL
                     </button>
-                    </div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -469,10 +528,14 @@ export default function MediaAdminPage() {
 
         {showForm && (
           <MediaUploadForm
-            onClose={() => setShowForm(false)}
+            onClose={() => {
+              setShowForm(false);
+              setEditingMedia(null);
+            }}
             onSave={() => {
               // The form will close itself and show a toast
             }}
+            editingMedia={editingMedia}
           />
         )}
 
@@ -517,6 +580,11 @@ export default function MediaAdminPage() {
               >
                 Your browser does not support the video tag.
               </video>
+              {videoPreview.media.title && (
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-3 rounded-b-lg">
+                  <p className="text-sm font-medium">{videoPreview.media.title}</p>
+                </div>
+              )}
               {videoPreview.media.alt && (
                 <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-3 rounded-b-lg">
                   <p className="text-sm">{videoPreview.media.alt}</p>

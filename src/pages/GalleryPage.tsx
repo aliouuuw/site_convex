@@ -22,7 +22,7 @@ const GalleryPage: React.FC = () => {
       type: item.type,
       src: item.url,
       thumbnail: item.thumbnailUrl || item.url, // Use thumbnailUrl if available, fallback to video URL
-      title: item.name,
+      title: item.title || item.name, // Use custom title if available, otherwise fallback to filename
       description: item.alt || "Description du média",
       category: item.tags?.find(tag => tag !== "gallery") || "Général",
       date: new Date(item.uploadedAt).toISOString().split('T')[0],
