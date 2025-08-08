@@ -438,3 +438,15 @@ export const deleteBlogPost = mutation({
     return null;
   },
 });
+
+export const countBlogPosts = query({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    const posts = await ctx.db
+      .query("blog_posts")
+      .order("desc")
+      .collect();
+    return posts.length;
+  },
+});

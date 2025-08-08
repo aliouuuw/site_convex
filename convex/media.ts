@@ -190,3 +190,15 @@ export const getUploadConfig = query({
     };
   },
 });
+
+export const countMediaFiles = query({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    const mediaFiles = await ctx.db
+      .query("media")
+      .order("desc")
+      .collect();
+    return mediaFiles.length;
+  },
+});

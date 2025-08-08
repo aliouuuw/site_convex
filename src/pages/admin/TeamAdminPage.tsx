@@ -4,6 +4,7 @@ import { api } from "../../../convex/_generated/api";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import MediaPicker from "../../components/MediaPicker";
 
 interface TeamMemberFormProps {
   member?: any;
@@ -20,9 +21,23 @@ function TeamMemberForm({ member, onClose, onSave }: TeamMemberFormProps) {
   const [visible, setVisible] = useState(member?.visible ?? true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const createMember = useMutation(api.team.createTeamMember);
   const updateMember = useMutation(api.team.updateTeamMember);
+
+  const handleMediaUpload = (payload: { previews: string[]; uploadData: Array<{ url: string; name: string; size: number; mediaId?: string }> }) => {
+    if (payload.uploadData.length > 0) {
+      const uploadedUrl = payload.uploadData[0].url;
+      setPhoto(uploadedUrl);
+      setUploadError(null);
+    }
+  };
+
+  const handleMediaUploadError = (error: Error) => {
+    setUploadError(error.message);
+    toast.error(error.message);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,16 +128,19 @@ function TeamMemberForm({ member, onClose, onSave }: TeamMemberFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Photo URL
+              Profile Picture
             </label>
-            <input
-              type="url"
-              value={photo}
-              onChange={(e) => setPhoto(e.target.value)}
+            <MediaPicker
+              onUploadComplete={handleMediaUpload}
+              onUploadError={handleMediaUploadError}
+              className="mb-3"
+              accept="image/*"
+              multiple={false}
               disabled={isSubmitting}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-              placeholder="https://..."
             />
+            {uploadError && (
+              <div className="text-red-600 text-sm mb-2">{uploadError}</div>
+            )}
             {photo && (
               <div className="mt-2 flex items-center gap-3">
                 <img
@@ -133,7 +151,15 @@ function TeamMemberForm({ member, onClose, onSave }: TeamMemberFormProps) {
                     e.currentTarget.style.display = 'none';
                   }}
                 />
-                <span className="text-sm text-gray-500">Preview</span>
+                <span className="text-sm text-gray-500">Current photo</span>
+                <button
+                  type="button"
+                  onClick={() => setPhoto("")}
+                  disabled={isSubmitting}
+                  className="text-red-600 hover:text-red-800 text-sm"
+                >
+                  Remove
+                </button>
               </div>
             )}
             {!photo && name && (
@@ -141,7 +167,7 @@ function TeamMemberForm({ member, onClose, onSave }: TeamMemberFormProps) {
                 <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 font-medium">
                   {getInitials(name)}
                 </div>
-                <span className="text-sm text-gray-500">Fallback (initials)</span>
+                <span className="text-sm text-gray-500">No photo uploaded</span>
               </div>
             )}
           </div>

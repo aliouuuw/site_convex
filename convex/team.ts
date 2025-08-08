@@ -79,3 +79,16 @@ export const deleteTeamMember = mutation({
     return null;
   },
 });
+
+export const countTeamMembers = query({
+  args: {},
+  returns: v.number(),
+  handler: async (ctx) => {
+    const members = await ctx.db
+      .query("team_members")
+      .withIndex("by_order", (q) => q.gt("order", -Infinity))
+      .order("asc")
+      .collect();
+    return members.length;
+  },
+});

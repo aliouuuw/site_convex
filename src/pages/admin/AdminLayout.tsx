@@ -1,9 +1,16 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaEdit, FaImages, FaUsers } from "react-icons/fa";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  
+  // Fetch real-time stats from Convex
+  const blogPostCount = useQuery(api.blog.countBlogPosts) ?? 0;
+  const mediaFileCount = useQuery(api.media.countMediaFiles) ?? 0;
+  const teamMemberCount = useQuery(api.team.countTeamMembers) ?? 0;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -37,15 +44,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Total Posts</span>
-              <span className="font-medium">12</span>
+              <span className="font-medium">{blogPostCount}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Media Files</span>
-              <span className="font-medium">48</span>
+              <span className="font-medium">{mediaFileCount}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Team Members</span>
-              <span className="font-medium">8</span>
+              <span className="font-medium">{teamMemberCount}</span>
             </div>
           </div>
         </div>

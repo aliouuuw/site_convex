@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { FaImages, FaVideo, FaPlay, FaSearch, FaTimes } from "react-icons/fa";
 import { ImageSlider } from "../components/ImageSlider";
 import { useQuery } from "convex/react";
@@ -10,14 +10,14 @@ const GalleryPage: React.FC = () => {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [, setIsLoading] = useState(false);
 
   // Fetch media with "gallery" tag from Convex
   const galleryMedia = useQuery(api.media.searchMedia, { tag: "gallery", limit: 50 });
 
   // Transform Convex media data to match our component structure
   const galleryItems = galleryMedia?.map((item) => {
-    console.log("Gallery item URL:", item.url); // Debug log
+    // console.log("Gallery item URL:", item.url); // Debug log
     return {
       type: item.type,
       src: item.url,
@@ -241,7 +241,7 @@ const GalleryPage: React.FC = () => {
                           }
                         }}
                         onLoad={() => {
-                          console.log("Image loaded successfully:", item.src);
+                          // console.log("Image loaded successfully:", item.src);
                           const parent = (event?.target as HTMLElement)?.parentElement;
                           const loading = parent?.querySelector('.image-loading') as HTMLElement;
                           if (loading) {
@@ -432,7 +432,7 @@ const GalleryPage: React.FC = () => {
           
           {/* Fallback for failed modal video */}
           {selectedItem.type === "video" && (
-            <div className="video-modal-fallback hidden absolute inset-0 bg-gray-900 flex items-center justify-center">
+            <div className="video-modal-fallback absolute inset-0 bg-gray-900 flex items-center justify-center">
               <div className="text-center text-white">
                 <FaVideo className="text-6xl mb-4 text-gray-400" />
                 <p className="text-xl">Vidéo</p>
