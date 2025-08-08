@@ -10,11 +10,6 @@ export const useEditMode = () => {
     new URLSearchParams(location.search).get("edit") === "true";
 
   const enableEditMode = () => {
-    if (!isAuthenticated) {
-      console.log("Authentication required for edit mode");
-      return;
-    }
-
     const urlParams = new URLSearchParams(location.search);
     urlParams.set('edit', 'true');
     void navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });

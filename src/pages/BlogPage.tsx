@@ -54,7 +54,7 @@ const BlogPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="lg:col-span-5">
+              <div className="lg:col-span-5 flex flex-col justify-center">
                 <div className="relative">
                   <div className="relative h-[400px] w-full">
                     <img
@@ -88,7 +88,7 @@ const BlogPage: React.FC = () => {
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="relative h-64 md:h-auto">
                     <img
-                      src={featuredPost.coverImage || "/images/blog/default-blog.jpg"}
+                      src={featuredPost.coverImageUrl || "/images/blog/default-blog.jpg"}
                       alt={featuredPost.title}
                       className="object-cover w-full h-full"
                       onError={(e) => {
@@ -152,7 +152,7 @@ const BlogPage: React.FC = () => {
                 >
                   <div className="card-image">
                     <img
-                      src={post.coverImage || "/images/blog/default-blog.jpg"}
+                      src={post.coverImageUrl || "/images/blog/default-blog.jpg"}
                       alt={post.title}
                       width={400}
                       height={250}

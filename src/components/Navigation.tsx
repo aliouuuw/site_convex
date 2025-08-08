@@ -16,7 +16,6 @@ const Navigation = () => {
     setIsAdminPage(location.pathname.startsWith("/admin"));
   }, [location]);
 
-  console.log("isAdminPage:", isAdminPage);
 
   // Check for edit mode from URL
   useEffect(() => {

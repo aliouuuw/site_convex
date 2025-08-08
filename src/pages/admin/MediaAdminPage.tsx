@@ -13,15 +13,17 @@ interface MediaUploadFormProps {
 
 function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
   const [url, setUrl] = useState("");
+  const [name, setName] = useState("");
   const [type, setType] = useState<"image" | "video">("image");
   const [alt, setAlt] = useState("");
   const [width, setWidth] = useState<number | undefined>();
   const [height, setHeight] = useState<number | undefined>();
+  const [size, setSize] = useState<number>(0);
   const [tags, setTags] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadMedia = useMutation(api.media.upsertMedia);
+  const storeMediaRecord = useMutation(api.media.storeMediaRecord);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,15 +32,17 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
 
     const mediaData = {
       url,
+      name,
       type,
       alt: alt || undefined,
       width,
       height,
       tags: tags ? tags.split(",").map((t: string) => t.trim()).filter(Boolean) : undefined,
+      size: 0, // This will be updated by the upload process
     };
 
     try {
-      await uploadMedia(mediaData);
+      await storeMediaRecord(mediaData);
       toast.success("Media uploaded successfully!");
       onSave();
       onClose();
@@ -71,10 +75,14 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
               Upload Files
             </label>
             <MediaPicker
-              onUploadComplete={(urls) => {
-                if (urls.length > 0) {
-                  setUrl(urls[0]);
+              onUploadComplete={(uploadData) => {
+                if (uploadData.uploadData.length > 0) {
+                  const file = uploadData.uploadData[0];
+                  setUrl(file.url);
+                  setName(file.name);
                   setType("image");
+                  // Update the size field
+                  setSize(file.size);
                 }
               }}
               onUploadError={(error) => {
@@ -227,7 +235,7 @@ export default function MediaAdminPage() {
     }
   };
 
-  const formatDate = (timestamp: number) => {
+  const formatDate = (timestamp: string) => {
     return new Date(timestamp).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -235,9 +243,18 @@ export default function MediaAdminPage() {
     });
   };
 
-  const formatFileSize = (_url: string) => {
-    // This is a placeholder - in a real app you'd get this from the file metadata
-    return "—";
+  const formatFileSize = (size: number) => {
+    if (!size) return "—";
+    const units = ["B", "KB", "MB", "GB"];
+    let bytes = size;
+    let unitIndex = 0;
+    
+    while (bytes >= 1024 && unitIndex < units.length - 1) {
+      bytes /= 1024;
+      unitIndex++;
+    }
+    
+    return `${bytes.toFixed(1)} ${units[unitIndex]}`;
   };
 
   return (
@@ -320,8 +337,8 @@ export default function MediaAdminPage() {
                     {item.width && item.height && (
                       <div>{item.width} × {item.height}px</div>
                     )}
-                    <div>Size: {formatFileSize(item.url)}</div>
-                    <div>Uploaded: {formatDate(item.createdAt)}</div>
+                    <div>Size: {formatFileSize(item.size)}</div>
+                    <div>Uploaded: {formatDate(item.uploadedAt)}</div>
                   </div>
                   
                   {item.tags && item.tags.length > 0 && (

@@ -14,15 +14,15 @@ This document outlines how to handle structured content (Blog, Team, Gallery, Ev
   - New collections:
     - `blog_posts`: {_id, slug, title, excerpt, content(html), coverImage, author, category, tags[], featured:boolean, status: 'draft'|'published', publishedAt:number}
     - `team_members`: {_id, name, role, photo, bio, order:number, visible:boolean}
-    - `media`: {_id, url, provider:'uploadthing', type:'image'|'video', alt, width, height, tags[], createdAt}
+    - `media`: {_id, storageId: Id<'_storage'>, type:'image'|'video', alt, width, height, tags[], createdAt}
     - `events` (optional): {_id, title, startAt, endAt, location, coverImage, description, status, publishedAt}
 - Auth & Roles: `admin`, `editor`, `viewer`. Gate `/admin` and Convex mutations with role checks.
 
-## Media Strategy: UploadThing (Single Solution)
-- Chosen provider: UploadThing for uploads, storage backend, CDN delivery, and simple policies.
-- Use UploadThing for all structured media (blogs, gallery, team portraits, videos) and page images where convenient.
-- Keep media metadata normalized in Convex (`media` collection) with `provider:'uploadthing'` and essential fields (url, width/height, alt, tags).
-- Benefits: Great DX, TS-first, simple server routes, good CDN performance, straightforward integration with Vite/React.
+## Media Strategy: Convex File Storage (Single Solution)
+- Use Convex File Storage for all uploads (images, videos, docs).
+- Store storageId: Id<'_storage'> in the media collection with metadata (type, alt, width/height, tags, createdAt).
+- Serve via short-lived signed URLs fetched at read time (ctx.storage.getUrl) or queries that enrich media with urls.
+- Benefits: Simpler stack (no third-party uploader), first-party integration, type-safe, works for all file types.
 
 ## Rendering Strategy
 - Blog, Team, Gallery pages read from Convex collections.
@@ -31,8 +31,8 @@ This document outlines how to handle structured content (Blog, Team, Gallery, Ev
 
 ## Admin Surface (/admin)
 - Protected route with modules: Blog, Team, Gallery, Media, Events (optional).
-- CRUD forms with validation, image pickers (UploadThing), and preview links.
-- Reusable components: Slug input, Rich text editor (TipTap), Image picker (UploadThing), Publish controls.
+- CRUD forms with validation, image pickers (convex), and preview links.
+- Reusable components: Slug input, Rich text editor (TipTap), Image picker (convex), Publish controls.
 
 ## DX and Safety
 - Centralize inline content keys (`pages_content`) naming by page.section.key.
@@ -62,10 +62,10 @@ This document outlines how to handle structured content (Blog, Team, Gallery, Ev
     -   Create a new Convex query to fetch *all* posts (drafts and published) for the admin view.
     -   Add "Publish" and "Unpublish" buttons.
     -   Display status badges ("Draft", "Published") on each post card.
-2.  **Integrate Media Library (UploadThing):**
-    -   Implement the UploadThing uploader in the Media module.
-    -   Build a reusable media picker component.
-    -   Replace the "Cover Image" and "Photo URL" text inputs with the new media picker.
+2.  **Integrate Media Library (Convex File Storage):**
+    - Implement Convex upload flow (generateUploadUrl -> POST bytes -> store media record with storageId).
+    - Build a reusable MediaPicker using the new flow.
+    - Replace the "Cover Image" and "Photo URL" text inputs with the new MediaPicker that persists storageId.
 3.  **Complete Team Module:**
     -   Display the member's photo in the list, with a fallback to the initial.
 

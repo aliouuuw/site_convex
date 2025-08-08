@@ -11,7 +11,10 @@ const _blogPostDoc = {
   title: v.string(),
   excerpt: v.optional(v.string()),
   contentHtml: v.optional(v.string()),
-  coverImage: v.optional(v.string()),
+  coverImageUrl: v.optional(v.string()),
+  coverImageName: v.optional(v.string()),
+  coverImageSize: v.optional(v.number()),
+  coverImageUploadedAt: v.optional(v.string()),
   author: v.optional(v.string()),
   category: v.optional(v.string()),
   tags: v.optional(v.array(v.string())),
@@ -28,6 +31,21 @@ export const listPublishedBlogPosts = query({
     cursor: v.optional(v.string()), // simple cursor: last slug
     featuredOnly: v.optional(v.boolean()),
   },
+  returns: v.array(v.object({
+    _id: v.id("blog_posts"),
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
+    author: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    featured: v.optional(v.boolean()),
+    publishedAt: v.optional(v.number()),
+  })),
   handler: async (ctx, args) => {
     const limit = Math.min(args.limit ?? 10, 50);
 
@@ -39,20 +57,21 @@ export const listPublishedBlogPosts = query({
       q = q.filter((q2) => q2.eq(q2.field("featured"), true));
     }
 
-    const posts = await q
-      .order("desc")
-      .take(limit);
+    const posts = await q.order("desc").take(limit);
 
     return posts.map((p) => ({
       _id: p._id,
       slug: p.slug,
       title: p.title,
       excerpt: p.excerpt,
-      coverImage: p.coverImage,
+      coverImageUrl: p.coverImageUrl,
+      coverImageName: p.coverImageName,
+      coverImageSize: p.coverImageSize,
+      coverImageUploadedAt: p.coverImageUploadedAt,
       author: p.author,
       category: p.category,
       tags: p.tags ?? [],
-      featured: !!p.featured,
+      featured: p.featured,
       publishedAt: p.publishedAt ?? p.createdAt,
     }));
   },
@@ -62,6 +81,25 @@ export const listAllBlogPosts = query({
   args: {
     limit: v.optional(v.number()),
   },
+  returns: v.array(v.object({
+    _id: v.id("blog_posts"),
+    _creationTime: v.number(),
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
+    author: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    featured: v.optional(v.boolean()),
+    status: v.union(v.literal("draft"), v.literal("published")),
+    publishedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })),
   handler: async (ctx, args) => {
     // TODO: role check once auth wired - only admins/editors should see this
     const limit = Math.min(args.limit ?? 50, 100);
@@ -73,14 +111,18 @@ export const listAllBlogPosts = query({
 
     return posts.map((p) => ({
       _id: p._id,
+      _creationTime: p._creationTime,
       slug: p.slug,
       title: p.title,
       excerpt: p.excerpt,
-      coverImage: p.coverImage,
+      coverImageUrl: p.coverImageUrl,
+      coverImageName: p.coverImageName,
+      coverImageSize: p.coverImageSize,
+      coverImageUploadedAt: p.coverImageUploadedAt,
       author: p.author,
       category: p.category,
       tags: p.tags ?? [],
-      featured: !!p.featured,
+      featured: p.featured,
       status: p.status,
       publishedAt: p.publishedAt,
       createdAt: p.createdAt,
@@ -94,6 +136,26 @@ export const getBlogBySlug = query({
     slug: v.string(),
     preview: v.optional(v.boolean()),
   },
+  returns: v.union(v.object({
+    _id: v.id("blog_posts"),
+    _creationTime: v.number(),
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.optional(v.string()),
+    contentHtml: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
+    author: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    featured: v.optional(v.boolean()),
+    status: v.union(v.literal("draft"), v.literal("published")),
+    publishedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }), v.null()),
   handler: async (ctx, args) => {
     const { slug, preview } = args;
     
@@ -106,7 +168,26 @@ export const getBlogBySlug = query({
     
     if (!preview && post.status !== "published") return null;
     
-    return post;
+    return {
+      _id: post._id,
+      _creationTime: post._creationTime,
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      contentHtml: post.contentHtml,
+      coverImageUrl: post.coverImageUrl,
+      coverImageName: post.coverImageName,
+      coverImageSize: post.coverImageSize,
+      coverImageUploadedAt: post.coverImageUploadedAt,
+      author: post.author,
+      category: post.category,
+      tags: post.tags,
+      featured: post.featured,
+      status: post.status,
+      publishedAt: post.publishedAt,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    };
   },
 });
 
@@ -115,6 +196,26 @@ export const getBlogPostForEdit = query({
   args: {
     slug: v.string(),
   },
+  returns: v.union(v.object({
+    _id: v.id("blog_posts"),
+    _creationTime: v.number(),
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.optional(v.string()),
+    contentHtml: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
+    author: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    featured: v.optional(v.boolean()),
+    status: v.union(v.literal("draft"), v.literal("published")),
+    publishedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }), v.null()),
   handler: async (ctx, args) => {
     const { slug } = args;
         
@@ -126,7 +227,31 @@ export const getBlogPostForEdit = query({
       return null;
     }
     
-    return posts[0];
+    const post = posts[0];
+    
+    // Ensure the returned object has all fields expected by the validator
+    const result = {
+      _id: post._id,
+      _creationTime: post._creationTime,
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      contentHtml: post.contentHtml,
+      coverImageUrl: post.coverImageUrl,
+      coverImageName: post.coverImageName,
+      coverImageSize: post.coverImageSize,
+      coverImageUploadedAt: post.coverImageUploadedAt,
+      author: post.author,
+      category: post.category,
+      tags: post.tags,
+      featured: post.featured,
+      status: post.status,
+      publishedAt: post.publishedAt,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    };
+    
+    return result;
   },
 });
 
@@ -134,10 +259,64 @@ export const getBlogPost = query({
   args: {
     id: v.id("blog_posts"),
   },
+  returns: v.union(v.object({
+    _id: v.id("blog_posts"),
+    _creationTime: v.number(),
+    slug: v.string(),
+    title: v.string(),
+    excerpt: v.optional(v.string()),
+    contentHtml: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
+    author: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    featured: v.optional(v.boolean()),
+    status: v.union(v.literal("draft"), v.literal("published")),
+    publishedAt: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }), v.null()),
   handler: async (ctx, args) => {
     const post = await ctx.db.get(args.id);
     if (!post) return null;
-    return post;
+    
+    return {
+      _id: post._id,
+      _creationTime: post._creationTime,
+      slug: post.slug,
+      title: post.title,
+      excerpt: post.excerpt,
+      contentHtml: post.contentHtml,
+      coverImageUrl: post.coverImageUrl,
+      coverImageName: post.coverImageName,
+      coverImageSize: post.coverImageSize,
+      coverImageUploadedAt: post.coverImageUploadedAt,
+      author: post.author,
+      category: post.category,
+      tags: post.tags,
+      featured: post.featured,
+      status: post.status,
+      publishedAt: post.publishedAt,
+      createdAt: post.createdAt,
+      updatedAt: post.updatedAt,
+    };
+  },
+});
+
+/**
+ * Get the URL for a blog post's cover image.
+ * This is a helper function that can be used by other parts of the application.
+ */
+export const getBlogPostCoverUrl = query({
+  args: {
+    coverImageUrl: v.optional(v.string()),
+  },
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx, args) => {
+    return args.coverImageUrl || null;
   },
 });
 
@@ -147,7 +326,10 @@ export const createBlogPost = mutation({
     title: v.string(),
     excerpt: v.optional(v.string()),
     contentHtml: v.optional(v.string()),
-    coverImage: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
     author: v.optional(v.string()),
     category: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
@@ -168,7 +350,10 @@ export const createBlogPost = mutation({
       title: args.title,
       excerpt: args.excerpt,
       contentHtml: args.contentHtml,
-      coverImage: args.coverImage,
+      coverImageUrl: args.coverImageUrl,
+      coverImageName: args.coverImageName,
+      coverImageSize: args.coverImageSize,
+      coverImageUploadedAt: args.coverImageUploadedAt,
       author: args.author,
       category: args.category,
       tags: args.tags,
@@ -190,7 +375,10 @@ export const updateBlogPost = mutation({
     title: v.optional(v.string()),
     excerpt: v.optional(v.string()),
     contentHtml: v.optional(v.string()),
-    coverImage: v.optional(v.string()),
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
     author: v.optional(v.string()),
     category: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
@@ -206,7 +394,10 @@ export const updateBlogPost = mutation({
       "title",
       "excerpt",
       "contentHtml",
-      "coverImage",
+      "coverImageUrl",
+      "coverImageName",
+      "coverImageSize",
+      "coverImageUploadedAt",
       "author",
       "category",
       "tags",
@@ -241,6 +432,8 @@ export const unpublishBlogPost = mutation({
 export const deleteBlogPost = mutation({
   args: { id: v.id("blog_posts") },
   handler: async (ctx, args) => {
+    // With Uploadthing, files are automatically cleaned up when the account is deleted
+    // No need to manually delete files from storage
     await ctx.db.delete(args.id);
     return null;
   },

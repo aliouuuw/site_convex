@@ -283,51 +283,35 @@ export default defineSchema({
   }).index("by_content_id", ["id"])
     .index("by_page", ["page"]),
     
-  // Media library
+  // Media library (Convex File Storage)
   media: defineTable({
-    filename: v.string(),
-    originalName: v.string(),
-    contentType: v.string(),
-    size: v.number(),
-    url: v.string(),
-    thumbnailUrl: v.optional(v.string()),
+    storageId: v.id("_storage"),
+    type: v.union(v.literal("image"), v.literal("video")),
     alt: v.optional(v.string()),
-    uploadedBy: v.id("users"),
-    uploadedAt: v.number(),
-    tags: v.array(v.string()),
-  }).index("by_filename", ["filename"])
-    .index("by_content_type", ["contentType"])
-    .index("by_uploaded_by", ["uploadedBy"]),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
+    createdAt: v.number(),
+  }).index("by_createdAt", ["createdAt"])
+    .index("by_tag", ["tags"]),
     
   // Blog system
-  blogPosts: defineTable({
+  blog_posts: defineTable({
     title: v.string(),
     slug: v.string(),
-    excerpt: v.string(),
-    content: v.string(), // Rich text HTML
-    featuredImage: v.optional(v.string()),
-    category: v.string(),
-    tags: v.array(v.string()),
-    author: v.object({
-      name: v.string(),
-      role: v.string(),
-      avatar: v.optional(v.string()),
-    }),
-    seo: v.object({
-      title: v.string(),
-      description: v.string(),
-      keywords: v.array(v.string()),
-    }),
+    excerpt: v.optional(v.string()),
+    contentHtml: v.optional(v.string()),
+    coverImage: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    author: v.optional(v.string()),
     status: v.union(v.literal("draft"), v.literal("published")),
-    featured: v.boolean(),
-    readTime: v.number(),
+    featured: v.optional(v.boolean()),
     publishedAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
-    lastModifiedBy: v.id("users"),
   }).index("by_slug", ["slug"])
-    .index("by_status", ["status"])
-    .index("by_category", ["category"])
+    .index("by_status_publishedAt", ["status", "publishedAt"])
     .index("by_featured", ["featured"]),
 });
 ```
@@ -409,12 +393,49 @@ export const createUser = mutation({...}) ⏳
 export const getUserRole = query({...}) ⏳
 export const updateUserPermissions = mutation({...}) ⏳
 
-// convex/media.ts
-export const generateUploadUrl = mutation({...}) ⏳
-export const saveMediaMetadata = mutation({...}) ⏳
-export const getMedia = query({...}) ⏳
-export const listMedia = query({...}) ⏳
-export const deleteMedia = mutation({...}) ⏳
+// convex/media.ts (Convex File Storage)
+export const generateUploadUrl = mutation({
+  args: {},
+  returns: v.string(),
+  handler: async (ctx) => await ctx.storage.generateUploadUrl(),
+});
+export const storeMediaRecord = mutation({
+  args: {
+    storageId: v.id("_storage"),
+    type: v.union(v.literal("image"), v.literal("video")),
+    alt: v.optional(v.string()),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
+  },
+  returns: v.id("media"),
+  handler: async (ctx, args) => ctx.db.insert("media", { ...args, createdAt: Date.now() }),
+});
+export const getSignedUrl = query({
+  args: { storageId: v.id("_storage") },
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx, { storageId }) => ctx.storage.getUrl(storageId),
+});
+export const searchMedia = query({
+  args: { tag: v.optional(v.string()), limit: v.optional(v.number()) },
+  handler: async (ctx, args) => {
+    const limit = Math.min(args.limit ?? 20, 50);
+    const items = typeof args.tag === "string"
+      ? await ctx.db.query("media").withIndex("by_tag", (q) => q.eq("tags", [args.tag])).order("desc").take(limit)
+      : await ctx.db.query("media").withIndex("by_createdAt").order("desc").take(limit);
+    return Promise.all(items.map(async (m) => ({ ...m, url: await ctx.storage.getUrl(m.storageId) })));
+  },
+});
+export const deleteMedia = mutation({
+  args: { id: v.id("media"), deleteBlob: v.optional(v.boolean()) },
+  returns: v.null(),
+  handler: async (ctx, { id, deleteBlob }) => {
+    const doc = await ctx.db.get(id);
+    if (doc && deleteBlob) await ctx.storage.delete(doc.storageId);
+    if (doc) await ctx.db.delete(id);
+    return null;
+  },
+});
 
 // convex/blog.ts
 export const createBlogPost = mutation({...}) ⏳

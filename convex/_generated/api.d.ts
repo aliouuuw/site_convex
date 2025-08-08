@@ -18,9 +18,9 @@ import type * as blog from "../blog.js";
 import type * as content from "../content.js";
 import type * as http from "../http.js";
 import type * as media from "../media.js";
+import type * as mediaUpload from "../mediaUpload.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as team from "../team.js";
-import type * as uploadthing from "../uploadthing.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -36,9 +36,9 @@ declare const fullApi: ApiFromModules<{
   content: typeof content;
   http: typeof http;
   media: typeof media;
+  mediaUpload: typeof mediaUpload;
   myFunctions: typeof myFunctions;
   team: typeof team;
-  uploadthing: typeof uploadthing;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

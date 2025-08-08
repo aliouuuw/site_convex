@@ -3,11 +3,16 @@ import { useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 
 interface MediaPickerProps {
-  onUploadComplete: (urls: string[]) => void;
+  /**
+   * Called after uploads complete.
+   * Receives both local preview URLs for immediate UI and the Uploadthing file data for persistence.
+   */
+  onUploadComplete: (payload: { previews: string[]; uploadData: Array<{ url: string; name: string; size: number; mediaId?: string }> }) => void;
   onUploadError?: (error: Error) => void;
   className?: string;
   accept?: string;
   multiple?: boolean;
+  disabled?: boolean;
 }
 
 export default function MediaPicker({
@@ -16,47 +21,68 @@ export default function MediaPicker({
   className = "",
   accept = "image/*",
   multiple = false,
+  disabled = false,
 }: MediaPickerProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const uploadMedia = useMutation(api.media.uploadMedia);
 
   const handleFiles = async (files: FileList) => {
     if (!files.length) return;
 
     setIsUploading(true);
-    const uploadedUrls: string[] = [];
+    const previewUrls: string[] = [];
+    const uploadData: Array<{ url: string; name: string; size: number; mediaId?: string }> = [];
 
     try {
+      // Use Convex deployment URL for upload endpoint
+      const convexBase = (import.meta.env as any).VITE_CONVEX_URL_HTTP_ACTIONS;
+      if (!convexBase) {
+        throw new Error("VITE_CONVEX_URL not configured");
+      }
+      const uploadEndpoint = `${String(convexBase).replace(/\/$/, "")}/api/uploadthing`;
+
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        
-        // Determine file type
-        const fileType = file.type.startsWith('image/') ? 'image' : 'video';
-        
-        // For now, we'll just use the file URL as a placeholder
-        // In a real implementation, you'd upload to Convex storage
-        const url = URL.createObjectURL(file);
-        
-        // Upload to Convex
-        const result = await uploadMedia({
-          url,
-          type: fileType,
-          alt: file.name,
-          tags: [fileType],
+
+        // Create object URL for immediate preview
+        const objectUrl = URL.createObjectURL(file);
+        previewUrls.push(objectUrl);
+
+        // Upload file to Uploadthing endpoint
+        const form = new FormData();
+        form.append("file", file);
+
+        const res = await fetch(uploadEndpoint, {
+          method: "POST",
+          body: form,
         });
-        
-        if (result) {
-          uploadedUrls.push(url);
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`Upload failed (${res.status}) ${text}`);
         }
+
+        const json = await res.json().catch(() => null);
+        if (!json || json.success === false) {
+          throw new Error((json && json.message) || "Upload failed");
+        }
+
+        // Use returned url if available, otherwise fall back to object URL
+        uploadData.push({
+          url: json.url || objectUrl,
+          name: json.name || file.name,
+          size: json.size || file.size,
+          mediaId: json.mediaId || undefined,
+        });
       }
-      
-      onUploadComplete(uploadedUrls);
+
+      // Return both previews (blob: URLs) for immediate UI and uploadData for persistence
+      onUploadComplete({ previews: previewUrls, uploadData });
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error("Upload error:", error);
       if (onUploadError) {
-        onUploadError(error instanceof Error ? error : new Error('Upload failed'));
+        onUploadError(error instanceof Error ? error : new Error("Upload failed"));
       }
     } finally {
       setIsUploading(false);
@@ -110,12 +136,12 @@ export default function MediaPicker({
           dragActive
             ? "border-primary bg-primary/5"
             : "border-gray-300 hover:border-gray-400"
-        } ${isUploading ? "opacity-50 cursor-not-allowed" : ""}`}
-        onClick={openFileDialog}
-        onDragEnter={handleDrag}
-        onDragLeave={handleDrag}
-        onDragOver={handleDrag}
-        onDrop={handleDrop}
+        } ${isUploading ? "opacity-50 cursor-not-allowed" : ""} ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+        onClick={!disabled ? openFileDialog : undefined}
+        onDragEnter={!disabled ? handleDrag : undefined}
+        onDragLeave={!disabled ? handleDrag : undefined}
+        onDragOver={!disabled ? handleDrag : undefined}
+        onDrop={!disabled ? handleDrop : undefined}
       >
         {isUploading ? (
           <div className="flex flex-col items-center">
@@ -134,7 +160,7 @@ export default function MediaPicker({
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
               />
             </svg>
             <p className="text-sm text-gray-600 mb-1">

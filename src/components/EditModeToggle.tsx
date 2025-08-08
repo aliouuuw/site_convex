@@ -18,7 +18,6 @@ export default function EditModeToggle({ liveEdit }: EditModeToggleProps) {
       const count = elements.length;
       setEditableCount(count);
       // TODO: Replace with a more robust logging system if needed, render is infinite
-      console.log(`Found ${count} editable elements on page`);
     };
 
     // Initial count
@@ -45,7 +44,6 @@ export default function EditModeToggle({ liveEdit }: EditModeToggleProps) {
 
   // Memoize the toggle function to prevent unnecessary re-renders
   const handleToggle = useCallback(() => {
-    console.log("Toggle edit mode requested");
     toggleEditMode();
   }, [toggleEditMode]);
 
@@ -69,8 +67,6 @@ export default function EditModeToggle({ liveEdit }: EditModeToggleProps) {
       }
     };
 
-    console.log("Adding global keyboard listener for edit mode toggle");
-    document.addEventListener("keydown", handleGlobalKeyDown);
     return () => document.removeEventListener("keydown", handleGlobalKeyDown);
   }, [handleToggle]);
 

@@ -34,13 +34,13 @@ The project now includes a sophisticated live editing system that allows content
 │   ├── Primary (6-11 years) ⏳
 │   └── Middle School (11-15 years) ⏳
 │
-├── Blog & News ⏳
-│   ├── Articles ⏳
+├── Blog & News ✅
+│   ├── Articles ✅ (Complete with rich text editing)
 │   ├── Events ⏳
 │   └── Announcements ⏳
 │
-├── Media Assets ⏳
-│   ├── Images ⏳
+├── Media Assets ✅
+│   ├── Images ✅ (Convex file storage with upload)
 │   ├── Documents ⏳
 │   └── Videos ⏳
 │
@@ -68,7 +68,8 @@ export default defineSchema({
     type: v.union(v.literal("text"), v.literal("image")),
     page: v.string(),
     lastModified: v.number(),
-  }).index("by_content_id", ["id"])
+  })
+    .index("by_content_id", ["id"]) // existing indexes
     .index("by_page", ["page"]),
 });
 ```
@@ -82,82 +83,46 @@ export const getContentByPage = query({...}) ✅
 export const getAllContent = query({...}) ✅
 ```
 
-### Enhanced Schema (Phase 2) ⏳
-
-#### 1. Enhanced Content Table ⏳
-```typescript
-// convex/schema.ts (Enhanced)
-export const content = defineTable({
-  id: v.string(),
-  content: v.string(),
-  type: v.union(v.literal("text"), v.literal("image"), v.literal("video")),
-  page: v.string(),
-  lastModified: v.number(),
-  lastModifiedBy: v.id("users"), // Track who made changes
-}).index("by_content_id", ["id"])
-  .index("by_page", ["page"]);
-```
-
-#### 2. Media Library Table ⏳
+#### 3. Media Library Table ✅
 ```typescript
 export const media = defineTable({
-  filename: v.string(),
-  originalName: v.string(),
-  contentType: v.string(),
-  size: v.number(),
-  url: v.string(),
-  thumbnailUrl: v.optional(v.string()),
+  storageId: v.id("_storage"), // Convex file storage ID
+  type: v.union(v.literal("image"), v.literal("video")),
   alt: v.optional(v.string()),
-  uploadedBy: v.id("users"),
-  uploadedAt: v.number(),
-  tags: v.array(v.string()),
-}).index("by_filename", ["filename"])
-  .index("by_content_type", ["contentType"])
-  .index("by_uploaded_by", ["uploadedBy"]);
+  width: v.optional(v.number()),
+  height: v.optional(v.number()),
+  tags: v.optional(v.array(v.string())),
+  uploadedAt: v.string(), // ISO timestamp
+  uploadedBy: v.string(), // User ID
+})
+  .index("by_uploadedAt", ["uploadedAt"]) // for recent media
+  .index("by_tag", ["tags"]), // basic tag search
 ```
 
-#### 3. Blog Posts Table ⏳
+#### 4. Blog Posts Table ✅
 ```typescript
-export const blogPosts = defineTable({
-  title: v.string(),
+export const blog_posts: defineTable({
   slug: v.string(),
-  excerpt: v.string(),
-  content: v.string(), // Rich text HTML
-  featuredImage: v.optional(v.string()),
-  category: v.string(), // "Actualités", "Événements", "Succès", etc.
-  tags: v.array(v.string()),
-  author: v.object({
-    name: v.string(),
-    role: v.string(),
-    avatar: v.optional(v.string())
-  }),
-  seo: v.object({
-    title: v.string(),
-    description: v.string(),
-    keywords: v.array(v.string())
-  }),
+  title: v.string(),
+  excerpt: v.optional(v.string()),
+  contentHtml: v.optional(v.string()), // Rich text HTML from TipTap
+  coverImageUrl: v.optional(v.string()), // URL to media
+  coverImageName: v.optional(v.string()), // Original filename
+  coverImageSize: v.optional(v.number()), // File size in bytes
+  coverImageUploadedAt: v.optional(v.string()), // ISO timestamp
+  author: v.optional(v.string()),
+  category: v.optional(v.string()),
+  tags: v.optional(v.array(v.string())),
+  featured: v.optional(v.boolean()),
   status: v.union(v.literal("draft"), v.literal("published")),
-  featured: v.boolean(),
   publishedAt: v.optional(v.number()),
-  readTime: v.number(), // minutes
   createdAt: v.number(),
   updatedAt: v.number(),
-  lastModifiedBy: v.id("users")
-}).index("by_slug", ["slug"])
-  .index("by_status", ["status"])
-  .index("by_category", ["category"])
-  .index("by_featured", ["featured"]);
-```
-
-#### 4. User Management Table ⏳
-```typescript
-export const users = defineTable({
-  name: v.string(),
-  email: v.string(),
-  role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
-  permissions: v.array(v.string()),
-  lastLogin: v.optional(v.number()),
-}).index("by_email", ["email"]);
+})
+  .index("by_slug", ["slug"]) // ensure ability to enforce uniqueness at logic level
+  .index("by_status_publishedAt", ["status", "publishedAt"]) // for listing published posts
+  .index("by_featured", ["featured"])
+  .index("by_coverImageUrl", ["coverImageUrl"]), // for querying posts with cover images
 ```
 
 ## Live Edit System Implementation ✅
@@ -259,203 +224,121 @@ export default function ContentProvider({ children }: ContentProviderProps) {
 }
 ```
 
-## Next Phase Implementation Plan ⏳
+## Media Management System ✅
 
-### Phase 2.1: Complete Content Attribution (Day 1)
+### Convex File Storage Integration ✅
 
-#### AboutPage.tsx Attribution ⏳
+#### 1. Media Upload Flow ✅
 ```typescript
-// Hero section
-<h1 data-live-edit-id="about.hero.title">Notre Histoire</h1>
-<p data-live-edit-id="about.hero.description">Découvrez l'histoire de notre école...</p>
+// convex/media.ts
+export const generateUploadUrl = mutation({
+  args: {},
+  returns: v.string(),
+  handler: async (ctx) => {
+    return await ctx.storage.generateUploadUrl();
+  },
+});
 
-// School history
-<h2 data-live-edit-id="about.history.title">Une Histoire d'Excellence</h2>
-<p data-live-edit-id="about.history.content">Fondée en 1985, Les Hirondelles...</p>
+export const storeMediaRecord = mutation({
+  args: {
+    storageId: v.id("_storage"),
+    type: v.union(v.literal("image"), v.literal("video")),
+    alt: v.optional(v.string()),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
+    uploadedBy: v.optional(v.string()),
+  },
+  returns: v.id("media"),
+  handler: async (ctx, args) => {
+    const id = await ctx.db.insert("media", {
+      storageId: args.storageId,
+      type: args.type,
+      alt: args.alt,
+      width: args.width,
+      height: args.height,
+      tags: args.tags,
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: args.uploadedBy || "unknown",
+    });
+    return id;
+  },
+});
 
-// Values section
-<h2 data-live-edit-id="about.values.title">Nos Valeurs</h2>
-<div data-live-edit-id="about.values.excellence">Excellence académique</div>
-<div data-live-edit-id="about.values.respect">Respect et intégrité</div>
-<div data-live-edit-id="about.values.community">Communauté et solidarité</div>
-
-// Leadership section
-<h2 data-live-edit-id="about.leadership.title">Notre Équipe</h2>
-<div data-live-edit-id="about.leadership.director.name">Mme Fatou Diop</div>
-<div data-live-edit-id="about.leadership.director.role">Directrice Générale</div>
-<div data-live-edit-id="about.leadership.director.bio">Avec plus de 20 ans d'expérience...</div>
+export const getSignedUrl = query({
+  args: { storageId: v.id("_storage") },
+  returns: v.union(v.string(), v.null()),
+  handler: async (ctx, { storageId }) => {
+    return await ctx.storage.getUrl(storageId);
+  },
+});
 ```
 
-#### ContactPage.tsx Attribution ⏳
+#### 2. Media Upload Component ✅
 ```typescript
-// Contact information
-<h1 data-live-edit-id="contact.hero.title">Contactez-nous</h1>
-<p data-live-edit-id="contact.hero.description">Nous sommes là pour répondre...</p>
+// src/components/MediaPicker.tsx
+export default function MediaPicker({
+  onUploadComplete,
+  onUploadError,
+  className = "",
+  accept = "image/*",
+  multiple = false,
+  disabled = false,
+}: MediaPickerProps) {
+  const handleFiles = async (files: FileList) => {
+    // Use Convex deployment URL for upload endpoint
+    const convexBase = (import.meta.env as any).VITE_CONVEX_URL;
+    const uploadEndpoint = `${String(convexBase).replace(/\/$/, "")}/api/uploadthing`;
 
-// Contact details
-<div data-live-edit-id="contact.info.address">123 Avenue de l'Éducation, Dakar</div>
-<div data-live-edit-id="contact.info.phone">+221 33 123 45 67</div>
-<div data-live-edit-id="contact.info.email">contact@leshirondelles.sn</div>
+    for (const file of files) {
+      const form = new FormData();
+      form.append("file", file);
 
-// Office hours
-<h3 data-live-edit-id="contact.hours.title">Heures d'ouverture</h3>
-<div data-live-edit-id="contact.hours.weekdays">Lundi - Vendredi: 7h30 - 17h30</div>
-<div data-live-edit-id="contact.hours.saturday">Samedi: 8h00 - 12h00</div>
-```
-
-#### InscriptionPage.tsx Attribution ⏳
-```typescript
-// Admissions content
-<h1 data-live-edit-id="inscription.hero.title">Inscription</h1>
-<p data-live-edit-id="inscription.hero.description">Découvrez notre processus...</p>
-
-// Process steps
-<h2 data-live-edit-id="inscription.process.title">Processus d'Admission</h2>
-<div data-live-edit-id="inscription.process.step1">1. Demande de rendez-vous</div>
-<div data-live-edit-id="inscription.process.step2">2. Visite de l'établissement</div>
-<div data-live-edit-id="inscription.process.step3">3. Évaluation académique</div>
-<div data-live-edit-id="inscription.process.step4">4. Décision d'admission</div>
-
-// Requirements
-<h2 data-live-edit-id="inscription.requirements.title">Documents Requis</h2>
-<ul data-live-edit-id="inscription.requirements.list">
-  <li>Certificat de naissance</li>
-  <li>Bulletins scolaires</li>
-  <li>Certificat médical</li>
-</ul>
-```
-
-### Phase 2.2: Authentication Integration (Days 2-3) ⏳
-
-#### User Role System ⏳
-```typescript
-// User roles and permissions
-enum UserRole {
-  ADMIN = "admin",     // Full access to all features
-  EDITOR = "editor",   // Can edit content, manage media
-  VIEWER = "viewer"    // Read-only access
-}
-
-// Permission-based access control
-const permissions = {
-  admin: ["read", "write", "delete", "manage_users", "manage_media"],
-  editor: ["read", "write", "manage_media"],
-  viewer: ["read"]
-};
-```
-
-#### Authentication Integration ⏳
-```typescript
-// src/components/EditProvider.tsx (Enhanced)
-export default function EditProvider({ children }: EditProviderProps) {
-  const { isAuthenticated, user } = useAuth();
-  const { isEditMode, toggleEditMode } = useEditModeHook();
-  
-  // Only allow edit mode for authenticated users with proper role
-  const canEdit = isAuthenticated && user?.role === "admin" || user?.role === "editor";
-  
-  // Initialize live edit system only for authorized users
-  useEffect(() => {
-    if (canEdit) {
-      // Initialize LiveEditPrototype
-    }
-  }, [canEdit]);
-  
-  return (
-    <EditContext.Provider value={contextValue}>
-      {children}
-      {canEdit && isInitialized && liveEditRef.current && (
-        <EditModeToggle liveEdit={liveEditRef.current} />
-      )}
-    </EditContext.Provider>
-  );
-}
-```
-
-### Phase 2.3: Rich Media Support (Days 4-5) ⏳
-
-#### Media Upload Component ⏳
-```typescript
-// src/components/MediaUpload.tsx
-export default function MediaUpload({ 
-  onUploadComplete, 
-  acceptedTypes = ["image/*", "video/*"],
-  maxSize = 10 * 1024 * 1024 // 10MB
-}: MediaUploadProps) {
-  const generateUploadUrl = useMutation(api.media.generateUploadUrl);
-  const saveMediaMetadata = useMutation(api.media.saveMediaMetadata);
-
-  const handleFileUpload = async (file: File) => {
-    // 1. Generate upload URL from Convex
-    // 2. Upload file to Convex storage
-    // 3. Save metadata to database
-    // 4. Return media ID and URL
-  };
-
-  return (
-    <div className="media-upload">
-      <input type="file" accept={acceptedTypes.join(",")} />
-      {isUploading && <div className="upload-progress" />}
-    </div>
-  );
-}
-```
-
-#### Enhanced LiveEdit for Media ⏳
-```typescript
-// src/lib/liveEdit.ts (Enhanced)
-private async handleImageUpload(element: HTMLElement, editElement: LiveEditElement): Promise<void> {
-  // Create file input for image selection
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = "image/*";
-  
-  fileInput.onchange = async (e) => {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
-    try {
-      // Upload file and get URL
-      const uploadUrl = await this.convex.mutation(api.media.generateUploadUrl);
-      const result = await fetch(uploadUrl, {
+      const res = await fetch(uploadEndpoint, {
         method: "POST",
-        headers: { "Content-Type": file.type },
-        body: file,
+        body: form,
       });
 
-      if (!result.ok) throw new Error("Upload failed");
-      
-      const { storageId } = await result.json();
-      
-      // Save metadata and update image
-      const mediaId = await this.convex.mutation(api.media.saveMediaMetadata, {
-        storageId,
-        filename: file.name,
-        originalName: file.name,
-        contentType: file.type,
-        size: file.size,
-        tags: [],
-      });
-
-      // Update image src and save to content
-      const media = await this.convex.query(api.media.get, { mediaId });
-      if (media) {
-        element.setAttribute("src", media.url);
-        await this.saveContent(editElement.id, media.url, true);
+      if (!res.ok) {
+        throw new Error(`Upload failed (${res.status})`);
       }
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      alert("Image upload failed. Please try again.");
+
+      const json = await res.json();
+      // Return upload data for persistence
+      onUploadComplete({
+        previews: [URL.createObjectURL(file)],
+        uploadData: [{
+          url: json.url,
+          name: json.name,
+          size: json.size,
+          mediaId: json.mediaId,
+        }]
+      });
     }
   };
-
-  fileInput.click();
 }
 ```
 
-### Phase 2.4: Rich Text Editing (Days 6-7) ⏳
+#### 3. HTTP Upload Endpoint ✅
+```typescript
+// convex/http.ts
+http.route({
+  path: "/api/uploadthing",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    const uploadthingHandler = createRouteHandler({
+      router: ourFileRouter,
+    });
+    return await uploadthingHandler(req);
+  })
+});
+```
 
-#### TipTap Integration ⏳
+## Blog Management System ✅
+
+### Rich Text Editing with TipTap ✅
+
+#### 1. TipTap Integration ✅
 ```typescript
 // src/components/RichTextEditor.tsx
 import { useEditor, EditorContent } from "@tiptap/react";
@@ -525,7 +408,120 @@ export default function RichTextEditor({
 }
 ```
 
-#### Blog Management System ⏳
+#### 2. Blog Management Functions ✅
+```typescript
+// convex/blog.ts
+export const createBlogPost = mutation({
+  args: {
+    title: v.string(),
+    slug: v.string(),
+    excerpt: v.string(),
+    contentHtml: v.string(), // Rich text HTML
+    coverImageUrl: v.optional(v.string()),
+    coverImageName: v.optional(v.string()),
+    coverImageSize: v.optional(v.number()),
+    coverImageUploadedAt: v.optional(v.string()),
+    author: v.optional(v.string()),
+    category: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    featured: v.optional(v.boolean()),
+    status: v.union(v.literal("draft"), v.literal("published")),
+  },
+  returns: v.id("blog_posts"),
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const blogPostId = await ctx.db.insert("blog_posts", {
+      ...args,
+      publishedAt: args.status === "published" ? Date.now() : undefined,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    });
+
+    return blogPostId;
+  },
+});
+
+export const updateBlogPost = mutation({
+  args: {
+    id: v.id("blog_posts"),
+    title: v.optional(v.string()),
+    slug: v.optional(v.string()),
+    excerpt: v.optional(v.string()),
+    contentHtml: v.optional(v.string()),
+    // ... other fields
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, {
+      ...updates,
+      updatedAt: Date.now(),
+    });
+    return null;
+  },
+});
+
+export const getBlogPost = query({
+  args: { slug: v.string() },
+  returns: v.union(
+    v.object({
+      _id: v.id("blog_posts"),
+      title: v.string(),
+      slug: v.string(),
+      excerpt: v.string(),
+      contentHtml: v.string(),
+      // ... other fields
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("blog_posts")
+      .filter((q) => q.eq(q.field("slug"), args.slug))
+      .unique();
+  },
+});
+
+export const listBlogPosts = query({
+  args: {
+    status: v.optional(v.union(v.literal("draft"), v.literal("published"))),
+    category: v.optional(v.string()),
+    featured: v.optional(v.boolean()),
+  },
+  returns: v.array(
+    v.object({
+      _id: v.id("blog_posts"),
+      title: v.string(),
+      slug: v.string(),
+      excerpt: v.string(),
+      // ... other fields
+    })
+  ),
+  handler: async (ctx, args) => {
+    let query = ctx.db.query("blog_posts");
+    
+    if (args.status) {
+      query = query.filter((q) => q.eq(q.field("status"), args.status));
+    }
+    
+    if (args.category) {
+      query = query.filter((q) => q.eq(q.field("category"), args.category));
+    }
+    
+    if (args.featured !== undefined) {
+      query = query.filter((q) => q.eq(q.field("featured"), args.featured));
+    }
+    
+    return await query.order("desc").collect();
+  },
+});
+```
+
+#### 3. Blog Editor Component ✅
 ```typescript
 // src/components/BlogEditor.tsx
 export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
@@ -550,7 +546,7 @@ export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
       const blogData = {
         ...formData,
         author: {
-          name: "Admin User", // Get from auth context
+          name: "Admin User",
           role: "Administrator",
         },
         seo: {
@@ -561,7 +557,7 @@ export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
       };
 
       if (initialData) {
-        await updateBlogPost(blogData);
+        await updateBlogPost({ id: initialData._id, ...blogData });
       } else {
         const blogId = await createBlogPost(blogData);
         onSave?.(blogId);
@@ -573,17 +569,10 @@ export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="blog-editor">
+    <form onSubmit={handleSubmit} className="blog-editor space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="Blog post title"
-            required
-          />
-          
+          {/* Title, Slug, Excerpt */}
           <RichTextEditor
             content={formData.content}
             onChange={(content) => setFormData({ ...formData, content })}
@@ -591,28 +580,11 @@ export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
         </div>
         
         <div className="space-y-6">
-          <select
-            value={formData.category}
-            onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          {/* Category, Tags, Status, Featured */}
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
           >
-            <option value="Actualités">Actualités</option>
-            <option value="Événements">Événements</option>
-            <option value="Succès">Succès</option>
-            <option value="Pédagogie">Pédagogie</option>
-          </select>
-          
-          <select
-            value={formData.status}
-            onChange={(e) => setFormData({ 
-              ...formData, 
-              status: e.target.value as "draft" | "published"
-            })}
-          >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-          </select>
-          
-          <button type="submit">
             {initialData ? "Update Post" : "Create Post"}
           </button>
         </div>
@@ -622,9 +594,9 @@ export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
 }
 ```
 
-## Content Workflow
+## Current Workflow ✅
 
-### Current Workflow ✅
+### Live Edit Workflow
 ```
 1. Content Editor visits website
 2. Clicks Ctrl+E to enable edit mode
@@ -635,16 +607,223 @@ export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
 7. Real-time updates across all users
 ```
 
-### Enhanced Workflow (Phase 2) ⏳
+### Blog Management Workflow
 ```
-1. Content Editor logs in with proper credentials
-2. Role-based access determines available features
-3. Edit mode only available to authorized users
-4. Rich media uploads available for images/videos
-5. Rich text editing for blog content
-6. Content validation and sanitization
-7. Version history and rollback capabilities
-8. Content approval workflow (future)
+1. Content Editor navigates to /admin/blog
+2. Clicks "Create New Post" or edits existing post
+3. Fills in title, slug, excerpt, and category
+4. Uses Rich Text Editor to write content
+5. Uploads cover image using MediaPicker
+6. Sets tags, featured status, and publication status
+7. Clicks "Save" or "Publish"
+8. Post is saved to Convex database
+9. Blog listing and detail pages automatically update
+```
+
+### Media Upload Workflow
+```
+1. Content Editor clicks upload button in MediaPicker
+2. Selects image/video file from local device
+3. File is uploaded to Convex file storage via /api/uploadthing
+4. Media metadata is stored in Convex database
+5. Signed URL is generated for file access
+6. Media is available in media library and can be embedded in content
+```
+
+## Next Phase Implementation Plan ⏳
+
+### Phase 2.1: Authentication Integration (Day 1)
+
+#### User Role System ⏳
+```typescript
+// User roles and permissions
+enum UserRole {
+  ADMIN = "admin",     // Full access to all features
+  EDITOR = "editor",   // Can edit content, manage media
+  VIEWER = "viewer"    // Read-only access
+}
+
+// Permission-based access control
+const permissions = {
+  admin: ["read", "write", "delete", "manage_users", "manage_media"],
+  editor: ["read", "write", "manage_media"],
+  viewer: ["read"]
+};
+```
+
+#### Authentication Integration ⏳
+```typescript
+// src/components/EditProvider.tsx (Enhanced)
+export default function EditProvider({ children }: EditProviderProps) {
+  const { isAuthenticated, user } = useAuth();
+  const { isEditMode, toggleEditMode } = useEditModeHook();
+  
+  // Only allow edit mode for authenticated users with proper role
+  const canEdit = isAuthenticated && user?.role === "admin" || user?.role === "editor";
+  
+  // Initialize live edit system only for authorized users
+  useEffect(() => {
+    if (canEdit) {
+      // Initialize LiveEditPrototype
+    }
+  }, [canEdit]);
+  
+  return (
+    <EditContext.Provider value={contextValue}>
+      {children}
+      {canEdit && isInitialized && liveEditRef.current && (
+        <EditModeToggle liveEdit={liveEditRef.current} />
+      )}
+    </EditContext.Provider>
+  );
+}
+```
+
+### Phase 2.2: Enhanced Media Management (Days 2-3)
+
+#### Media Library Management ⏳
+```typescript
+// src/components/MediaLibrary.tsx
+export default function MediaLibrary({
+  onSelect,
+  selectedMedia,
+  type = "image",
+}: MediaLibraryProps) {
+  const searchMedia = useQuery(api.media.searchMedia);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredMedia = useMemo(() => {
+    if (!searchTerm) return searchMedia || [];
+    return (searchMedia || []).filter(media =>
+      media.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (media.tags && media.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
+    );
+  }, [searchMedia, searchTerm]);
+
+  return (
+    <div className="media-library">
+      <input
+        type="text"
+        placeholder="Search media..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      
+      <div className="media-grid">
+        {filteredMedia.map((media) => (
+          <div
+            key={media._id}
+            className={`media-item ${selectedMedia?.id === media._id ? 'selected' : ''}`}
+            onClick={() => onSelect(media)}
+          >
+            <img src={media.url} alt={media.alt || media.name} />
+            <div className="media-info">
+              <p className="media-name">{media.name}</p>
+              <p className="media-size">{formatFileSize(media.size)}</p>
+              <div className="media-tags">
+                {media.tags?.map((tag) => (
+                  <span key={tag} className="tag">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Phase 2.3: Content Workflow Management (Days 4-5)
+
+#### Content Approval Workflow ⏳
+```typescript
+// convex/content.ts
+export const submitContentForApproval = mutation({
+  args: {
+    contentId: v.string(),
+    changes: v.string(),
+    reason: v.string(),
+  },
+  returns: v.id("content_approvals"),
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    return await ctx.db.insert("content_approvals", {
+      contentId: args.contentId,
+      changes: args.changes,
+      reason: args.reason,
+      requestedBy: identity.email,
+      status: "pending",
+      requestedAt: Date.now(),
+    });
+  },
+});
+
+export const approveContent = mutation({
+  args: {
+    approvalId: v.id("content_approvals"),
+    approvedBy: v.string(),
+    comments: v.optional(v.string()),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const approval = await ctx.db.get(args.approvalId);
+    if (!approval) {
+      throw new Error("Approval not found");
+    }
+
+    if (approval.status !== "pending") {
+      throw new Error("Approval already processed");
+    }
+
+    // Update the original content
+    await ctx.db.patch(approval.contentId, {
+      content: approval.changes,
+      lastModified: Date.now(),
+      lastModifiedBy: args.approvedBy,
+    });
+
+    // Update approval status
+    await ctx.db.patch(args.approvalId, {
+      status: "approved",
+      approvedBy: args.approvedBy,
+      approvedAt: Date.now(),
+      comments: args.comments,
+    });
+
+    return null;
+  },
+});
+```
+
+### Phase 2.4: Performance Optimization (Days 6-7)
+
+#### Image Optimization ⏳
+```typescript
+// src/utils/imageOptimization.ts
+export const getOptimizedImageUrl = (
+  storageId: string,
+  width?: number,
+  height?: number,
+  quality = 80
+): string => {
+  const baseUrl = (import.meta.env as any).VITE_CONVEX_URL;
+  const params = new URLSearchParams();
+  
+  if (width) params.set('w', width.toString());
+  if (height) params.set('h', height.toString());
+  params.set('q', quality.toString());
+  
+  return `${baseUrl}/api/image/${storageId}?${params.toString()}`;
+};
+
+// Usage in components
+const imageUrl = getOptimizedImageUrl(media.storageId, 800, 600);
+<img src={imageUrl} alt={media.alt} />
 ```
 
 ## Performance Optimization
@@ -725,6 +904,6 @@ export default function BlogEditor({ initialData, onSave }: BlogEditorProps) {
 ---
 
 **Status**: ✅ **LIVE EDIT SYSTEM COMPLETE**
-**Next Phase**: Authentication, Rich Media, Rich Text Editing
+**Next Phase**: Authentication, Enhanced Media Management, Content Workflow
 **Timeline**: 2 weeks to full content management system
 **Business Impact**: Immediate content editing capability with professional-grade features

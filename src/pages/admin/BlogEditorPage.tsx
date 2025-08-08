@@ -12,7 +12,10 @@ interface BlogFormData {
   slug: string;
   excerpt: string;
   contentHtml: string;
-  coverImage: string;
+  coverImageUrl: string; // URL to Uploadthing file
+  coverImageName: string; // Original filename
+  coverImageSize: number; // File size in bytes
+  coverImageUploadedAt: string; // ISO timestamp
   author: string;
   category: string;
   tags: string[];
@@ -30,7 +33,10 @@ export default function BlogEditorPage() {
     slug: "",
     excerpt: "",
     contentHtml: "",
-    coverImage: "",
+    coverImageUrl: "",
+    coverImageName: "",
+    coverImageSize: 0,
+    coverImageUploadedAt: "",
     author: "",
     category: "",
     tags: [],
@@ -48,35 +54,31 @@ export default function BlogEditorPage() {
     isEditing && slug ? { slug: slug } : "skip"
   );
 
-  // Debug logging
-  console.log("BlogEditorPage - slug:", slug);
-  console.log("BlogEditorPage - isEditing:", isEditing);
-  console.log("BlogEditorPage - existingPost:", existingPost);
-
   useEffect(() => {
     if (existingPost && isEditing) {
-      console.log("BlogEditorPage - Setting form data with existing post:", existingPost);
-      console.log("BlogEditorPage - contentHtml value:", existingPost.contentHtml);
       setFormData({
         title: existingPost.title,
         slug: existingPost.slug,
         excerpt: existingPost.excerpt || "",
         contentHtml: existingPost.contentHtml || "",
-        coverImage: existingPost.coverImage || "",
+        coverImageUrl: existingPost.coverImageUrl || "",
+        coverImageName: existingPost.coverImageName || "",
+        coverImageSize: existingPost.coverImageSize || 0,
+        coverImageUploadedAt: existingPost.coverImageUploadedAt || "",
         author: existingPost.author || "",
         category: existingPost.category || "",
         tags: existingPost.tags || [],
         featured: existingPost.featured || false,
         status: existingPost.status,
       });
-      setCoverImagePreview(existingPost.coverImage || null);
+      // Set preview if we have a coverImageUrl
+      if (existingPost.coverImageUrl) {
+        setCoverImagePreview(existingPost.coverImageUrl);
+      } else {
+        setCoverImagePreview(null);
+      }
     }
   }, [existingPost, isEditing]);
-
-  // Additional useEffect to debug contentHtml changes
-  useEffect(() => {
-    console.log("BlogEditorPage - formData.contentHtml changed:", formData.contentHtml);
-  }, [formData.contentHtml]);
 
   const createPost = useMutation(api.blog.createBlogPost);
   const updatePost = useMutation(api.blog.updateBlogPost);
@@ -102,9 +104,46 @@ export default function BlogEditorPage() {
     handleInputChange("tags", tags);
   };
 
-  const handleCoverImageUpload = (url: string) => {
-    handleInputChange("coverImage", url);
-    setCoverImagePreview(url);
+  const storeMediaRecord = useMutation(api.media.storeMediaRecord);
+  const handleCoverImageUpload = async (uploadData: { url: string; name: string; size: number; mediaId?: string }) => {
+    try {
+      // If backend already returned a mediaId, use the returned URL and metadata
+      if (uploadData.mediaId) {
+        handleInputChange("coverImageUrl", uploadData.url);
+        handleInputChange("coverImageName", uploadData.name);
+        handleInputChange("coverImageSize", uploadData.size);
+        handleInputChange("coverImageUploadedAt", new Date().toISOString());
+        setCoverImagePreview(uploadData.url);
+        return;
+      }
+
+      // Otherwise create a media record via mutation and use the URL returned from upload
+      await storeMediaRecord({
+        url: uploadData.url,
+        name: uploadData.name,
+        size: uploadData.size,
+        type: uploadData.url.startsWith("data:") || uploadData.url.startsWith("blob:") || !!uploadData.url.match(/\.(jpg|jpeg|png|gif|webp)/i) ? "image" : "video",
+        alt: undefined,
+        width: undefined,
+        height: undefined,
+        tags: [],
+      });
+
+      // Persisted — set post fields
+      handleInputChange("coverImageUrl", uploadData.url);
+      handleInputChange("coverImageName", uploadData.name);
+      handleInputChange("coverImageSize", uploadData.size);
+      handleInputChange("coverImageUploadedAt", new Date().toISOString());
+      setCoverImagePreview(uploadData.url);
+    } catch (err) {
+      console.error("Failed to persist media or set cover image:", err);
+      // still set preview locally so the user sees the image immediately
+      handleInputChange("coverImageUrl", uploadData.url);
+      handleInputChange("coverImageName", uploadData.name);
+      handleInputChange("coverImageSize", uploadData.size);
+      handleInputChange("coverImageUploadedAt", new Date().toISOString());
+      setCoverImagePreview(uploadData.url);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -305,18 +344,18 @@ export default function BlogEditorPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
+                  Image URL (external)
                 </label>
                 <input
                   type="url"
-                  value={formData.coverImage}
+                  value={formData.coverImageUrl}
                   onChange={(e) => {
-                    handleInputChange("coverImage", e.target.value);
+                    handleInputChange("coverImageUrl", e.target.value);
                     setCoverImagePreview(e.target.value);
                   }}
                   disabled={isSubmitting}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-                  placeholder="https://..."
+                  placeholder="image URL"
                 />
               </div>
 
@@ -325,9 +364,10 @@ export default function BlogEditorPage() {
                   Upload Image
                 </label>
                 <MediaPicker
-                  onUploadComplete={(urls) => {
-                    if (urls.length > 0) {
-                      handleCoverImageUpload(urls[0]);
+                  onUploadComplete={({ uploadData }) => {
+                    // Use the uploadData for persistence and preview for immediate UI
+                    if (uploadData.length > 0) {
+                      void handleCoverImageUpload(uploadData[0]);
                     }
                   }}
                   onUploadError={(error) => {
@@ -335,6 +375,7 @@ export default function BlogEditorPage() {
                     toast.error("Failed to upload image");
                   }}
                   className="w-full"
+                  disabled={isSubmitting}
                 />
               </div>
             </div>
@@ -345,15 +386,17 @@ export default function BlogEditorPage() {
                   Preview
                 </label>
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <img
-                    src={coverImagePreview}
-                    alt="Cover preview"
-                    className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "";
-                      setCoverImagePreview(null);
-                    }}
-                  />
+                  {coverImagePreview && (
+                    <img
+                      src={coverImagePreview}
+                      alt="Cover preview"
+                      className="w-full h-48 object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "";
+                        setCoverImagePreview(null);
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             )}

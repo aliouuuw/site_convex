@@ -140,11 +140,11 @@ const BlogDetailPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="lg:col-span-5">
+              <div className="lg:col-span-5 flex flex-col justify-center">
                 <div className="relative">
                   <div className="relative h-[400px] w-full">
                     <img
-                      src={blogPost.coverImage || "/images/blog/default-blog.jpg"}
+                      src={blogPost.coverImageUrl || "/images/blog/default-blog.jpg"}
                       alt={blogPost.title}
                       className="object-cover w-full h-full"
                       onError={(e) => {

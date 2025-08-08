@@ -26,7 +26,10 @@ export default defineSchema({
     title: v.string(),
     excerpt: v.optional(v.string()),
     contentHtml: v.optional(v.string()),
-    coverImage: v.optional(v.string()), // URL to media or external
+    coverImageUrl: v.optional(v.string()), // URL to Uploadthing file
+    coverImageName: v.optional(v.string()), // Original filename
+    coverImageSize: v.optional(v.number()), // File size in bytes
+    coverImageUploadedAt: v.optional(v.string()), // ISO timestamp
     author: v.optional(v.string()),
     category: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
@@ -38,7 +41,8 @@ export default defineSchema({
   })
     .index("by_slug", ["slug"]) // ensure ability to enforce uniqueness at logic level
     .index("by_status_publishedAt", ["status", "publishedAt"]) // for listing published posts
-    .index("by_featured", ["featured"]),
+    .index("by_featured", ["featured"])
+    .index("by_coverImageUrl", ["coverImageUrl"]), // for querying posts with cover images
 
   // New: Team members
   team_members: defineTable({
@@ -54,17 +58,19 @@ export default defineSchema({
     .index("by_visible_order", ["visible", "order"]) // list visible in order
     .index("by_order", ["order"]),
 
-  // New: Media library entries (supports multiple providers)
+  // Media library entries backed by Uploadthing
   media: defineTable({
-    url: v.string(),
-    provider: v.union(v.literal("uploadthing"), v.literal("convex")),
+    url: v.string(), // Uploadthing file URL
+    name: v.string(), // Original filename
+    size: v.number(), // File size in bytes
     type: v.union(v.literal("image"), v.literal("video")),
     alt: v.optional(v.string()),
     width: v.optional(v.number()),
     height: v.optional(v.number()),
     tags: v.optional(v.array(v.string())),
-    createdAt: v.number(),
+    uploadedAt: v.string(), // ISO timestamp
+    uploadedBy: v.string(), // User ID
   })
-    .index("by_createdAt", ["createdAt"]) // for recent media
-    .index("by_tag", ["tags"]) // basic tag search
+    .index("by_uploadedAt", ["uploadedAt"]) // for recent media
+    .index("by_tag", ["tags"]), // basic tag search
 });
