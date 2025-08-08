@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { FaImages, FaVideo, FaPlay, FaSearch, FaTimes, FaExpand } from "react-icons/fa";
+import React, { useState, useRef, useEffect } from "react";
+import { FaImages, FaVideo, FaPlay, FaSearch, FaTimes } from "react-icons/fa";
 import { ImageSlider } from "../components/ImageSlider";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -21,8 +21,9 @@ const GalleryPage: React.FC = () => {
     return {
       type: item.type,
       src: item.url,
+      thumbnail: item.thumbnailUrl || item.url, // Use thumbnailUrl if available, fallback to video URL
       title: item.name,
-      description: item.alt || "Image de la galerie",
+      description: item.alt || "Description du média",
       category: item.tags?.find(tag => tag !== "gallery") || "Général",
       date: new Date(item.uploadedAt).toISOString().split('T')[0],
       width: item.width,
@@ -254,15 +255,45 @@ const GalleryPage: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <video
-                      src={item.src}
-                      className="w-full h-full object-cover"
-                      poster={item.src} // Use the video URL as poster for now
-                    />
-                  )}
-                  {item.type === "video" && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 group-hover:bg-opacity-40 transition-all duration-300">
-                      <FaPlay className="text-white text-4xl" />
+                    <div className="relative w-full h-full group cursor-pointer">
+                      <video
+                        src={item.thumbnail || item.src}
+                        className="w-full h-full object-cover"
+                        preload="metadata"
+                        muted
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          const fallback = parent?.querySelector('.video-fallback') as HTMLElement;
+                          if (fallback) {
+                            fallback.style.display = 'flex';
+                          }
+                        }}
+                        onLoadedMetadata={(e) => {
+                          const video = e.currentTarget;
+                          if (!video.videoWidth || !video.videoHeight) {
+                            // If video fails to load metadata, show fallback
+                            e.currentTarget.style.display = 'none';
+                            const parent = e.currentTarget.parentElement;
+                            const fallback = parent?.querySelector('.video-fallback') as HTMLElement;
+                            if (fallback) {
+                              fallback.style.display = 'flex';
+                            }
+                          }
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="bg-white bg-opacity-90 rounded-full p-4 transform scale-100 group-hover:scale-110 transition-transform duration-300">
+                          <FaPlay className="text-primary text-xl ml-1" />
+                        </div>
+                      </div>
+                      <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                        VIDEO
+                      </div>
+                      <div className="hidden w-full h-full flex-col items-center justify-center text-gray-500 bg-gray-100">
+                        <FaVideo className="text-4xl mb-2" />
+                        <p className="text-sm">Vidéo</p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -359,12 +390,24 @@ const GalleryPage: React.FC = () => {
               />
             ) : (
               <video
-                src={selectedItem.src}
+                src={selectedItem.thumbnail || selectedItem.src}
                 controls
                 className="max-w-full max-h-[90vh] object-contain"
                 onClick={(e) => e.stopPropagation()}
                 autoPlay
-              />
+                preload="metadata"
+                onError={(e) => {
+                  console.error("Video playback error:", e);
+                  e.currentTarget.style.display = 'none';
+                  const parent = e.currentTarget.parentElement;
+                  const fallback = parent?.querySelector('.video-modal-fallback') as HTMLElement;
+                  if (fallback) {
+                    fallback.style.display = 'flex';
+                  }
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
             )}
             
             <div 
@@ -386,6 +429,17 @@ const GalleryPage: React.FC = () => {
               </div>
             </div>
           </div>
+          
+          {/* Fallback for failed modal video */}
+          {selectedItem.type === "video" && (
+            <div className="video-modal-fallback hidden absolute inset-0 bg-gray-900 flex items-center justify-center">
+              <div className="text-center text-white">
+                <FaVideo className="text-6xl mb-4 text-gray-400" />
+                <p className="text-xl">Vidéo</p>
+                <p className="text-sm text-gray-400 mt-2">Impossible de charger la vidéo</p>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

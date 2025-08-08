@@ -106,12 +106,13 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
               Upload Files
             </label>
             <MediaPicker
+              accept="image/*,video/*"
               onUploadComplete={({ uploadData }) => {
                 if (uploadData.length > 0) {
                   const file = uploadData[0];
                   setUrl(file.url);
                   setName(file.name);
-                  setType(file.url.match(/\.(mp4|webm|ogg|mov|avi)$/i) ? "video" : "image");
+                  setType(file.url.match(/\.(mp4|webm|ogg|mov|avi|mkv|flv|wmv|m4v|3gp)$/i) ? "video" : "image");
                   setSize(file.size);
                   // Store the mediaId if it was created during upload
                   if (file.mediaId) {
@@ -145,7 +146,7 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Alt Text
+              {type === "video" ? "Description" : "Alt Text"}
             </label>
             <input
               type="text"
@@ -153,7 +154,7 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
               onChange={(e) => setAlt(e.target.value)}
               disabled={isSubmitting}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary disabled:bg-gray-100"
-              placeholder="Describe the media for accessibility"
+              placeholder={type === "video" ? "Describe the video content" : "Describe the image for accessibility"}
             />
           </div>
 
@@ -198,19 +199,40 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
             />
           </div>
 
-          {url && type === "image" && (
+          {url && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Preview
               </label>
-              <img
-                src={url}
-                alt="Preview"
-                className="max-w-full h-32 object-cover rounded-md border"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
+              {type === "image" ? (
+                <img
+                  src={url}
+                  alt="Preview"
+                  className="max-w-full h-32 object-cover rounded-md border"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              ) : (
+                <video
+                  src={url}
+                  className="max-w-full h-32 object-cover rounded-md border"
+                  controls
+                  preload="metadata"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                  onLoadedMetadata={(e) => {
+                    const video = e.currentTarget;
+                    if (!width && !height) {
+                      setWidth(video.videoWidth);
+                      setHeight(video.videoHeight);
+                    }
+                  }}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              )}
             </div>
           )}
 
@@ -246,6 +268,10 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
 export default function MediaAdminPage() {
   const [showForm, setShowForm] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; media: any }>({
+    isOpen: false,
+    media: null,
+  });
+  const [videoPreview, setVideoPreview] = useState<{ isOpen: boolean; media: any }>({
     isOpen: false,
     media: null,
   });
@@ -321,7 +347,7 @@ export default function MediaAdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {media.map((item) => (
               <div key={item._id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                <div className="aspect-square bg-gray-100 flex items-center justify-center relative overflow-hidden">
                   {item.type === "image" ? (
                     <img
                       src={item.url}
@@ -334,11 +360,35 @@ export default function MediaAdminPage() {
                       }}
                     />
                   ) : (
-                    <div className="flex flex-col items-center justify-center text-gray-500">
-                      <svg className="w-12 h-12 mb-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-                      </svg>
-                      <span className="text-sm">Video</span>
+                    <div 
+                      className="relative w-full h-full group cursor-pointer"
+                      onClick={() => setVideoPreview({ isOpen: true, media: item })}
+                    >
+                      <video
+                        src={item.url}
+                        className="w-full h-full object-cover"
+                        preload="metadata"
+                        muted
+                        onError={(e) => {
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="absolute top-2 right-2 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded">
+                        VIDEO
+                      </div>
+                      <div className="hidden w-full h-full flex-col items-center justify-center text-gray-500 bg-gray-100">
+                        <svg className="w-12 h-12 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                        </svg>
+                        <span className="text-sm">Video</span>
+                      </div>
                     </div>
                   )}
                   <div className="hidden w-full h-full flex-col items-center justify-center text-gray-500">
@@ -444,6 +494,37 @@ export default function MediaAdminPage() {
           cancelText="Cancel"
           isDestructive={true}
         />
+
+        {/* Video Preview Modal */}
+        {videoPreview.isOpen && videoPreview.media && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="relative max-w-4xl max-h-[90vh] w-full">
+              <button
+                onClick={() => setVideoPreview({ isOpen: false, media: null })}
+                className="absolute -top-10 right-0 text-white hover:text-gray-300 text-xl font-bold z-10"
+              >
+                ✕
+              </button>
+              <video
+                src={videoPreview.media.url}
+                controls
+                autoPlay
+                className="w-full h-auto max-h-[80vh] rounded-lg"
+                onError={(e) => {
+                  console.error("Video playback error:", e);
+                  toast.error("Failed to load video");
+                }}
+              >
+                Your browser does not support the video tag.
+              </video>
+              {videoPreview.media.alt && (
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-3 rounded-b-lg">
+                  <p className="text-sm">{videoPreview.media.alt}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </AdminLayout>
   );

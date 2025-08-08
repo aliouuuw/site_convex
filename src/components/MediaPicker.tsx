@@ -17,7 +17,7 @@ export default function MediaPicker({
   onUploadComplete,
   onUploadError,
   className = "",
-  accept = "image/*",
+  accept = "image/*,video/*",
   multiple = false,
   disabled = false,
 }: MediaPickerProps) {
@@ -77,6 +77,20 @@ export default function MediaPicker({
   const handleFiles = async (files: FileList) => {
     if (!files.length) return;
 
+    // Check file sizes before uploading (20MB limit)
+    const maxSize = 20 * 1024 * 1024; // 20MB in bytes
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (file.size > maxSize) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(1);
+        const errorMessage = `File "${file.name}" is ${sizeMB}MB, which exceeds the 20MB limit`;
+        if (onUploadError) {
+          onUploadError(new Error(errorMessage));
+        }
+        return;
+      }
+    }
+
     setIsUploading(true);
     const previewUrls: string[] = [];
     const uploadData: Array<{ url: string; name: string; size: number; mediaId?: string }> = [];
@@ -120,6 +134,8 @@ export default function MediaPicker({
           errorMessage = "Network error - please check your connection and try again";
         } else if (error.message.includes("HTTP2_PROTOCOL_ERROR")) {
           errorMessage = "Connection error - please try again";
+        } else if (error.message.includes("stream size exceeded limit")) {
+          errorMessage = "File too large - maximum size is 20MB";
         } else {
           errorMessage = error.message;
         }
@@ -211,7 +227,7 @@ export default function MediaPicker({
               <span className="font-medium text-primary">Click to upload</span> or drag and drop
             </p>
             <p className="text-xs text-gray-500">
-              {accept} files (max 4MB each)
+              Images and videos (max 20MB each)
             </p>
           </div>
         )}
