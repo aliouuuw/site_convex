@@ -18,7 +18,7 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
   const [alt, setAlt] = useState("");
   const [width, setWidth] = useState<number | undefined>();
   const [height, setHeight] = useState<number | undefined>();
-  const [size, setSize] = useState<number>(0);
+  const [, setSize] = useState<number>(0);
   const [tags, setTags] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -117,7 +117,7 @@ export const getUploadConfig = query({
     maxFileSize: v.number(),
     allowedFileTypes: v.array(v.string()),
   }),
-  handler: async (ctx) => {
+  handler: async (_ctx) => {
     return {
       url: "/api/upload", // This would be your Convex upload endpoint
       permissions: ["upload"],

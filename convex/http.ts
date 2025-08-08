@@ -58,6 +58,7 @@ http.route({
         }
       } catch (e) {
         // ignore; leave uploadedBy as unknown
+        console.error("Failed to get user identity:", e);
       }
 
       // Insert a media record via a Convex mutation (actions don't have direct DB access)

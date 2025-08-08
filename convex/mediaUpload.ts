@@ -1,6 +1,5 @@
 import { action } from "./_generated/server";
 import { v } from "convex/values";
-import { ourFileRouter } from "./uploadthing";
 
 export const uploadMedia = action({
   args: {
@@ -37,7 +36,7 @@ export const uploadMedia = action({
 export const getUploadUrl = action({
   args: {},
   returns: v.string(),
-  handler: async (ctx, args) => {
+  handler: async (_ctx, _args) => {
     // This would typically generate a presigned URL from Uploadthing
     // For now, we'll return a placeholder
     return "upload-url-placeholder";
