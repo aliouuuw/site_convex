@@ -117,17 +117,9 @@ export default function BlogEditorPage() {
         return;
       }
 
-      // Otherwise create a media record via mutation and use the URL returned from upload
-      await storeMediaRecord({
-        url: uploadData.url,
-        name: uploadData.name,
-        size: uploadData.size,
-        type: uploadData.url.startsWith("data:") || uploadData.url.startsWith("blob:") || !!uploadData.url.match(/\.(jpg|jpeg|png|gif|webp)/i) ? "image" : "video",
-        alt: undefined,
-        width: undefined,
-        height: undefined,
-        tags: [],
-      });
+      // Media record should have been created by the upload endpoint
+      // If no mediaId was returned, just use the upload data directly
+      console.warn("No mediaId returned from upload - media record may not have been created");
 
       // Persisted — set post fields
       handleInputChange("coverImageUrl", uploadData.url);

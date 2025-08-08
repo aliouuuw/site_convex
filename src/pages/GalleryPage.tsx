@@ -1,87 +1,35 @@
 import React, { useState } from "react";
 import { FaImages, FaVideo, FaPlay, FaSearch, FaTimes, FaExpand } from "react-icons/fa";
 import { ImageSlider } from "../components/ImageSlider";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
-const galleryItems = [
-  {
-    type: "image",
-    src: "/images/about/school-heritage.jpg",
-    title: "Patrimoine de l'école",
-    description: "Une vue de notre bâtiment historique.",
-    category: "Architecture",
-    date: "2024-01-15"
-  },
-  {
-    type: "video",
-    src: "/videos/promo.mp4",
-    title: "Vidéo Promotionnelle",
-    description: "Découvrez notre école en action.",
-    category: "Présentation",
-    date: "2024-02-20"
-  },
-  {
-    type: "image",
-    src: "/images/about/history-1.jpg",
-    title: "Cours de sciences",
-    description: "Élèves en plein apprentissage des sciences naturelles.",
-    category: "Éducation",
-    date: "2024-03-10"
-  },
-  {
-    type: "image",
-    src: "/images/about/history-2.jpg",
-    title: "Événement sportif",
-    description: "Journée sportive annuelle avec tous les élèves.",
-    category: "Sport",
-    date: "2024-03-25"
-  },
-  {
-    type: "video",
-    src: "/videos/ceremony.mp4",
-    title: "Cérémonie de remise des diplômes",
-    description: "Moments émouvants de la remise des diplômes 2024.",
-    category: "Cérémonie",
-    date: "2024-06-15"
-  },
-  {
-    type: "image",
-    src: "/images/about/history-3.jpg",
-    title: "Atelier d'art",
-    description: "Créativité et expression artistique des élèves.",
-    category: "Art",
-    date: "2024-04-05"
-  },
-  {
-    type: "image",
-    src: "/images/about/history-4.jpg",
-    title: "Bibliothèque",
-    description: "Espace de lecture et de recherche pour tous.",
-    category: "Infrastructure",
-    date: "2024-01-30"
-  },
-  {
-    type: "video",
-    src: "/videos/activities.mp4",
-    title: "Activités extrascolaires",
-    description: "Découvrez nos nombreuses activités après les cours.",
-    category: "Activités",
-    date: "2024-05-12"
-  },
-  {
-    type: "image",
-    src: "/images/about/history-5.jpg",
-    title: "Laboratoire informatique",
-    description: "Apprentissage des nouvelles technologies.",
-    category: "Technologie",
-    date: "2024-02-28"
-  }
-];
+// Remove static data - we'll fetch from Convex
 
 const GalleryPage: React.FC = () => {
   const [filter, setFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Fetch media with "gallery" tag from Convex
+  const galleryMedia = useQuery(api.media.searchMedia, { tag: "gallery", limit: 50 });
+
+  // Transform Convex media data to match our component structure
+  const galleryItems = galleryMedia?.map((item) => {
+    console.log("Gallery item URL:", item.url); // Debug log
+    return {
+      type: item.type,
+      src: item.url,
+      title: item.name,
+      description: item.alt || "Image de la galerie",
+      category: item.tags?.find(tag => tag !== "gallery") || "Général",
+      date: new Date(item.uploadedAt).toISOString().split('T')[0],
+      width: item.width,
+      height: item.height,
+      size: item.size
+    };
+  }) || [];
 
   const filteredItems = galleryItems.filter((item) => {
     const matchesFilter = filter === "all" || item.type === filter;
@@ -108,6 +56,20 @@ const GalleryPage: React.FC = () => {
     setSelectedItem(null);
     document.body.style.overflow = 'unset';
   };
+
+  // Handle keyboard navigation for modal
+  React.useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && selectedItem) {
+        closeModal();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [selectedItem]);
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
@@ -151,6 +113,27 @@ const GalleryPage: React.FC = () => {
       {/* Gallery Grid Section */}
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-6 max-w-6xl">
+          
+          {/* Loading State */}
+          {galleryMedia === undefined && (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-3 text-gray-600">Chargement de la galerie...</span>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {galleryMedia !== undefined && galleryItems.length === 0 && (
+            <div className="text-center py-12">
+              <FaImages className="mx-auto text-6xl text-gray-400 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">Aucun média dans la galerie</h3>
+              <p className="text-gray-500">Les médias avec le tag "gallery" apparaîtront ici.</p>
+            </div>
+          )}
+
+          {/* Gallery Content */}
+          {galleryMedia !== undefined && galleryItems.length > 0 && (
+            <>
 
           {/* Search Bar */}
           <div className="max-w-md mx-auto mb-8">
@@ -208,43 +191,130 @@ const GalleryPage: React.FC = () => {
               {filteredItems.length} résultat{filteredItems.length !== 1 ? 's' : ''} trouvé{filteredItems.length !== 1 ? 's' : ''}
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {filteredItems.map((item, index) => (
+
+          {/* No Results State */}
+          {galleryMedia !== undefined && galleryItems.length > 0 && filteredItems.length === 0 && (
+            <div className="text-center py-12">
+              <FaSearch className="mx-auto text-6xl text-gray-400 mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">Aucun résultat trouvé</h3>
+              <p className="text-gray-500 mb-4">
+                Essayez de modifier vos critères de recherche ou de filtrage.
+              </p>
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setFilter("all");
+                }}
+                className="btn btn-primary"
+              >
+                Réinitialiser les filtres
+              </button>
+            </div>
+          )}
+          {/* Gallery Grid */}
+          {filteredItems.length > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {filteredItems.map((item, index) => (
               <div
                 key={index}
                 className="gallery-card-container bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"
               >
-                <div className="relative h-64">
+                <div 
+                  className="h-64 cursor-pointer group"
+                  onClick={() => openModal(item)}
+                >
                   {item.type === "image" ? (
-                    <img
-                      src={item.src}
-                      alt={item.title}
-                      className="w-full h-full object-cover"
-                    />
+                    <div className="relative w-full h-full">
+                      <img
+                        src={item.src}
+                        alt={item.title}
+                        className="h-64 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          console.error("Failed to load image:", item.src);
+                          console.error("Image error event:", e);
+                          e.currentTarget.style.display = 'none';
+                          const parent = e.currentTarget.parentElement;
+                          const fallback = parent?.querySelector('.image-fallback') as HTMLElement;
+                          if (fallback) {
+                            fallback.style.display = 'flex';
+                          }
+                        }}
+                        onLoad={() => {
+                          console.log("Image loaded successfully:", item.src);
+                          const parent = (event?.target as HTMLElement)?.parentElement;
+                          const loading = parent?.querySelector('.image-loading') as HTMLElement;
+                          if (loading) {
+                            loading.style.display = 'none';
+                          }
+                        }}
+                      />
+                      {/* Loading state */}
+                      <div className="image-loading absolute inset-0 bg-gray-200 flex items-center justify-center">
+                        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    </div>
                   ) : (
                     <video
                       src={item.src}
                       className="w-full h-full object-cover"
-                      poster="/images/about/school-heritage.jpg" // Add a poster image for videos
+                      poster={item.src} // Use the video URL as poster for now
                     />
                   )}
                   {item.type === "video" && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                      <FaVideo className="text-white text-5xl" />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 group-hover:bg-opacity-40 transition-all duration-300">
+                      <FaPlay className="text-white text-4xl" />
                     </div>
                   )}
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      item.type === "image" 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-blue-100 text-blue-800"
+                    }`}>
+                      {item.type === "image" ? "Image" : "Vidéo"}
+                    </span>
+                    <span className="text-xs text-gray-500">{item.category}</span>
+                  </div>
+                  
+                  <h3 
+                    className="text-lg font-bold text-gray-900 mb-2"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}
+                  >
                     {item.title}
                   </h3>
-                  <p className="text-gray-700 leading-relaxed">
+                  
+                  <p 
+                    className="text-gray-600 text-sm leading-relaxed mb-3"
+                    style={{
+                      display: '-webkit-box',
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden'
+                    }}
+                  >
                     {item.description}
                   </p>
+                  
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>{new Date(item.date).toLocaleDateString('fr-FR')}</span>
+                    {item.width && item.height && (
+                      <span>{item.width} × {item.height}</span>
+                    )}
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+            </>
+          )}
         </div>
       </section>
 
@@ -265,6 +335,59 @@ const GalleryPage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Modal for viewing media */}
+      {selectedItem && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onClick={closeModal}
+        >
+          <div className="relative max-w-4xl max-h-full">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 text-white text-2xl hover:text-gray-300 transition-colors z-10"
+            >
+              <FaTimes />
+            </button>
+            
+            {selectedItem.type === "image" ? (
+              <img
+                src={selectedItem.src}
+                alt={selectedItem.title}
+                className="max-w-full max-h-[90vh] object-contain"
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <video
+                src={selectedItem.src}
+                controls
+                className="max-w-full max-h-[90vh] object-contain"
+                onClick={(e) => e.stopPropagation()}
+                autoPlay
+              />
+            )}
+            
+            <div 
+              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-6 text-white"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold mb-2">{selectedItem.title}</h3>
+              <p className="text-gray-300 mb-1">{selectedItem.description}</p>
+              <div className="flex items-center gap-4 text-sm text-gray-400">
+                <span>{selectedItem.category}</span>
+                <span>•</span>
+                <span>{new Date(selectedItem.date).toLocaleDateString('fr-FR')}</span>
+                {selectedItem.width && selectedItem.height && (
+                  <>
+                    <span>•</span>
+                    <span>{selectedItem.width} × {selectedItem.height}px</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

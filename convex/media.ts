@@ -8,6 +8,7 @@ import { v } from "convex/values";
 export const storeMediaRecord = mutation({
   args: {
     url: v.string(),
+    storageId: v.optional(v.id("_storage")),
     name: v.string(),
     size: v.number(),
     type: v.union(v.literal("image"), v.literal("video")),
@@ -63,6 +64,56 @@ export const getMedia = query({
 });
 
 /**
+ * Find media record by URL.
+ */
+export const getMediaByUrl = query({
+  args: { url: v.string() },
+  returns: v.union(
+    v.object({
+      _id: v.id("media"),
+      url: v.string(),
+      name: v.string(),
+      size: v.number(),
+      type: v.union(v.literal("image"), v.literal("video")),
+      alt: v.optional(v.string()),
+      width: v.optional(v.number()),
+      height: v.optional(v.number()),
+      tags: v.optional(v.array(v.string())),
+      uploadedAt: v.string(),
+      uploadedBy: v.string(),
+    }),
+    v.null()
+  ),
+  handler: async (ctx, args) => {
+    const media = await ctx.db
+      .query("media")
+      .filter((q) => q.eq(q.field("url"), args.url))
+      .first();
+    return media || null;
+  },
+});
+
+/**
+ * Update media record with additional metadata.
+ */
+export const updateMediaRecord = mutation({
+  args: {
+    id: v.id("media"),
+    alt: v.optional(v.string()),
+    width: v.optional(v.number()),
+    height: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
+    type: v.optional(v.union(v.literal("image"), v.literal("video"))),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const { id, ...updates } = args;
+    await ctx.db.patch(id, updates);
+    return null;
+  },
+});
+
+/**
  * Search media with optional tag filter.
  */
 export const searchMedia = query({
@@ -72,15 +123,19 @@ export const searchMedia = query({
 
     let items;
     if (typeof args.tag === "string") {
-      items = await ctx.db
+      // For tag filtering, we need to scan all media and filter in memory
+      // since Convex doesn't support array contains queries on indexes
+      const allItems = await ctx.db
         .query("media")
-        .withIndex("by_tag", (q) => q.eq("tags", [args.tag as string]))
         .order("desc")
-        .take(limit);
+        .collect();
+      
+      items = allItems
+        .filter(item => item.tags?.includes(args.tag as string))
+        .slice(0, limit);
     } else {
       items = await ctx.db
         .query("media")
-        .withIndex("by_uploadedAt")
         .order("desc")
         .take(limit);
     }

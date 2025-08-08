@@ -18,12 +18,27 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
   const [alt, setAlt] = useState("");
   const [width, setWidth] = useState<number | undefined>();
   const [height, setHeight] = useState<number | undefined>();
-  const [, setSize] = useState<number>(0);
+  const [size, setSize] = useState<number>(0);
   const [tags, setTags] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mediaId, setMediaId] = useState<string | null>(null);
+
+  const resetForm = () => {
+    setUrl("");
+    setName("");
+    setType("image");
+    setAlt("");
+    setWidth(undefined);
+    setHeight(undefined);
+    setSize(0);
+    setTags("");
+    setError(null);
+    setMediaId(null);
+  };
 
   const storeMediaRecord = useMutation(api.media.storeMediaRecord);
+  const updateMediaRecord = useMutation(api.media.updateMediaRecord);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,17 +53,33 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
       width,
       height,
       tags: tags ? tags.split(",").map((t: string) => t.trim()).filter(Boolean) : undefined,
-      size: 0, // This will be updated by the upload process
+      size,
+      uploadedBy: "admin", // Add uploadedBy field
     };
 
     try {
-      await storeMediaRecord(mediaData);
-      toast.success("Media uploaded successfully!");
+      if (mediaId) {
+        // Update existing record with additional metadata
+        await updateMediaRecord({
+          id: mediaId as any, // Type assertion needed for the ID
+          alt: alt || undefined,
+          width,
+          height,
+          tags: tags ? tags.split(",").map((t: string) => t.trim()).filter(Boolean) : undefined,
+          type,
+        });
+        toast.success("Media details updated successfully!");
+      } else {
+        // Create new record (fallback case)
+        await storeMediaRecord(mediaData);
+        toast.success("Media uploaded successfully!");
+      }
+      resetForm();
       onSave();
       onClose();
     } catch (error: any) {
-      console.error("Error uploading media:", error);
-      const errorMessage = error?.message || "Failed to upload media";
+      console.error("Error saving media:", error);
+      const errorMessage = error?.message || "Failed to save media";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -60,7 +91,7 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
         <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto shadow-lg border border-gray-200">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Upload Media</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{mediaId ? "Add Media Details" : "Upload Media"}</h2>
         </div>
         
         <form onSubmit={(e) => { void handleSubmit(e); }} className="p-6 space-y-4">
@@ -75,18 +106,23 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
               Upload Files
             </label>
             <MediaPicker
-              onUploadComplete={(uploadData) => {
-                if (uploadData.uploadData.length > 0) {
-                  const file = uploadData.uploadData[0];
+              onUploadComplete={({ uploadData }) => {
+                if (uploadData.length > 0) {
+                  const file = uploadData[0];
                   setUrl(file.url);
                   setName(file.name);
-                  setType("image");
-                  // Update the size field
+                  setType(file.url.match(/\.(mp4|webm|ogg|mov|avi)$/i) ? "video" : "image");
                   setSize(file.size);
+                  // Store the mediaId if it was created during upload
+                  if (file.mediaId) {
+                    setMediaId(file.mediaId);
+                  }
                 }
               }}
               onUploadError={(error) => {
+                console.error("MediaPicker upload error:", error);
                 setError(error.message);
+                toast.error(`Upload failed: ${error.message}`);
               }}
               className="w-full"
             />
@@ -181,7 +217,10 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => {
+                resetForm();
+                onClose();
+              }}
               disabled={isSubmitting}
               className="btn btn-secondary disabled:opacity-50"
             >
@@ -189,13 +228,13 @@ function MediaUploadForm({ onClose, onSave }: MediaUploadFormProps) {
             </button>
             <button
               type="submit"
-              disabled={isSubmitting || !url.trim()}
+              disabled={isSubmitting || !url.trim() || !name.trim()}
               className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isSubmitting && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               )}
-              {isSubmitting ? "Uploading..." : "Upload Media"}
+              {isSubmitting ? "Saving..." : mediaId ? "Save Details" : "Upload Media"}
             </button>
           </div>
         </form>
@@ -354,14 +393,24 @@ export default function MediaAdminPage() {
                     </div>
                   )}
                   
-                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="mt-3 pt-3 border-t border-gray-100">
                     <button
-                      onClick={() => void navigator.clipboard.writeText(item.url)}
-                      className="text-primary hover:text-primary/80 text-sm font-medium"
+                      onClick={() =>
+                      void (async () => {
+                        try {
+                        await navigator.clipboard.writeText(item.url);
+                        toast.success("URL copied to clipboard!");
+                        } catch (error) {
+                        console.error("Failed to copy URL:", error);
+                        toast.error("Failed to copy URL");
+                        }
+                      })()
+                      }
+                      className="text-primary hover:text-primary/80 text-sm font-medium hover:cursor-pointer hover:underline"
                     >
                       Copy URL
                     </button>
-                  </div>
+                    </div>
                 </div>
               </div>
             ))}

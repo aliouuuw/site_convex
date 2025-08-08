@@ -25,6 +25,55 @@ export default function MediaPicker({
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const uploadFileWithRetry = async (file: File, uploadEndpoint: string, maxRetries = 2) => {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const form = new FormData();
+        form.append("file", file);
+
+        console.log(`Uploading to: ${uploadEndpoint} (attempt ${attempt + 1})`);
+        const res = await fetch(uploadEndpoint, {
+          method: "POST",
+          body: form,
+          headers: {
+            // Don't set Content-Type header - let the browser set it with boundary for multipart/form-data
+          },
+        });
+
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          console.error("Upload failed:", res.status, text);
+          throw new Error(`Upload failed (${res.status}): ${text || res.statusText}`);
+        }
+
+        const json = await res.json().catch((err) => {
+          console.error("Failed to parse JSON response:", err);
+          return null;
+        });
+        
+        if (!json) {
+          throw new Error("Invalid response from server");
+        }
+        
+        if (json.success === false) {
+          throw new Error(json.message || "Upload failed");
+        }
+
+        console.log("Upload response:", json);
+        return json;
+      } catch (error) {
+        if (attempt === maxRetries) {
+          throw error; // Last attempt failed, re-throw the error
+        }
+        
+        // Wait before retrying (exponential backoff)
+        const delay = Math.pow(2, attempt) * 1000;
+        console.log(`Upload attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  };
+
   const handleFiles = async (files: FileList) => {
     if (!files.length) return;
 
@@ -36,9 +85,9 @@ export default function MediaPicker({
       // Use Convex deployment URL for upload endpoint
       const convexBase = (import.meta.env as any).VITE_CONVEX_URL_HTTP_ACTIONS;
       if (!convexBase) {
-        throw new Error("VITE_CONVEX_URL not configured");
+        throw new Error("VITE_CONVEX_URL_HTTP_ACTIONS not configured");
       }
-      const uploadEndpoint = `${String(convexBase).replace(/\/$/, "")}/api/uploadthing`;
+      const uploadEndpoint = `${String(convexBase).replace(/\/$/, "")}/api/upload`;
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -47,24 +96,8 @@ export default function MediaPicker({
         const objectUrl = URL.createObjectURL(file);
         previewUrls.push(objectUrl);
 
-        // Upload file to Uploadthing endpoint
-        const form = new FormData();
-        form.append("file", file);
-
-        const res = await fetch(uploadEndpoint, {
-          method: "POST",
-          body: form,
-        });
-
-        if (!res.ok) {
-          const text = await res.text().catch(() => "");
-          throw new Error(`Upload failed (${res.status}) ${text}`);
-        }
-
-        const json = await res.json().catch(() => null);
-        if (!json || json.success === false) {
-          throw new Error((json && json.message) || "Upload failed");
-        }
+        // Upload file to Convex endpoint with retry
+        const json = await uploadFileWithRetry(file, uploadEndpoint);
 
         // Use returned url if available, otherwise fall back to object URL
         uploadData.push({
@@ -79,8 +112,21 @@ export default function MediaPicker({
       onUploadComplete({ previews: previewUrls, uploadData });
     } catch (error) {
       console.error("Upload error:", error);
+      
+      // Provide more specific error messages
+      let errorMessage = "Upload failed";
+      if (error instanceof Error) {
+        if (error.message.includes("Failed to fetch")) {
+          errorMessage = "Network error - please check your connection and try again";
+        } else if (error.message.includes("HTTP2_PROTOCOL_ERROR")) {
+          errorMessage = "Connection error - please try again";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       if (onUploadError) {
-        onUploadError(error instanceof Error ? error : new Error("Upload failed"));
+        onUploadError(new Error(errorMessage));
       }
     } finally {
       setIsUploading(false);

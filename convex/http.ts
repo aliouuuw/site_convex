@@ -19,6 +19,23 @@ auth.addHttpRoutes(http);
  * const res = await fetch('/api/upload', { method: 'POST', body: form });
  * const json = await res.json();
  */
+// Handle CORS preflight requests
+http.route({
+  path: "/api/upload",
+  method: "OPTIONS",
+  handler: httpAction(async (_ctx, _req) => {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "86400",
+      },
+    });
+  }),
+});
+
 http.route({
   path: "/api/upload",
   method: "POST",
@@ -26,13 +43,29 @@ http.route({
     try {
       const contentType = req.headers.get("content-type") || "";
       if (!contentType.includes("multipart/form-data")) {
-        return new Response(JSON.stringify({ success: false, message: "Expected multipart/form-data" }), { status: 400, headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ success: false, message: "Expected multipart/form-data" }), { 
+          status: 400, 
+          headers: { 
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          } 
+        });
       }
 
       const form = await req.formData();
       const file = form.get("file") as File | null;
       if (!file) {
-        return new Response(JSON.stringify({ success: false, message: "Missing file field" }), { status: 400, headers: { "Content-Type": "application/json" } });
+        return new Response(JSON.stringify({ success: false, message: "Missing file field" }), { 
+          status: 400, 
+          headers: { 
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          } 
+        });
       }
 
       const arrayBuffer = await file.arrayBuffer();
@@ -85,10 +118,26 @@ http.route({
         uploadedAt,
       };
 
-      return new Response(JSON.stringify(result), { status: 200, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify(result), { 
+        status: 200, 
+        headers: { 
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        } 
+      });
     } catch (err: any) {
       console.error("Upload endpoint error:", err);
-      return new Response(JSON.stringify({ success: false, message: err?.message || "Upload failed" }), { status: 500, headers: { "Content-Type": "application/json" } });
+      return new Response(JSON.stringify({ success: false, message: err?.message || "Upload failed" }), { 
+        status: 500, 
+        headers: { 
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+        } 
+      });
     }
   }),
 });
