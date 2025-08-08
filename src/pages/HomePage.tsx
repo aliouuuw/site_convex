@@ -1,5 +1,8 @@
-import React from 'react';
-import { ImageSlider } from '../components/ImageSlider';
+import React, { useRef } from 'react';
+import { EditableImageSlider, EditableImageSliderRef } from '../components/EditableImageSlider';
+import EditableText from '../components/EditableText';
+import EditableImage from '../components/EditableImage';
+import { useEditMode } from '../hooks/useEditMode';
 
 const schoolLevels = [
   {
@@ -66,27 +69,70 @@ const newsEvents = [
 ];
 
 const HomePage: React.FC = () => {
+  const { isEditMode } = useEditMode();
+  const backgroundSliderRef = useRef<EditableImageSliderRef>(null);
+  
   return (
     <div className="min-h-screen">
       <main>
         {/* Hero Section - Condensed Content */}
         <section className="hero-background-optimized">
           <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-0">
-            <ImageSlider />
+            <EditableImageSlider
+              ref={backgroundSliderRef}
+              id="hero.background"
+              defaultImages={[
+                '/images/hero-school.jpg',
+                '/images/mission-main.png',
+                '/images/news-featured.jpg',
+                '/images/programs/preschool.jpg',
+                '/images/programs/primary.jpg',
+                '/images/programs/middleschool.jpg'
+              ]}
+              page="home"
+            />
           </div>
-          <div className="z-10 absolute top-0 left-0 w-full h-full bg-linear-to-r from-[var(--primary)] to-[var(--accent)]/50 opacity-50"></div>
+          <div className={`absolute top-0 left-0 w-full h-full bg-linear-to-r from-[var(--primary)] to-[var(--accent)]/50 opacity-50 ${isEditMode ? 'pointer-events-none' : ''}`} style={{ zIndex: isEditMode ? -1 : 10 }}></div>
+          
+          {/* Background Image Edit Button - Only visible in edit mode */}
+          {isEditMode && (
+            <div className="absolute top-4 left-4 z-30">
+              <button
+                onClick={() => {
+                  backgroundSliderRef.current?.triggerEdit();
+                }}
+                className="bg-primary/90 hover:bg-primary text-white px-3 py-2 rounded text-sm transition-colors shadow-lg backdrop-blur"
+                title="Edit Background Images"
+              >
+                🖼️ Edit Background
+              </button>
+            </div>
+          )}
+          
           <div className="container z-20">
             <div className="hero-content-background">
               <div className="hero-badge-elegant">
-                <span data-live-edit-id="hero.badge">Excellence depuis 20+ ans</span>
+                <EditableText id="hero.badge" page="home">
+                  Excellence depuis 20+ ans
+                </EditableText>
               </div>
-              <h1 className="hero-title-background" data-live-edit-id="hero.title">
+              <EditableText 
+                id="hero.title" 
+                page="home" 
+                as="h1" 
+                className="hero-title-background"
+              >
                 Former les leaders de demain
-              </h1>
-              <p className="hero-description-background" data-live-edit-id="hero.description">
+              </EditableText>
+              <EditableText 
+                id="hero.description" 
+                page="home" 
+                as="p" 
+                className="hero-description-background"
+              >
                 Excellence académique et valeurs humaines du préscolaire au
                 collège.
-              </p>
+              </EditableText>
               <div className="hero-actions-background">
                 <a href="#programs" className="btn btn-primary-hero">
                   Nos programmes
@@ -97,16 +143,28 @@ const HomePage: React.FC = () => {
               </div>
               <div className="hero-stats-inline">
                 <div className="hero-stat-inline">
-                  <span className="stat-number-inline" data-live-edit-id="hero.stats.students">500+</span>
-                  <span className="stat-label-inline" data-live-edit-id="hero.stats.students.label">Élèves</span>
+                  <EditableText id="hero.stats.students" page="home" className="stat-number-inline">
+                    500+
+                  </EditableText>
+                  <EditableText id="hero.stats.students.label" page="home" className="stat-label-inline">
+                    Élèves
+                  </EditableText>
                 </div>
                 <div className="hero-stat-inline">
-                  <span className="stat-number-inline" data-live-edit-id="hero.stats.success">98%</span>
-                  <span className="stat-label-inline" data-live-edit-id="hero.stats.success.label">Réussite</span>
+                  <EditableText id="hero.stats.success" page="home" className="stat-number-inline">
+                    98%
+                  </EditableText>
+                  <EditableText id="hero.stats.success.label" page="home" className="stat-label-inline">
+                    Réussite
+                  </EditableText>
                 </div>
                 <div className="hero-stat-inline">
-                  <span className="stat-number-inline" data-live-edit-id="hero.stats.years">20+</span>
-                  <span className="stat-label-inline" data-live-edit-id="hero.stats.years.label">Années</span>
+                  <EditableText id="hero.stats.years" page="home" className="stat-number-inline">
+                    20+
+                  </EditableText>
+                  <EditableText id="hero.stats.years.label" page="home" className="stat-label-inline">
+                    Années
+                  </EditableText>
                 </div>
               </div>
             </div>
@@ -156,11 +214,23 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">01</div>
               <div>
-                <h2 className="section-title-creative" data-live-edit-id="programs.title">Nos Programmes</h2>
-                <p className="section-description-creative" data-live-edit-id="programs.description">
+                <EditableText 
+                  id="programs.title" 
+                  page="home" 
+                  as="h2" 
+                  className="section-title-creative"
+                >
+                  Nos Programmes
+                </EditableText>
+                <EditableText 
+                  id="programs.description" 
+                  page="home" 
+                  as="p" 
+                  className="section-description-creative"
+                >
                   Un parcours éducatif complet qui accompagne chaque élève vers
                   l&apos;excellence
-                </p>
+                </EditableText>
               </div>
             </div>
 
@@ -168,12 +238,14 @@ const HomePage: React.FC = () => {
               {schoolLevels.map((level, index) => (
                 <div key={index} className="program-card-simplified">
                   <div className="program-image-simplified">
-                    <img
+                    <EditableImage
+                      id={`programs.${level.title.toLowerCase()}.image`}
                       src={level.image}
                       alt={level.title}
+                      className="w-full h-full object-cover"
                       width={1000}
                       height={1000}
-                      className="w-full h-full object-cover"
+                      page="home"
                     />
                     <div className="program-age-badge">{level.ageRange}</div>
                   </div>
@@ -206,26 +278,48 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">02</div>
               <div>
-                <h2 className="section-title-creative" data-live-edit-id="mission.title">Notre Mission</h2>
-                <p className="section-description-creative" data-live-edit-id="mission.description">
+                <EditableText 
+                  id="mission.title" 
+                  page="home" 
+                  as="h2" 
+                  className="section-title-creative"
+                >
+                  Notre Mission
+                </EditableText>
+                <EditableText 
+                  id="mission.description" 
+                  page="home" 
+                  as="p" 
+                  className="section-description-creative"
+                >
                   Former les citoyens de demain avec excellence et bienveillance
-                </p>
+                </EditableText>
               </div>
             </div>
 
             <div className="mission-grid">
               <div className="mission-content-simplified">
-                <p className="mission-text-large" data-live-edit-id="mission.main">
+                <EditableText 
+                  id="mission.main" 
+                  page="home" 
+                  as="p" 
+                  className="mission-text-large"
+                >
                   Nous nous engageons à offrir une éducation de qualité qui
                   forme les citoyens de demain, cultivant l&apos;excellence
                   académique tout en développant les valeurs humaines
                   essentielles.
-                </p>
-                <p className="mission-text-regular" data-live-edit-id="mission.secondary">
+                </EditableText>
+                <EditableText 
+                  id="mission.secondary" 
+                  page="home" 
+                  as="p" 
+                  className="mission-text-regular"
+                >
                   Depuis notre création, nous accompagnons chaque élève dans son
                   épanouissement personnel et sa réussite scolaire, de la
                   maternelle au collège.
-                </p>
+                </EditableText>
 
                 <div className="mission-values-simplified">
                   <div className="value-item-simplified">
@@ -258,10 +352,12 @@ const HomePage: React.FC = () => {
 
               <div className="mission-visual-simplified flex justify-center items-center">
                 <div className="mission-image-wrapper h-[400px] w-[350px]">
-                  <img
+                  <EditableImage
+                    id="mission.image"
                     src="/images/mission-main.png"
                     alt="Notre mission"
                     className="object-cover object-center w-full h-full"
+                    page="home"
                   />
                 </div>
               </div>
@@ -275,22 +371,36 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">03</div>
               <div>
-                <h2 className="section-title-creative" data-live-edit-id="news.title">Actualités</h2>
-                <p className="section-description-creative" data-live-edit-id="news.description">
+                <EditableText 
+                  id="news.title" 
+                  page="home" 
+                  as="h2" 
+                  className="section-title-creative"
+                >
+                  Actualités
+                </EditableText>
+                <EditableText 
+                  id="news.description" 
+                  page="home" 
+                  as="p" 
+                  className="section-description-creative"
+                >
                   Découvrez la vie dynamique de notre école
-                </p>
+                </EditableText>
               </div>
             </div>
 
             <div className="news-magazine-grid">
               <article className="news-featured">
                 <div className="news-image">
-                  <img
+                  <EditableImage
+                    id="news.featured.image"
                     src="/images/news-featured.jpg"
                     alt="Actualité principale"
+                    className="w-full h-full object-cover"
                     width={100}
                     height={100}
-                    className="w-full h-full object-cover"
+                    page="home"
                   />
                   <div className="news-category">Événement</div>
                 </div>

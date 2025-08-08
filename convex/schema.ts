@@ -16,6 +16,8 @@ export default defineSchema({
     type: v.union(v.literal("text"), v.literal("image")),
     page: v.string(),
     lastModified: v.number(),
+    mediaId: v.optional(v.id("media")),
+    alt: v.optional(v.string()),
   })
     .index("by_content_id", ["id"]) // existing indexes
     .index("by_page", ["page"]),

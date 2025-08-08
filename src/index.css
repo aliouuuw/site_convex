@@ -2001,3 +2001,23 @@ html {
 .live-edit-input:focus {
   border-color: var(--accent);
 }
+
+/* Hero Background Edit Mode Enhancement */
+.live-edit-mode .hero-background-optimized .live-edit-element {
+  outline: 3px dashed var(--accent);
+  outline-offset: 5px;
+}
+
+.live-edit-mode .hero-background-optimized .live-edit-element:hover {
+  outline: 3px dashed var(--primary);
+  outline-offset: 8px;
+}
+
+/* Pointer events utility */
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.pointer-events-auto {
+  pointer-events: auto;
+}

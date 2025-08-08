@@ -7,10 +7,12 @@ export const updateContent = mutation({
     content: v.string(),
     type: v.union(v.literal("text"), v.literal("image")),
     page: v.string(),
+    mediaId: v.optional(v.id("media")),
+    alt: v.optional(v.string()),
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    const { id, content, type, page } = args;
+    const { id, content, type, page, mediaId, alt } = args;
     
     // Check if content already exists
     const existing = await ctx.db
@@ -24,6 +26,8 @@ export const updateContent = mutation({
         content,
         type,
         page,
+        mediaId,
+        alt,
         lastModified: Date.now(),
       });
     } else {
@@ -33,6 +37,8 @@ export const updateContent = mutation({
         content,
         type,
         page,
+        mediaId,
+        alt,
         lastModified: Date.now(),
       });
     }
@@ -54,6 +60,8 @@ export const getContent = query({
       type: v.union(v.literal("text"), v.literal("image")),
       page: v.string(),
       lastModified: v.number(),
+      mediaId: v.optional(v.id("media")),
+      alt: v.optional(v.string()),
     }),
     v.null()
   ),
@@ -80,6 +88,8 @@ export const getContentByPage = query({
       type: v.union(v.literal("text"), v.literal("image")),
       page: v.string(),
       lastModified: v.number(),
+      mediaId: v.optional(v.id("media")),
+      alt: v.optional(v.string()),
     })
   ),
   handler: async (ctx, args) => {
@@ -103,10 +113,12 @@ export const getAllContent = query({
       type: v.union(v.literal("text"), v.literal("image")),
       page: v.string(),
       lastModified: v.number(),
+      mediaId: v.optional(v.id("media")),
+      alt: v.optional(v.string()),
     })
   ),
   handler: async (ctx) => {
     const contents = await ctx.db.query("content").collect();
     return contents;
   },
-}); 
+});

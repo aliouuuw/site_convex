@@ -225,6 +225,8 @@ export class LiveEditPrototype {
     id: string,
     content: string,
     isImage: boolean,
+    mediaId?: string,
+    alt?: string,
   ): Promise<void> {
     try {
       console.log(`Saving content for element: ${id}`);
@@ -251,6 +253,8 @@ export class LiveEditPrototype {
         content,
         type: isImage ? "image" : "text",
         page: this.getCurrentPage(),
+        mediaId,
+        alt,
       });
 
       // Update indicator to show success
