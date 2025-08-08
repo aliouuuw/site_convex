@@ -1,27 +1,9 @@
 import React from "react";
-
-const teamMembers = [
-  {
-    name: "Mme Aïssatou Ndiaye",
-    role: "Directrice",
-    image: "/images/team/director.jpg",
-    bio: "Responsable de la vision stratégique et de la gestion quotidienne de l'école.",
-  },
-  {
-    name: "M. Babacar Gueye",
-    role: "Chef Pédagogique",
-    image: "/images/team/pedagogical-lead.jpg",
-    bio: "Coordonne les programmes éducatifs et soutient les enseignants.",
-  },
-  {
-    name: "M. Ousmane Fall",
-    role: "Surveillant Général",
-    image: "/images/team/supervisor.jpg",
-    bio: "Assure la discipline, la sécurité et le bien-être des élèves.",
-  },
-];
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 
 const EquipePage: React.FC = () => {
+  const teamMembers = useQuery(api.team.listTeamMembers);
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
       {/* Hero Section */}
@@ -82,33 +64,55 @@ const EquipePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <div
-                key={index}
-                className="team-card-container bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"
-              >
-                <div className="relative h-64">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
+          {teamMembers === undefined ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          ) : teamMembers.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Aucun membre d'équipe disponible pour le moment.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+              {teamMembers.map((member) => (
+                <div
+                  key={member._id}
+                  className="team-card-container bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"
+                >
+                  <div className="relative h-64">
+                    {member.photo ? (
+                      <img
+                        src={member.photo}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to initials if image fails to load
+                          e.currentTarget.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <div className="text-4xl font-bold text-gray-400">
+                          {member.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                      {member.name}
+                    </h3>
+                    <p className="text-primary font-semibold mb-4">
+                      {member.role || "Membre de l'équipe"}
+                    </p>
+                    <p className="text-gray-700 leading-relaxed">
+                      {member.bio || "Aucune biographie disponible pour le moment."}
+                    </p>
+                  </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    {member.name}
-                  </h3>
-                  <p className="text-primary font-semibold mb-4">
-                    {member.role}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed">
-                    {member.bio}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
