@@ -1,7 +1,10 @@
 import React from 'react';
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import DisplayImageSlider from '../components/DisplayImageSlider';
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
+import TestimonialsCarousel from '../components/TestimonialsCarousel';
 
 const schoolLevels = [
   {
@@ -28,46 +31,21 @@ const schoolLevels = [
   },
 ];
 
-const testimonials = [
-  {
-    quote:
-      "Les Hirondelles a donné à ma fille la confiance et les compétences nécessaires pour réussir. L'équipe pédagogique est exceptionnelle.",
-    author: "Mme Fatou Diop",
-    role: "Parent d'élève",
-    image: "/images/parent1.png",
-  },
-  {
-    quote:
-      "Une école qui allie excellence académique et valeurs humaines. Mon fils s'épanouit chaque jour.",
-    author: "M. Amadou Sall",
-    role: "Parent d'élève",
-    image: "/images/parent2.png",
-  },
-];
 
-const newsEvents = [
-  {
-    title: "Journée Portes Ouvertes",
-    date: "15 Mars 2024",
-    description:
-      "Venez découvrir notre établissement et rencontrer nos équipes",
-    type: "Événement",
-  },
-  {
-    title: "Concours de Sciences",
-    date: "22 Mars 2024",
-    description: "Nos élèves de collège participent au concours national",
-    type: "Actualité",
-  },
-  {
-    title: "Spectacle de fin d'année",
-    date: "10 Juin 2024",
-    description: "Représentation théâtrale et musicale de nos élèves",
-    type: "Événement",
-  },
-];
 
 const HomePage: React.FC = () => {
+  // Fetch published blog posts for the news section
+  const blogPosts = useQuery(api.blog.listPublishedBlogPosts, { limit: 4 });
+  // Fetch visible testimonials for the testimonials section
+  const testimonials = useQuery(api.testimonials.listVisibleTestimonials, { limit: 6 });
+  
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
   
   return (
     <div className="min-h-screen">
@@ -371,49 +349,81 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="news-magazine-grid">
-              <article className="news-featured">
-                <div className="news-image">
-                  <DisplayImage
-                    id="news.featured.image"
-                    src="/images/news-featured.jpg"
-                    alt="Actualité principale"
-                    className="w-full h-full object-cover"
-                    width={100}
-                    height={100}
-                    page="home"
-                  />
-                  <div className="news-category">Événement</div>
-                </div>
-                <div className="news-content">
-                  <time className="news-date">15 Mars 2024</time>
-                  <h3 className="news-title">Journée Portes Ouvertes 2024</h3>
-                  <p className="news-excerpt">
-                    Venez découvrir notre établissement, rencontrer nos équipes
-                    pédagogiques et visiter nos installations modernes.
-                  </p>
-                  <a href="/news/portes-ouvertes" className="news-link">
-                    Lire la suite →
-                  </a>
-                </div>
-              </article>
-
-              <div className="news-secondary">
-                {newsEvents.slice(1).map((item, index) => (
-                  <article key={index} className="news-card-small">
-                    <div className="news-meta">
-                      <span className="news-category-small">{item.type}</span>
-                      <time className="news-date-small">{item.date}</time>
-                    </div>
-                    <h4 className="news-title-small">{item.title}</h4>
-                    <p className="news-excerpt-small">{item.description}</p>
-                  </article>
-                ))}
+            {blogPosts === undefined ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
-            </div>
+            ) : blogPosts.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">Aucune actualité disponible pour le moment.</p>
+              </div>
+            ) : (
+              <div className="news-magazine-grid">
+                {/* Featured Blog Post */}
+                <article className="news-featured">
+                  <div className="news-image">
+                    {blogPosts[0].coverImageUrl ? (
+                      <DisplayImage
+                        id="news.featured.image"
+                        src={blogPosts[0].coverImageUrl}
+                        alt={blogPosts[0].title}
+                        className="w-full h-full object-cover"
+                        width={100}
+                        height={100}
+                        page="home"
+                      />
+                    ) : (
+                      <DisplayImage
+                        id="news.featured.image.default"
+                        src="/images/news-featured.jpg"
+                        alt="Actualité"
+                        className="w-full h-full object-cover"
+                        width={100}
+                        height={100}
+                        page="home"
+                      />
+                    )}
+                    <div className="news-category">{blogPosts[0].category || "Actualité"}</div>
+                  </div>
+                  <div className="news-content">
+                    <time className="news-date">
+                      {formatDate(blogPosts[0].publishedAt)}
+                    </time>
+                    <h3 className="news-title">{blogPosts[0].title}</h3>
+                    <p className="news-excerpt">
+                      {blogPosts[0].excerpt || "Découvrez cette actualité de notre école."}
+                    </p>
+                    <a href={`/journal/${blogPosts[0].slug}`} className="news-link">
+                      Lire la suite →
+                    </a>
+                  </div>
+                </article>
+
+                {/* Secondary Blog Posts */}
+                <div className="news-secondary">
+                  {blogPosts.slice(1, 4).map((post) => (
+                    <article key={post._id} className="news-card-small">
+                      <div className="news-meta">
+                        <span className="news-category-small">{post.category || "Actualité"}</span>
+                        <time className="news-date-small">
+                          {formatDate(post.publishedAt)}
+                        </time>
+                      </div>
+                      <h4 className="news-title-small">{post.title}</h4>
+                      <p className="news-excerpt-small">
+                        {post.excerpt || "Découvrez cette actualité de notre école."}
+                      </p>
+                      <a href={`/journal/${post.slug}`} className="news-link-small">
+                        Lire →
+                      </a>
+                    </article>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="news-cta">
-              <a href="/news" className="btn btn-secondary">
+              <a href="/journal" className="btn btn-secondary">
                 Toutes les actualités
               </a>
             </div>
@@ -432,35 +442,17 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="testimonials-carousel">
-              <div className="testimonials-track">
-                {testimonials.map((testimonial, index) => (
-                  <div key={index} className="testimonial-card-creative">
-                    <div className="testimonial-content-creative">
-                      <div className="testimonial-quote-creative">
-                        <span className="quote-mark"></span>
-                        <p>{testimonial.quote}</p>
-                      </div>
-                      <div className="testimonial-author-creative">
-                        <div className="author-avatar">
-                          <img
-                            src={testimonial.image}
-                            alt={testimonial.author}
-                            width={100}
-                            height={100}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="author-info">
-                          <h4>{testimonial.author}</h4>
-                          <p>{testimonial.role}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+            {testimonials === undefined ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
               </div>
-            </div>
+            ) : testimonials.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">Aucun témoignage disponible pour le moment.</p>
+              </div>
+            ) : (
+              <TestimonialsCarousel testimonials={testimonials} />
+            )}
           </div>
         </section>
 

@@ -60,6 +60,25 @@ export default defineSchema({
     .index("by_visible_order", ["visible", "order"]) // list visible in order
     .index("by_order", ["order"]),
 
+  // New: Testimonials
+  testimonials: defineTable({
+    quote: v.string(),
+    author: v.string(),
+    role: v.string(),
+    imageUrl: v.optional(v.string()), // URL to Uploadthing file
+    imageName: v.optional(v.string()), // Original filename
+    imageSize: v.optional(v.number()), // File size in bytes
+    imageUploadedAt: v.optional(v.string()), // ISO timestamp
+    featured: v.optional(v.boolean()),
+    visible: v.optional(v.boolean()),
+    order: v.optional(v.number()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_visible_order", ["visible", "order"]) // for listing visible testimonials in order
+    .index("by_featured", ["featured"])
+    .index("by_order", ["order"]),
+
   // Media library entries backed by Uploadthing
   media: defineTable({
     url: v.string(), // Uploadthing file URL

@@ -1640,63 +1640,65 @@ html {
 .testimonials-creative {
   padding: 8rem 0;
   background: var(--white);
-  overflow: hidden;
 }
 
 .testimonials-carousel {
   margin-top: 4rem;
 }
 
-.testimonials-track {
+.testimonial-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+  height: 100%;
   display: flex;
-  gap: 2rem;
-  animation: testimonialSlide 20s linear infinite;
+  flex-direction: column;
 }
 
-.testimonial-card-creative {
-  flex-shrink: 0;
-  width: 400px;
-  background: var(--gray-50);
-  padding: 3rem;
-  position: relative;
+.testimonial-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.testimonial-content-creative {
+.testimonial-content {
   position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .quote-mark {
-  font-size: 4rem;
+  font-size: 3rem;
   color: var(--accent);
-  position: absolute;
-  top: -1rem;
-  left: -1rem;
   line-height: 1;
+  margin-bottom: 1rem;
+  font-family: Georgia, serif;
 }
 
-.quote-mark::before {
-  content: '"';
-}
-
-.testimonial-quote-creative p {
+.testimonial-quote {
   font-size: 1.125rem;
   color: var(--gray-700);
   line-height: 1.6;
   margin-bottom: 2rem;
-  padding-left: 2rem;
+  flex: 1;
+  font-style: italic;
 }
 
-.testimonial-author-creative {
+.testimonial-author {
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-top: auto;
 }
 
 .author-avatar {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .author-avatar img {
@@ -1705,23 +1707,36 @@ html {
   object-fit: cover;
 }
 
-.author-info h4 {
+.author-avatar-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 600;
-  margin-bottom: 0.25rem;
+  font-size: 1.25rem;
+  flex-shrink: 0;
 }
 
-.author-info p {
+.author-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.author-name {
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.author-role {
   color: var(--gray-500);
   font-size: 0.875rem;
-}
-
-@keyframes testimonialSlide {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  margin: 0;
 }
 
 /* CTA Creative Section */

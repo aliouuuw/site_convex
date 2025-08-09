@@ -20,6 +20,7 @@ import EquipePage from "./pages/EquipePage";
 // Admin pages
 import BlogAdminPage from "./pages/admin/BlogAdminPage";
 import BlogEditorPage from "./pages/admin/BlogEditorPage";
+import TestimonialsAdminPage from "./pages/admin/TestimonialsAdminPage";
 import MediaAdminPage from "./pages/admin/MediaAdminPage";
 import TeamAdminPage from "./pages/admin/TeamAdminPage";
 
@@ -56,6 +57,7 @@ export default function App() {
               <Route path="/admin/blog" element={<BlogAdminPage />} />
               <Route path="/admin/blog/create" element={<BlogEditorPage />} />
               <Route path="/admin/blog/edit/:slug" element={<BlogEditorPage />} />
+              <Route path="/admin/testimonials" element={<TestimonialsAdminPage />} />
               <Route path="/admin/media" element={<MediaAdminPage />} />
               <Route path="/admin/team" element={<TeamAdminPage />} />
 

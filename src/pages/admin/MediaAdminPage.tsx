@@ -395,16 +395,28 @@ export default function MediaAdminPage() {
               <div key={item._id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
                 <div className="aspect-square bg-gray-100 flex items-center justify-center relative overflow-hidden">
                   {item.type === "image" ? (
-                    <img
-                      src={item.url}
-                      alt={item.alt || "Media"}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                        if (fallback) fallback.style.display = 'flex';
-                      }}
-                    />
+                    <>
+                      <img
+                        src={item.url}
+                        alt={item.alt || "Media"}
+                        className="w-full h-full object-cover relative z-10"
+                        onError={(e) => {
+                          console.error(`Failed to load image: ${item.url}`, item);
+                          e.currentTarget.style.display = 'none';
+                          const fallback = e.currentTarget.parentElement?.querySelector('.error-fallback') as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
+                        onLoad={() => {
+                          console.log(`Successfully loaded image: ${item.url}`);
+                        }}
+                      />
+                      <div className="error-fallback absolute inset-0 bg-gray-200 flex items-center justify-center text-gray-500 text-sm flex-col z-10" style={{ display: 'none' }}>
+                        <div className="text-4xl mb-2">🖼️</div>
+                        <div className="font-medium">Image failed to load</div>
+                        <div className="text-xs mt-1 text-center px-2">{item.name}</div>
+                        <div className="text-xs text-gray-400 mt-1">{item.url}</div>
+                      </div>
+                    </>
                   ) : (
                     <div 
                       className="relative w-full h-full group cursor-pointer"
