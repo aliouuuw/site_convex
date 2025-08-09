@@ -43,6 +43,19 @@ export const contentRegistry: ContentRegistry = {
       { id: 'news.description', type: 'text', label: 'News Description', section: 'news', page: 'home' },
       { id: 'news.featured.image', type: 'image', label: 'Featured Image', section: 'news', page: 'home' },
     ],
+    cta: [
+      { id: 'cta.title', type: 'text', label: 'CTA Title', section: 'cta', page: 'home' },
+      { id: 'cta.description', type: 'text', label: 'CTA Description', section: 'cta', page: 'home' },
+      { id: 'cta.card1.title', type: 'text', label: 'Card 1 Title', section: 'cta', page: 'home' },
+      { id: 'cta.card1.description', type: 'text', label: 'Card 1 Description', section: 'cta', page: 'home' },
+      { id: 'cta.card1.button', type: 'text', label: 'Card 1 Button', section: 'cta', page: 'home' },
+      { id: 'cta.card2.title', type: 'text', label: 'Card 2 Title', section: 'cta', page: 'home' },
+      { id: 'cta.card2.description', type: 'text', label: 'Card 2 Description', section: 'cta', page: 'home' },
+      { id: 'cta.card2.button', type: 'text', label: 'Card 2 Button', section: 'cta', page: 'home' },
+      { id: 'cta.card3.title', type: 'text', label: 'Card 3 Title', section: 'cta', page: 'home' },
+      { id: 'cta.card3.description', type: 'text', label: 'Card 3 Description', section: 'cta', page: 'home' },
+      { id: 'cta.card3.button', type: 'text', label: 'Card 3 Button', section: 'cta', page: 'home' },
+    ],
   },
 };
 

@@ -5,6 +5,18 @@ import DisplayImageSlider from '../components/DisplayImageSlider';
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import TestimonialsCarousel from '../components/TestimonialsCarousel';
+import { FaCalendar, FaFileAlt, FaComments } from 'react-icons/fa';
+
+const translate = (text: string) => {
+  switch (text) {
+    case "préscolaire":
+      return "preschool";
+    case "primaire":
+      return "primary";
+    case "collège":
+      return "middleschool";
+  }
+};
 
 const schoolLevels = [
   {
@@ -219,7 +231,7 @@ const HomePage: React.FC = () => {
                       ))}
                     </ul>
                     <a
-                      href={`/programs/${level.title.toLowerCase()}`}
+                      href={`/programs/${translate(level.title.toLowerCase())}`}
                       className="program-link-simplified"
                     >
                       En savoir plus →
@@ -461,40 +473,98 @@ const HomePage: React.FC = () => {
           <div className="container">
             <div className="cta-content">
               <div className="cta-text">
-                <h2 className="cta-title">
+                <DisplayText 
+                  id="cta.title" 
+                  page="home" 
+                  as="h2" 
+                  className="cta-title"
+                >
                   Prêt à rejoindre notre communauté ?
-                </h2>
-                <p className="cta-description">
+                </DisplayText>
+                <DisplayText 
+                  id="cta.description" 
+                  page="home" 
+                  as="p" 
+                  className="cta-description"
+                >
                   Découvrez comment Les Hirondelles peut accompagner votre
                   enfant vers l&apos;excellence et la réussite.
-                </p>
+                </DisplayText>
               </div>
               <div className="cta-actions">
                 <div className="cta-card">
-                  <div className="cta-card-icon">📅</div>
-                  <h3>Planifier une visite</h3>
-                  <p>Découvrez nos installations</p>
+                  <div className="bg-primary text-white p-3 rounded-full w-fit mx-auto mb-2">
+                    <FaCalendar className="w-8 h-8" />
+                  </div>
+                  <DisplayText 
+                    id="cta.card1.title" 
+                    page="home" 
+                    as="h3"
+                  >
+                    Planifier une visite
+                  </DisplayText>
+                  <DisplayText 
+                    id="cta.card1.description" 
+                    page="home" 
+                    as="p"
+                  >
+                    Découvrez nos installations
+                  </DisplayText>
                   <a href="/contact" className="btn btn-primary">
-                    Réserver
+                    <DisplayText id="cta.card1.button" page="home">
+                      Réserver
+                    </DisplayText>
                   </a>
                 </div>
                 <div className="cta-card">
-                  <div className="cta-card-icon">📋</div>
-                  <h3>Dossier d&apos;inscription</h3>
-                  <p>Téléchargez notre brochure</p>
+                  <div className="bg-primary text-white p-3 rounded-full w-fit mx-auto mb-2">
+                    <FaFileAlt className="w-8 h-8" />
+                  </div>
+                  <DisplayText 
+                    id="cta.card2.title" 
+                    page="home" 
+                    as="h3"
+                  >
+                    Dossier d&apos;inscription
+                  </DisplayText>
+                  <DisplayText 
+                    id="cta.card2.description" 
+                    page="home" 
+                    as="p"
+                  >
+                    Téléchargez notre brochure
+                  </DisplayText>
                   <a href="/brochure" className="btn btn-secondary">
-                    Télécharger
+                    <DisplayText id="cta.card2.button" page="home">
+                      Télécharger
+                    </DisplayText>
                   </a>
                 </div>
                 <div className="cta-card">
-                  <div className="cta-card-icon">💬</div>
-                  <h3>Nous contacter</h3>
-                  <p>Posez vos questions</p>
+                  <div className="bg-primary text-white p-3 rounded-full w-fit mx-auto mb-2">
+                    <FaComments className="w-8 h-8" />
+                  </div>
+                  <DisplayText 
+                    id="cta.card3.title" 
+                    page="home" 
+                    as="h3"
+                  >
+                    Nous contacter
+                  </DisplayText>
+                  <DisplayText 
+                    id="cta.card3.description" 
+                    page="home" 
+                    as="p"
+                  >
+                    Posez vos questions
+                  </DisplayText>
                   <a
                     href="/contact"
                     className="btn btn-secondary"
                   >
-                    Discuter
+                    <DisplayText id="cta.card3.button" page="home">
+                      Discuter
+                    </DisplayText>
                   </a>
                 </div>
               </div>
