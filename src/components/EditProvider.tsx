@@ -10,6 +10,7 @@ import { LiveEditPrototype } from "../lib/liveEdit";
 import EditModeToggle from "./EditModeToggle";
 import EditPanel from "./EditPanel";
 import { useEditMode as useEditModeHook } from "../hooks/useEditMode";
+import { FaPenToSquare } from "react-icons/fa6";
 
 interface EditContextType {
   liveEdit: LiveEditPrototype | null;
@@ -95,13 +96,15 @@ export default function EditProvider({ children }: EditProviderProps) {
       {isAuthenticated && (
         <EditPanel page={currentPage} isOpen={editPanelOpen} onClose={closeEditPanel} />
       )}
-      {/* Floating button to open the panel when in edit mode */}
+      {/* Floating action button to open the panel when in edit mode */}
       {isEditMode && !editPanelOpen && (
         <button
-          className="fixed bottom-6 right-6 z-[1001] bg-primary text-white px-4 py-2 rounded-full shadow-lg hover:bg-primary/90"
+          className="edit-content-fab"
           onClick={openEditPanel}
+          title="Open the content editing panel (Ctrl+E to toggle)"
         >
-          Open Page Editor
+          <FaPenToSquare className="text-base" />
+          <span className="font-medium">Open Panel</span>
         </button>
       )}
     </EditContext.Provider>

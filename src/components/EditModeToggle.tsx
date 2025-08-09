@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { LiveEditPrototype } from "../lib/liveEdit";
 import { useEditMode } from "../hooks/useEditMode";
+import { FaPen, FaXmark } from "react-icons/fa6";
 
 interface EditModeToggleProps {
   liveEdit: LiveEditPrototype;
 }
 
 export default function EditModeToggle({ liveEdit }: EditModeToggleProps) {
-  const { isEditMode, toggleEditMode } = useEditMode();
+  const { isEditMode, toggleEditMode, editPanelOpen } = useEditMode();
   const [editableCount, setEditableCount] = useState(0);
 
   useEffect(() => {
@@ -72,14 +73,20 @@ export default function EditModeToggle({ liveEdit }: EditModeToggleProps) {
 
   return (
     <button
-      className={`edit-mode-toggle ${isEditMode ? "active" : ""}`}
+      className={`edit-mode-toggle ${isEditMode ? "active" : ""} ${editPanelOpen ? "panel-open" : ""}`}
       onClick={handleToggle}
       onKeyDown={handleKeyDown}
-      title={`${isEditMode ? "Disable" : "Enable"} edit mode (Ctrl+E)`}
+      title={`${isEditMode ? "Exit" : "Enter"} edit mode (Ctrl+E)`}
     >
-      <span className="icon">{isEditMode ? "✕" : "✏️"}</span>
-      <span>{isEditMode ? "Exit Edit" : "Edit Mode"}</span>
-      {editableCount > 0 && <span className="count">{editableCount}</span>}
+      <span className="icon">
+        {isEditMode ? <FaXmark /> : <FaPen />}
+      </span>
+      <span className="text-xs font-medium">
+        {isEditMode ? "Cancel" : "Edit"}
+      </span>
+      {editableCount > 0 && !isEditMode && (
+        <span className="count">{editableCount}</span>
+      )}
     </button>
   );
 }

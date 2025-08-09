@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { getPageRegistry } from '../lib/contentRegistry';
 import { useEditMode as useEditModeHook } from '../hooks/useEditMode';
 import MediaPicker from './MediaPicker';
 import { Id } from '../../convex/_generated/dataModel';
+import RichTextEditor from './RichTextEditor';
+import { FaTrash } from 'react-icons/fa6';
 
 interface EditPanelProps {
   page: string;
@@ -22,18 +24,31 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
   const updateContent = useMutation(api.content.updateContent);
   const storeMediaRecord = useMutation(api.media.storeMediaRecord);
 
+  // Page-level hydration: fetch all content for current page once
+  const pageContents = useQuery(api.content.getContentByPage, { page }) || [];
+  const contentMap = useMemo(() => {
+    const map = new Map<string, { id: string; content: string; type: 'text' | 'image'; page: string; mediaId?: Id<'media'>; alt?: string }>();
+    for (const item of pageContents) {
+      map.set(item.id, item as any);
+    }
+    return map;
+  }, [pageContents]);
+
   if (!isEditMode) return null;
 
   const handleTextChange = async (id: string, value: string, page: string) => {
     try {
+      console.log('Saving text content:', { id, value, page });
       await updateContent({
         id,
         content: value,
         type: 'text',
         page,
       });
+      console.log('Text content saved successfully');
     } catch (error) {
       console.error('Failed to update text:', error);
+      alert(`Failed to save text content: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -94,9 +109,17 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
         throw new Error('No upload data received');
       }
 
-      // Get current images
-      const content = await api.content.getContent({ id });
-      const currentImages = content?.content ? JSON.parse(content.content) : [];
+      // Get current images from hydrated map
+      const currentImages = (() => {
+        const existing = contentMap.get(id)?.content;
+        if (!existing) return [] as string[];
+        try {
+          const parsed = JSON.parse(existing);
+          return Array.isArray(parsed) ? parsed.filter((x: unknown): x is string => typeof x === 'string') : [];
+        } catch {
+          return [] as string[];
+        }
+      })();
       
       // Add new image to the array
       const updatedImages = [...currentImages, uploadItem.url];
@@ -133,20 +156,21 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
   };
 
   const TextEditor = ({ id, page }: { id: string; page: string }) => {
-    const content = useQuery(api.content.getContent, { id });
-    const [value, setValue] = useState(content?.content || '');
+    const hydrated = contentMap.get(id)?.content || '';
+    const [value, setValue] = useState(hydrated);
     const [hasChanges, setHasChanges] = useState(false);
 
     React.useEffect(() => {
-      if (content?.content !== undefined && content.content !== value) {
-        setValue(content.content);
+      if (hydrated !== undefined && hydrated !== value) {
+        setValue(hydrated);
         setHasChanges(false);
       }
-    }, [content?.content]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hydrated]);
 
     const handleChange = (newValue: string) => {
       setValue(newValue);
-      setHasChanges(newValue !== (content?.content || ''));
+      setHasChanges(newValue !== hydrated);
     };
 
     const handleSave = () => {
@@ -177,57 +201,131 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
   };
 
   const ImageEditor = ({ id, page }: { id: string; page: string }) => {
-    const content = useQuery(api.content.getContent, { id });
-    const currentSrc = content?.content;
+    const currentSrc = contentMap.get(id)?.content;
+
+    const removeImage = async () => {
+      // Confirmation dialog
+      const confirmed = window.confirm('Are you sure you want to remove this image? This action cannot be undone.');
+      if (!confirmed) return;
+
+      try {
+        console.log('Removing image:', { id, page });
+        await updateContent({
+          id,
+          content: '',
+          type: 'image',
+          page,
+        });
+        console.log('Image removed successfully');
+      } catch (error) {
+        console.error('Failed to remove image:', error);
+        alert(`Failed to remove image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    };
 
     return (
       <div className="space-y-2">
         {currentSrc && (
           <img src={currentSrc} alt="Current" className="w-full h-20 object-cover rounded" />
         )}
-        <button
-          onClick={() => {
-            setEditingItem(id);
-            setShowMediaPicker(true);
-          }}
-          className="w-full text-xs bg-gray-100 hover:bg-gray-200 p-2 rounded border"
-        >
-          {currentSrc ? 'Change Image' : 'Add Image'}
-        </button>
+        <div className="space-y-1">
+          <button
+            onClick={() => {
+              setEditingItem(id);
+              setShowMediaPicker(true);
+            }}
+            className="w-full text-xs bg-gray-100 hover:bg-gray-200 p-2 rounded border"
+          >
+            {currentSrc ? 'Change Image' : 'Add Image'}
+          </button>
+          {currentSrc && (
+            <button
+              onClick={removeImage}
+              className="w-full text-xs bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 p-2 rounded border border-red-200 hover:border-red-300 flex items-center justify-center gap-1"
+              title="Remove this image"
+            >
+              <FaTrash className="text-xs" />
+              Remove Image
+            </button>
+          )}
+        </div>
       </div>
     );
   };
 
   const SliderEditor = ({ id, page }: { id: string; page: string }) => {
-    const content = useQuery(api.content.getContent, { id });
-    const currentImages = content?.content ? JSON.parse(content.content) : [];
+    const currentImages = (() => {
+      const existing = contentMap.get(id)?.content;
+      if (!existing) return [] as string[];
+      try {
+        const parsed = JSON.parse(existing);
+        return Array.isArray(parsed) ? parsed.filter((x: unknown): x is string => typeof x === 'string') : [];
+      } catch {
+        return [] as string[];
+      }
+    })();
 
     const removeImage = async (index: number) => {
-      const updatedImages = currentImages.filter((_: string, i: number) => i !== index);
-      await updateContent({
-        id,
-        content: JSON.stringify(updatedImages),
-        type: 'image',
-        page,
-      });
+      try {
+        const updatedImages = currentImages.filter((_: string, i: number) => i !== index);
+        await updateContent({
+          id,
+          content: JSON.stringify(updatedImages),
+          type: 'image',
+          page,
+        });
+      } catch (error) {
+        console.error('Failed to remove slider image:', error);
+        alert(`Failed to remove image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    };
+
+    const clearAllImages = async () => {
+      const confirmed = window.confirm(`Are you sure you want to remove all ${currentImages.length} images? This action cannot be undone.`);
+      if (!confirmed) return;
+
+      try {
+        await updateContent({
+          id,
+          content: JSON.stringify([]),
+          type: 'image',
+          page,
+        });
+      } catch (error) {
+        console.error('Failed to clear slider images:', error);
+        alert(`Failed to clear images: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
     };
 
     return (
       <div className="space-y-2">
         {currentImages.length > 0 && (
-          <div className="space-y-1 max-h-32 overflow-y-auto">
-            {currentImages.map((img: string, index: number) => (
-              <div key={index} className="flex items-center gap-2 p-1 bg-gray-50 rounded">
-                <img src={img} alt={`Slide ${index + 1}`} className="w-8 h-8 object-cover rounded" />
-                <span className="text-xs flex-1 truncate">{img.split('/').pop()}</span>
-                <button
-                  onClick={() => removeImage(index)}
-                  className="text-xs text-red-500 hover:text-red-700 px-1"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+          <div className="space-y-2">
+            <div className="space-y-1 max-h-32 overflow-y-auto">
+              {currentImages.map((img: string, index: number) => (
+                <div key={index} className="flex items-center gap-2 p-1 bg-gray-50 rounded">
+                  <img src={img} alt={`Slide ${index + 1}`} className="w-8 h-8 object-cover rounded" />
+                  <span className="text-xs flex-1 truncate">{img.split('/').pop()}</span>
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded flex items-center gap-1"
+                    title={`Remove image ${index + 1}`}
+                  >
+                    <FaTrash className="text-xs" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            {currentImages.length > 1 && (
+              <button
+                onClick={clearAllImages}
+                className="w-full text-xs bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 p-2 rounded border border-red-200 hover:border-red-300 flex items-center justify-center gap-1"
+                title="Remove all images"
+              >
+                <FaTrash className="text-xs" />
+                Clear All ({currentImages.length})
+              </button>
+            )}
           </div>
         )}
         <button
@@ -239,6 +337,47 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
         >
           Add Image
         </button>
+      </div>
+    );
+  };
+
+  const RichTextField = ({ id, page }: { id: string; page: string }) => {
+    const hydrated = contentMap.get(id)?.content || '';
+    const [value, setValue] = useState(hydrated);
+    const [hasChanges, setHasChanges] = useState(false);
+
+    React.useEffect(() => {
+      if (hydrated !== undefined && hydrated !== value) {
+        setValue(hydrated);
+        setHasChanges(false);
+      }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [hydrated]);
+
+    const handleSave = async () => {
+      if (!hasChanges) return;
+      try {
+        console.log('Saving rich text content:', { id, value, page });
+        await updateContent({ id, content: value, type: 'text', page });
+        console.log('Rich text content saved successfully');
+        setHasChanges(false);
+      } catch (error) {
+        console.error('Failed to update rich text:', error);
+        alert(`Failed to save rich text content: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    };
+
+    return (
+      <div className="space-y-2">
+        <RichTextEditor content={value} onChange={(v) => { setValue(v); setHasChanges(v !== hydrated); }} minHeight={200} maxHeight={400} />
+        {hasChanges && (
+          <button
+            onClick={handleSave}
+            className="text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary/90"
+          >
+            Save Changes
+          </button>
+        )}
       </div>
     );
   };
@@ -262,12 +401,59 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
                     {item.type === 'text' && <TextEditor id={item.id} page={item.page} />}
                     {item.type === 'image' && <ImageEditor id={item.id} page={item.page} />}
                     {item.type === 'imageSlider' && <SliderEditor id={item.id} page={item.page} />}
-                    {item.type === 'richText' && <TextEditor id={item.id} page={item.page} />}
+                    {item.type === 'richText' && <RichTextField id={item.id} page={item.page} />}
                   </div>
                 ))}
               </div>
             </div>
           ))}
+
+          {/* Unregistered content detection */}
+          {(() => {
+            const registeredIds = new Set(
+              Object.values(registry).flat().map((i) => i.id)
+            );
+            const unregistered = pageContents.filter((c) => !registeredIds.has(c.id));
+            if (unregistered.length === 0) return null;
+            if (import.meta.env.DEV) {
+              // Dev-only warning to help keep registry in sync
+              // eslint-disable-next-line no-console
+              console.warn(`[EditPanel] Unregistered content for page "${page}":`, unregistered.map((u) => u.id));
+            }
+            return (
+              <div className="mt-6">
+                <h3 className="text-sm font-semibold text-amber-700 mb-2">Unregistered content</h3>
+                <div className="space-y-2">
+                  {unregistered.map((u) => (
+                    <div key={u._id as unknown as string} className="border rounded p-2 bg-amber-50">
+                      <div className="text-xs text-gray-700 font-medium">{u.id}</div>
+                      <div className="text-xs text-gray-600 truncate">{u.content}</div>
+                      <div className="mt-2 flex gap-2">
+                        <button
+                          className="text-xs px-2 py-1 border rounded"
+                          onClick={() => {
+                            void navigator.clipboard.writeText(u.id);
+                          }}
+                        >
+                          Copy ID
+                        </button>
+                        <button
+                          className="text-xs px-2 py-1 border rounded"
+                          onClick={() => {
+                            // eslint-disable-next-line no-console
+                            console.log('Add to registry:', { id: u.id, page });
+                            alert('Add this ID to the page registry in src/lib/contentRegistry.ts');
+                          }}
+                        >
+                          Add to registry
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </div>
 

@@ -27,9 +27,9 @@ export const contentRegistry: ContentRegistry = {
     programs: [
       { id: 'programs.title', type: 'text', label: 'Section Title', section: 'programs', page: 'home' },
       { id: 'programs.description', type: 'text', label: 'Section Description', section: 'programs', page: 'home' },
-      { id: 'programs.preschool.image', type: 'image', label: 'Preschool Image', section: 'programs', page: 'home' },
-      { id: 'programs.primary.image', type: 'image', label: 'Primary Image', section: 'programs', page: 'home' },
-      { id: 'programs.middleschool.image', type: 'image', label: 'Middleschool Image', section: 'programs', page: 'home' },
+      { id: 'programs.préscolaire.image', type: 'image', label: 'Préscolaire Image', section: 'programs', page: 'home' },
+      { id: 'programs.primaire.image', type: 'image', label: 'Primaire Image', section: 'programs', page: 'home' },
+      { id: 'programs.collège.image', type: 'image', label: 'Collège Image', section: 'programs', page: 'home' },
     ],
     mission: [
       { id: 'mission.title', type: 'text', label: 'Title', section: 'mission', page: 'home' },
