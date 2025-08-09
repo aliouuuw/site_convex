@@ -1,8 +1,7 @@
-import React, { useRef } from 'react';
-import { EditableImageSlider, EditableImageSliderRef } from '../components/EditableImageSlider';
-import EditableText from '../components/EditableText';
-import EditableImage from '../components/EditableImage';
-import { useEditMode } from '../hooks/useEditMode';
+import React from 'react';
+import DisplayImageSlider from '../components/DisplayImageSlider';
+import DisplayText from '../components/DisplayText';
+import DisplayImage from '../components/DisplayImage';
 
 const schoolLevels = [
   {
@@ -69,8 +68,6 @@ const newsEvents = [
 ];
 
 const HomePage: React.FC = () => {
-  const { isEditMode } = useEditMode();
-  const backgroundSliderRef = useRef<EditableImageSliderRef>(null);
   
   return (
     <div className="min-h-screen">
@@ -78,8 +75,7 @@ const HomePage: React.FC = () => {
         {/* Hero Section - Condensed Content */}
         <section className="hero-background-optimized">
           <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-0">
-            <EditableImageSlider
-              ref={backgroundSliderRef}
+            <DisplayImageSlider
               id="hero.background"
               defaultImages={[
                 '/images/hero-school.jpg',
@@ -92,39 +88,24 @@ const HomePage: React.FC = () => {
               page="home"
             />
           </div>
-          <div className={`absolute top-0 left-0 w-full h-full bg-linear-to-r from-[var(--primary)] to-[var(--accent)]/50 opacity-50 ${isEditMode ? 'pointer-events-none' : ''}`} style={{ zIndex: isEditMode ? -1 : 10 }}></div>
-          
-          {/* Background Image Edit Button - Only visible in edit mode */}
-          {isEditMode && (
-            <div className="absolute top-4 left-4 z-30">
-              <button
-                onClick={() => {
-                  backgroundSliderRef.current?.triggerEdit();
-                }}
-                className="bg-primary/90 hover:bg-primary text-white px-3 py-2 rounded text-sm transition-colors shadow-lg backdrop-blur"
-                title="Edit Background Images"
-              >
-                🖼️ Edit Background
-              </button>
-            </div>
-          )}
+          <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[var(--primary)] to-[var(--accent)]/50 opacity-50" style={{ zIndex: 10 }}></div>
           
           <div className="container z-20">
             <div className="hero-content-background">
               <div className="hero-badge-elegant">
-                <EditableText id="hero.badge" page="home">
+                <DisplayText id="hero.badge" page="home">
                   Excellence depuis 20+ ans
-                </EditableText>
+                </DisplayText>
               </div>
-              <EditableText 
+              <DisplayText 
                 id="hero.title" 
                 page="home" 
                 as="h1" 
                 className="hero-title-background"
               >
                 Former les leaders de demain
-              </EditableText>
-              <EditableText 
+              </DisplayText>
+              <DisplayText 
                 id="hero.description" 
                 page="home" 
                 as="p" 
@@ -132,7 +113,7 @@ const HomePage: React.FC = () => {
               >
                 Excellence académique et valeurs humaines du préscolaire au
                 collège.
-              </EditableText>
+              </DisplayText>
               <div className="hero-actions-background">
                 <a href="#programs" className="btn btn-primary-hero">
                   Nos programmes
@@ -143,28 +124,28 @@ const HomePage: React.FC = () => {
               </div>
               <div className="hero-stats-inline">
                 <div className="hero-stat-inline">
-                  <EditableText id="hero.stats.students" page="home" className="stat-number-inline">
+                  <DisplayText id="hero.stats.students" page="home" className="stat-number-inline">
                     500+
-                  </EditableText>
-                  <EditableText id="hero.stats.students.label" page="home" className="stat-label-inline">
+                  </DisplayText>
+                  <DisplayText id="hero.stats.students.label" page="home" className="stat-label-inline">
                     Élèves
-                  </EditableText>
+                  </DisplayText>
                 </div>
                 <div className="hero-stat-inline">
-                  <EditableText id="hero.stats.success" page="home" className="stat-number-inline">
+                  <DisplayText id="hero.stats.success" page="home" className="stat-number-inline">
                     98%
-                  </EditableText>
-                  <EditableText id="hero.stats.success.label" page="home" className="stat-label-inline">
+                  </DisplayText>
+                  <DisplayText id="hero.stats.success.label" page="home" className="stat-label-inline">
                     Réussite
-                  </EditableText>
+                  </DisplayText>
                 </div>
                 <div className="hero-stat-inline">
-                  <EditableText id="hero.stats.years" page="home" className="stat-number-inline">
+                  <DisplayText id="hero.stats.years" page="home" className="stat-number-inline">
                     20+
-                  </EditableText>
-                  <EditableText id="hero.stats.years.label" page="home" className="stat-label-inline">
+                  </DisplayText>
+                  <DisplayText id="hero.stats.years.label" page="home" className="stat-label-inline">
                     Années
-                  </EditableText>
+                  </DisplayText>
                 </div>
               </div>
             </div>
@@ -214,15 +195,15 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">01</div>
               <div>
-                <EditableText 
+                <DisplayText 
                   id="programs.title" 
                   page="home" 
                   as="h2" 
                   className="section-title-creative"
                 >
                   Nos Programmes
-                </EditableText>
-                <EditableText 
+                </DisplayText>
+                <DisplayText 
                   id="programs.description" 
                   page="home" 
                   as="p" 
@@ -230,7 +211,7 @@ const HomePage: React.FC = () => {
                 >
                   Un parcours éducatif complet qui accompagne chaque élève vers
                   l&apos;excellence
-                </EditableText>
+                </DisplayText>
               </div>
             </div>
 
@@ -238,7 +219,7 @@ const HomePage: React.FC = () => {
               {schoolLevels.map((level, index) => (
                 <div key={index} className="program-card-simplified">
                   <div className="program-image-simplified">
-                    <EditableImage
+                    <DisplayImage
                       id={`programs.${level.title.toLowerCase()}.image`}
                       src={level.image}
                       alt={level.title}
@@ -278,28 +259,28 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">02</div>
               <div>
-                <EditableText 
+                <DisplayText 
                   id="mission.title" 
                   page="home" 
                   as="h2" 
                   className="section-title-creative"
                 >
                   Notre Mission
-                </EditableText>
-                <EditableText 
+                </DisplayText>
+                <DisplayText 
                   id="mission.description" 
                   page="home" 
                   as="p" 
                   className="section-description-creative"
                 >
                   Former les citoyens de demain avec excellence et bienveillance
-                </EditableText>
+                </DisplayText>
               </div>
             </div>
 
             <div className="mission-grid">
               <div className="mission-content-simplified">
-                <EditableText 
+                <DisplayText 
                   id="mission.main" 
                   page="home" 
                   as="p" 
@@ -309,8 +290,8 @@ const HomePage: React.FC = () => {
                   forme les citoyens de demain, cultivant l&apos;excellence
                   académique tout en développant les valeurs humaines
                   essentielles.
-                </EditableText>
-                <EditableText 
+                </DisplayText>
+                <DisplayText 
                   id="mission.secondary" 
                   page="home" 
                   as="p" 
@@ -319,7 +300,7 @@ const HomePage: React.FC = () => {
                   Depuis notre création, nous accompagnons chaque élève dans son
                   épanouissement personnel et sa réussite scolaire, de la
                   maternelle au collège.
-                </EditableText>
+                </DisplayText>
 
                 <div className="mission-values-simplified">
                   <div className="value-item-simplified">
@@ -352,7 +333,7 @@ const HomePage: React.FC = () => {
 
               <div className="mission-visual-simplified flex justify-center items-center">
                 <div className="mission-image-wrapper h-[400px] w-[350px]">
-                  <EditableImage
+                  <DisplayImage
                     id="mission.image"
                     src="/images/mission-main.png"
                     alt="Notre mission"
@@ -371,29 +352,29 @@ const HomePage: React.FC = () => {
             <div className="section-header-creative">
               <div className="section-number">03</div>
               <div>
-                <EditableText 
+                <DisplayText 
                   id="news.title" 
                   page="home" 
                   as="h2" 
                   className="section-title-creative"
                 >
                   Actualités
-                </EditableText>
-                <EditableText 
+                </DisplayText>
+                <DisplayText 
                   id="news.description" 
                   page="home" 
                   as="p" 
                   className="section-description-creative"
                 >
                   Découvrez la vie dynamique de notre école
-                </EditableText>
+                </DisplayText>
               </div>
             </div>
 
             <div className="news-magazine-grid">
               <article className="news-featured">
                 <div className="news-image">
-                  <EditableImage
+                  <DisplayImage
                     id="news.featured.image"
                     src="/images/news-featured.jpg"
                     alt="Actualité principale"

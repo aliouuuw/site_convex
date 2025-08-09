@@ -8,6 +8,7 @@ import React, {
 import { ConvexReactClient } from "convex/react";
 import { LiveEditPrototype } from "../lib/liveEdit";
 import EditModeToggle from "./EditModeToggle";
+import EditPanel from "./EditPanel";
 import { useEditMode as useEditModeHook } from "../hooks/useEditMode";
 
 interface EditContextType {
@@ -34,7 +35,7 @@ interface EditProviderProps {
 export default function EditProvider({ children }: EditProviderProps) {
   // For now, assume authenticated - can be enhanced later
   const isAuthenticated = true;
-  const { isEditMode, toggleEditMode } = useEditModeHook();
+  const { isEditMode, toggleEditMode, editPanelOpen, openEditPanel, closeEditPanel, currentPage } = useEditModeHook();
   const liveEditRef = useRef<LiveEditPrototype | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -89,6 +90,19 @@ export default function EditProvider({ children }: EditProviderProps) {
       {children}
       {isAuthenticated && isInitialized && liveEditRef.current && (
         <EditModeToggle liveEdit={liveEditRef.current} />
+      )}
+      {/* Centralized Edit Panel */}
+      {isAuthenticated && (
+        <EditPanel page={currentPage} isOpen={editPanelOpen} onClose={closeEditPanel} />
+      )}
+      {/* Floating button to open the panel when in edit mode */}
+      {isEditMode && !editPanelOpen && (
+        <button
+          className="fixed bottom-6 right-6 z-[1001] bg-primary text-white px-4 py-2 rounded-full shadow-lg hover:bg-primary/90"
+          onClick={openEditPanel}
+        >
+          Open Page Editor
+        </button>
       )}
     </EditContext.Provider>
   );

@@ -1,11 +1,8 @@
-// DEPRECATED: Use DisplayText instead. This component is kept for backward compatibility.
-// All editing should now happen through the centralized EditPanel.
-
 import React from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 
-interface EditableTextProps {
+interface DisplayTextProps {
   id: string;
   children: React.ReactNode;
   className?: string;
@@ -13,7 +10,7 @@ interface EditableTextProps {
   as?: React.ElementType;
 }
 
-export const EditableText: React.FC<EditableTextProps> = ({
+export const DisplayText: React.FC<DisplayTextProps> = ({
   id,
   children,
   className = '',
@@ -33,4 +30,4 @@ export const EditableText: React.FC<EditableTextProps> = ({
   );
 };
 
-export default EditableText;
+export default DisplayText;

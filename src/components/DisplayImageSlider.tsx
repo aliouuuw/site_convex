@@ -1,22 +1,19 @@
-// DEPRECATED: Use DisplayImageSlider instead. This component is kept for backward compatibility.
-// All editing should now happen through the centralized EditPanel.
-
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 
-interface EditableImageSliderProps {
+interface DisplayImageSliderProps {
   id: string;
   defaultImages: string[];
   className?: string;
   page?: string;
 }
 
-export const EditableImageSlider: React.FC<EditableImageSliderProps> = ({
+export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
   id,
   defaultImages,
   className = '',
-  page: _page = 'home',
+  page = 'home',
 }) => {
   // Get content from Convex
   const content = useQuery(api.content.getContent, { id });
@@ -73,4 +70,4 @@ export const EditableImageSlider: React.FC<EditableImageSliderProps> = ({
   );
 };
 
-export default EditableImageSlider;
+export default DisplayImageSlider;

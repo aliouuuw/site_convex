@@ -1825,9 +1825,6 @@ html {
     grid-template-columns: 1fr;
   }
 
-  .hero-title-background {
-    font-size: clamp(2.5rem, 6vw, 4rem);
-  }
 
   .hero-stats-inline {
     gap: 1.5rem;
@@ -1858,10 +1855,6 @@ html {
     margin-bottom: 1rem;
   }
 
-  .hero-title-background {
-    font-size: clamp(2rem, 6vw, 3rem);
-    margin-bottom: 1rem;
-  }
 
   .hero-description-background {
     font-size: 1rem;

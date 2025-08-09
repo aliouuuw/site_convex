@@ -1,11 +1,8 @@
-// DEPRECATED: Use DisplayImage instead. This component is kept for backward compatibility.
-// All editing should now happen through the centralized EditPanel.
-
 import React from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 
-interface EditableImageProps {
+interface DisplayImageProps {
   id: string;
   src: string;
   alt?: string;
@@ -16,7 +13,7 @@ interface EditableImageProps {
   page?: string;
 }
 
-export const EditableImage: React.FC<EditableImageProps> = ({
+export const DisplayImage: React.FC<DisplayImageProps> = ({
   id,
   src,
   alt = '',
@@ -44,4 +41,4 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   );
 };
 
-export default EditableImage;
+export default DisplayImage;

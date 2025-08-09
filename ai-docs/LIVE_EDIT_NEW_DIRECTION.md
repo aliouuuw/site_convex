@@ -287,39 +287,14 @@ const { isEditMode, editPanelOpen, openEditPanel, currentPage } = useEditMode();
 
 ### Phase 3: Component Updates
 
-#### 3.1 Remove Individual Editability
-```typescript
-// Before: EditableText component with click handlers
-<EditableText id="hero.title" page="home" className="hero-title">
-  Former les leaders de demain
-</EditableText>
+#### 3.1 Remove Individual Editability (Completed)
+- All `Editable*` components have been replaced in `src/pages/HomePage.tsx` with `Display*` components.
+- Old `Editable*` components are now deprecated wrappers that only display content and perform no inline editing.
+- All edits are performed exclusively through the centralized panel.
 
-// After: Simple display component
-<DisplayText id="hero.title" page="home" className="hero-title">
-  Former les leaders de demain
-</DisplayText>
-```
-
-#### 3.2 Content Display Components
-```typescript
-// components/DisplayText.tsx
-interface DisplayTextProps {
-  id: string;
-  page: string;
-  className?: string;
-  as?: keyof JSX.IntrinsicElements;
-}
-
-// components/DisplayImage.tsx
-interface DisplayImageProps {
-  id: string;
-  page: string;
-  className?: string;
-  alt?: string;
-  width?: number;
-  height?: number;
-}
-```
+#### 3.2 Content Display Components (Completed)
+- Implemented simple `DisplayText`, `DisplayImage`, and `DisplayImageSlider` components that only render content fetched from Convex.
+- These components contain no edit handlers and no special edit-mode styling.
 
 ### Phase 4: Edit Panel Features
 
@@ -348,11 +323,9 @@ interface DisplayImageProps {
 3. Update EditMode context
 4. Create display components
 
-### Step 2: Page Migration
-1. Start with HomePage
-2. Replace EditableText with DisplayText
-3. Replace EditableImage with DisplayImage
-4. Remove individual edit handlers
+### Step 2: Page Migration (In progress)
+1. Home Page: Completed — replaced all inline editable components with display-only components and wired to panel
+2. Other pages: Pending — repeat the same pattern using the registry
 
 ### Step 3: Content Registration
 1. Register all editable content in registry
@@ -422,3 +395,73 @@ interface DisplayImageProps {
 ## Conclusion
 
 This new centralized panel approach will provide a much better user experience for content editing while maintaining the flexibility and power of the current system. The clean separation between display and editing concerns will make the codebase more maintainable and the interface more professional.
+
+---
+
+## Current Status (Sprint Update)
+
+- Centralized Edit Panel implemented (`src/components/EditPanel.tsx`) with support for:
+  - Text fields (textarea in-panel with explicit Save)
+  - Images (thumbnail + Replace via MediaPicker)
+  - Image sliders (list, add, remove) — used by `home.hero.background`
+- Display-only components created and adopted on Home page:
+  - `DisplayText`, `DisplayImage`, `DisplayImageSlider`
+- Content registry introduced (`src/lib/contentRegistry.ts`) and used to scope panel items by page/section
+- Home page hero overlay adjusted so edit mode no longer blocks interactions (click-through not needed anymore since editing is panel-only)
+
+## Known Gaps / Issues (to fix next)
+
+- Panel data hydration is incomplete for some content
+  - Symptom: Some persisted content does not appear prefilled in the panel editors
+  - Root causes to address:
+    - Panel currently looks up values per item ID; not all DB content is guaranteed to be represented in the registry
+    - For sliders, panel should prefetch current values using a page-level query and hydrate editors
+  - Plan:
+    - Add a single `getContentByPage(page)` query in the panel, build a `Map<string, Content>`
+    - Use this map to prefill all editors; render an "Unregistered content" section for DB items not present in the registry to avoid data drift
+    - Add light warnings for IDs in DB but missing from registry (developer visibility only)
+
+- Edit Mode toggle button placement overlaps UI
+  - Symptom: Toggle overlaps the Exit Edit button
+  - Plan:
+    - Move the edit mode toggle to top-left (or bottom-left) with safe spacing
+    - When panel is open, shift or hide the toggle to avoid overlap; rely on keyboard (Ctrl+E) as secondary affordance
+    - Ensure consistent `z-index` stack: Panel (1000+), Toggle (990), Open Panel FAB (1001)
+
+- Registry and content drift
+  - Enforce that all editable IDs must be in the registry; add dev-only console warnings if content exists in DB but is not in registry
+  - Add a CI check (optional) to fail on unknown IDs detected in DB dumps
+
+- Rich text editing
+  - Current panel uses basic textarea for `richText`; replace with `RichTextEditor` for a better experience
+
+## Next Steps
+
+1. Panel hydration
+   - Add `useQuery(api.content.getContentByPage, { page })` in `EditPanel`
+   - Build `id -> content` map and prefill editors from it
+   - Render extra section for DB content not in registry (read-only preview + CTA to add to registry)
+
+2. UI polish
+   - Reposition edit mode toggle and ensure non-overlapping with panel controls
+   - Add keyboard shortcut helper in panel header
+
+3. Page rollout
+   - Replace inline `Editable*` usage with `Display*` across remaining pages
+   - Extend `contentRegistry` for each page/section
+
+4. Rich text support
+   - Integrate `RichTextEditor` into panel for `richText` fields with a modal/editor area
+
+5. Safety & validation
+   - Add lightweight validation rules in registry (e.g., max length for titles)
+   - Add optimistic updates + toasts
+
+## QA Checklist for Panel-Only Editing
+
+- Display components have no click handlers or edit affordances
+- All edits are initiated and confirmed in the panel
+- Panel shows all registered items for the current page, hydrated with DB values
+- Slider editing supports add/remove and persists in Convex
+- Edit toggle and panel do not overlap critical UI
+- Accessibility: focus states and keyboard navigation within the panel
