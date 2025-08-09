@@ -1955,10 +1955,19 @@ html {
 
 /* Live Edit Functionality Styles */
 /* Edit Mode Toggle Button - Redesigned for top-right placement */
-.edit-mode-toggle {
+/* Edit Buttons Container */
+.edit-buttons-container {
   position: fixed;
-  top: calc(var(--header-height) + 20px); /* Below header */
-  right: 20px;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1002;
+}
+
+.edit-mode-toggle {
+  position: relative; /* Changed from fixed to relative */
   background: var(--primary);
   color: white;
   border: none;
@@ -1970,7 +1979,6 @@ html {
   font-weight: 500;
   font-size: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 990; /* Ensure below the panel */
   cursor: pointer;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
@@ -1982,45 +1990,14 @@ html {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.edit-mode-toggle.panel-open {
-  right: auto;
-  left: 20px;
-}
-
 .edit-mode-toggle.active {
   background-color: #e74c3c;
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* Mobile responsiveness for edit toggle */
-@media (max-width: 767px) {
-  .edit-mode-toggle {
-    top: calc(var(--header-height) + 10px);
-    right: 10px;
-    padding: 6px 10px;
-    font-size: 11px;
-  }
-  
-  .edit-mode-toggle.panel-open {
-    left: 10px;
-  }
-  
-  .edit-mode-toggle .icon {
-    font-size: 12px;
-  }
-  
-  .edit-mode-toggle .count {
-    width: 16px;
-    height: 16px;
-    font-size: 9px;
-  }
-}
-
 /* Edit Content FAB (Floating Action Button) */
 .edit-content-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
+  position: relative; /* Changed from fixed to relative */
   background: var(--accent);
   color: var(--black);
   border: none;
@@ -2032,7 +2009,6 @@ html {
   font-weight: 500;
   font-size: 14px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  z-index: 1001;
   cursor: pointer;
   transition: all 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -2057,19 +2033,6 @@ html {
     transform: translateY(0);
   }
 }
-
-/* Mobile responsiveness for FAB */
-@media (max-width: 767px) {
-  .edit-content-fab {
-    bottom: 16px;
-    right: 16px;
-    padding: 10px 16px;
-    font-size: 13px;
-    border-radius: 10px;
-  }
-}
-
-
 
 /* Editable Elements */
 .live-edit-mode .live-edit-element {
@@ -2144,4 +2107,34 @@ html {
 
 .pointer-events-auto {
   pointer-events: auto;
+}
+
+/* Mobile responsiveness for edit buttons container */
+@media (max-width: 767px) {
+  .edit-buttons-container {
+    bottom: 16px;
+    right: 16px;
+    gap: 8px;
+  }
+  
+  .edit-mode-toggle {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .edit-mode-toggle .icon {
+    font-size: 12px;
+  }
+  
+  .edit-mode-toggle .count {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+  
+  .edit-content-fab {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
 }

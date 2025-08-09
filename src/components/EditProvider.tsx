@@ -90,22 +90,24 @@ export default function EditProvider({ children }: EditProviderProps) {
     <EditContext.Provider value={contextValue}>
       {children}
       {isAuthenticated && isInitialized && liveEditRef.current && (
-        <EditModeToggle liveEdit={liveEditRef.current} />
+        <div className="edit-buttons-container">
+          {/* Floating action button to open the panel when in edit mode */}
+          {isEditMode && !editPanelOpen && (
+            <button
+              className="edit-content-fab"
+              onClick={openEditPanel}
+              title="Open the content editing panel (Ctrl+E to toggle)"
+            >
+              <FaPenToSquare className="text-base" />
+              <span className="font-medium">Open Panel</span>
+            </button>
+          )}
+          <EditModeToggle liveEdit={liveEditRef.current} />
+        </div>
       )}
       {/* Centralized Edit Panel */}
       {isAuthenticated && (
         <EditPanel page={currentPage} isOpen={editPanelOpen} onClose={closeEditPanel} />
-      )}
-      {/* Floating action button to open the panel when in edit mode */}
-      {isEditMode && !editPanelOpen && (
-        <button
-          className="edit-content-fab"
-          onClick={openEditPanel}
-          title="Open the content editing panel (Ctrl+E to toggle)"
-        >
-          <FaPenToSquare className="text-base" />
-          <span className="font-medium">Open Panel</span>
-        </button>
       )}
     </EditContext.Provider>
   );
