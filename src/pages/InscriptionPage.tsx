@@ -1,7 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from '../components/SEO';
@@ -33,7 +31,7 @@ const InscriptionPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <DisplayText id="inscription.title" page="inscription" as="span" className="block text-gray-900">
+                  <DisplayText id="inscription.title" as="span" className="block text-gray-900">
                     Rejoignez
                   </DisplayText>
                   <span className="block text-primary">Les Hirondelles</span>
@@ -42,7 +40,6 @@ const InscriptionPage: React.FC = () => {
                 <div className="max-w-xl">
                   <DisplayText 
                     id="inscription.description" 
-                    page="inscription" 
                     as="p" 
                     className="text-xl text-gray-600 leading-relaxed mb-6"
                   >
@@ -71,7 +68,6 @@ const InscriptionPage: React.FC = () => {
                 <div className="relative h-[500px] w-full">
                   <DisplayImage
                     id="inscription.hero.image"
-                    page="inscription"
                     src="/images/inscription/students-learning.jpg"
                     alt="Élèves en classe"
                     className="object-cover w-full h-full"
@@ -92,7 +88,6 @@ const InscriptionPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="inscription.process.title" 
-                page="inscription" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -100,7 +95,6 @@ const InscriptionPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="inscription.process.description" 
-                page="inscription" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -116,7 +110,6 @@ const InscriptionPage: React.FC = () => {
               </div>
               <DisplayText 
                 id="inscription.steps.step1.title" 
-                page="inscription" 
                 as="h3" 
                 className="text-xl font-semibold mb-4 color-black"
               >
@@ -124,7 +117,6 @@ const InscriptionPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="inscription.steps.step1.description" 
-                page="inscription" 
                 as="p" 
                 className="text-gray-600 leading-relaxed"
               >
@@ -138,7 +130,6 @@ const InscriptionPage: React.FC = () => {
               </div>
               <DisplayText 
                 id="inscription.steps.step2.title" 
-                page="inscription" 
                 as="h3" 
                 className="text-xl font-semibold mb-4 color-black"
               >
@@ -146,7 +137,6 @@ const InscriptionPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="inscription.steps.step2.description" 
-                page="inscription" 
                 as="p" 
                 className="text-gray-600 leading-relaxed"
               >
@@ -160,7 +150,6 @@ const InscriptionPage: React.FC = () => {
               </div>
               <DisplayText 
                 id="inscription.steps.step3.title" 
-                page="inscription" 
                 as="h3" 
                 className="text-xl font-semibold mb-4 color-black"
               >
@@ -168,7 +157,6 @@ const InscriptionPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="inscription.steps.step3.description" 
-                page="inscription" 
                 as="p" 
                 className="text-gray-600 leading-relaxed"
               >
@@ -182,7 +170,6 @@ const InscriptionPage: React.FC = () => {
               </div>
               <DisplayText 
                 id="inscription.steps.step4.title" 
-                page="inscription" 
                 as="h3" 
                 className="text-xl font-semibold mb-4 color-black"
               >
@@ -190,7 +177,6 @@ const InscriptionPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="inscription.steps.step4.description" 
-                page="inscription" 
                 as="p" 
                 className="text-gray-600 leading-relaxed"
               >
@@ -208,7 +194,6 @@ const InscriptionPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="inscription.requirements.title" 
-                page="inscription" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -216,7 +201,6 @@ const InscriptionPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="inscription.requirements.description" 
-                page="inscription" 
                 as="p" 
                 className="section-description-creative"
               >

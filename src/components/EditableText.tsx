@@ -9,7 +9,6 @@ interface EditableTextProps {
   id: string;
   children: React.ReactNode;
   className?: string;
-  page?: string;
   as?: React.ElementType;
 }
 
@@ -17,7 +16,6 @@ export const EditableText: React.FC<EditableTextProps> = ({
   id,
   children,
   className = '',
-  page = 'home',
   as: Component = 'span',
 }) => {
   // Get content from Convex

@@ -13,7 +13,6 @@ interface EditableImageProps {
   width?: number;
   height?: number;
   fallbackSrc?: string;
-  page?: string;
 }
 
 export const EditableImage: React.FC<EditableImageProps> = ({
@@ -24,7 +23,6 @@ export const EditableImage: React.FC<EditableImageProps> = ({
   width,
   height,
   fallbackSrc,
-  page = 'home',
 }) => {
   // Get content from Convex
   const content = useQuery(api.content.getContent, { id });

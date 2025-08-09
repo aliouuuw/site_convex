@@ -15,8 +15,6 @@ import {
   FaLightbulb,
   FaLeaf,
 } from "react-icons/fa";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
@@ -43,7 +41,6 @@ const MiddleschoolPage: React.FC = () => {
                 <div className="w-12 h-px bg-accent"></div>
                 <DisplayText 
                   id="middleschool.hero.label" 
-                  page="middleschool" 
                   as="span" 
                   className="text-sm font-semibold text-primary tracking-wider uppercase"
                 >
@@ -55,7 +52,6 @@ const MiddleschoolPage: React.FC = () => {
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
                   <DisplayText 
                     id="middleschool.hero.title" 
-                    page="middleschool" 
                     as="span" 
                     className="block text-gray-900"
                   >
@@ -63,7 +59,6 @@ const MiddleschoolPage: React.FC = () => {
                   </DisplayText>
                   <DisplayText 
                     id="middleschool.hero.age" 
-                    page="middleschool" 
                     as="span" 
                     className="block text-primary"
                   >
@@ -74,7 +69,6 @@ const MiddleschoolPage: React.FC = () => {
                 <div className="max-w-xl">
                   <DisplayText 
                     id="middleschool.hero.desc" 
-                    page="middleschool" 
                     as="p" 
                     className="text-xl text-gray-600 leading-relaxed mb-6"
                   >
@@ -86,7 +80,6 @@ const MiddleschoolPage: React.FC = () => {
                       <FaClock className="w-4 h-4" />
                       <DisplayText 
                         id="middleschool.hero.hours" 
-                        page="middleschool" 
                         as="span"
                       >
                         8h00 - 17h00
@@ -96,7 +89,6 @@ const MiddleschoolPage: React.FC = () => {
                       <FaUsers className="w-4 h-4" />
                       <DisplayText 
                         id="middleschool.hero.classsize" 
-                        page="middleschool" 
                         as="span"
                       >
                         25 élèves/classe
@@ -112,7 +104,6 @@ const MiddleschoolPage: React.FC = () => {
                   <div>
                     <DisplayText 
                       id="middleschool.hero.excellence.title" 
-                      page="middleschool" 
                       as="h3" 
                       className="font-semibold text-gray-900 mb-2"
                     >
@@ -120,7 +111,6 @@ const MiddleschoolPage: React.FC = () => {
                     </DisplayText>
                     <DisplayText 
                       id="middleschool.hero.excellence.desc" 
-                      page="middleschool" 
                       as="p" 
                       className="text-gray-700"
                     >
@@ -136,7 +126,6 @@ const MiddleschoolPage: React.FC = () => {
                 <div className="relative h-[500px] w-full">
                   <DisplayImage
                     id="middleschool.hero.image"
-                    page="middleschool"
                     src="/images/programs/middle-hero.jpg"
                     alt="Collège Les Hirondelles"
                     className="object-cover w-full h-full"
@@ -165,7 +154,6 @@ const MiddleschoolPage: React.FC = () => {
                 </div>
                 <DisplayText 
                   id={`middleschool.achievement.${achievement.key}.title`} 
-                  page="middleschool" 
                   as="h3" 
                   className="text-2xl font-bold mb-2"
                 >
@@ -173,7 +161,6 @@ const MiddleschoolPage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id={`middleschool.achievement.${achievement.key}.desc`} 
-                  page="middleschool" 
                   as="p" 
                   className="text-gray-200"
                 >
@@ -192,7 +179,6 @@ const MiddleschoolPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="middleschool.levels.title" 
-                page="middleschool" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -200,7 +186,6 @@ const MiddleschoolPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="middleschool.levels.desc" 
-                page="middleschool" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -214,7 +199,6 @@ const MiddleschoolPage: React.FC = () => {
                 <div className="relative h-64 w-full">
                   <DisplayImage
                     id={`middleschool.level.${index}.image`}
-                    page="middleschool"
                     src={`/images/programs/middle-${['6eme', '5eme4eme', '3eme'][index]}.jpg`}
                     alt={`Niveau ${index + 1}`}
                     className="object-cover w-full h-full"
@@ -222,7 +206,6 @@ const MiddleschoolPage: React.FC = () => {
                   <div className="absolute top-4 left-4 bg-accent text-black px-3 py-1 text-sm font-semibold">
                     <DisplayText 
                       id={`middleschool.level.${index}.age`} 
-                      page="middleschool" 
                       as="span"
                     >
                       {["11-12 ans", "12-14 ans", "14-15 ans"][index]}
@@ -232,7 +215,6 @@ const MiddleschoolPage: React.FC = () => {
                 <div className="p-6">
                   <DisplayText 
                     id={`middleschool.level.${index}.name`} 
-                    page="middleschool" 
                     as="h3" 
                     className="text-xl font-semibold mb-2 color-black"
                   >
@@ -240,7 +222,6 @@ const MiddleschoolPage: React.FC = () => {
                   </DisplayText>
                   <DisplayText 
                     id={`middleschool.level.${index}.focus`} 
-                    page="middleschool" 
                     as="p" 
                     className="text-gray-600"
                   >
@@ -260,7 +241,6 @@ const MiddleschoolPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="middleschool.subjects.title" 
-                page="middleschool" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -268,7 +248,6 @@ const MiddleschoolPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="middleschool.subjects.desc" 
-                page="middleschool" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -291,7 +270,6 @@ const MiddleschoolPage: React.FC = () => {
                 <div className="text-accent mb-6">{subject.icon}</div>
                 <DisplayText 
                   id={`middleschool.subject.${subject.key}.title`} 
-                  page="middleschool" 
                   as="h3" 
                   className="text-xl font-semibold mb-4 color-black"
                 >
@@ -299,7 +277,6 @@ const MiddleschoolPage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id={`middleschool.subject.${subject.key}.desc`} 
-                  page="middleschool" 
                   as="p" 
                   className="text-gray-600 leading-relaxed"
                 >
@@ -327,7 +304,6 @@ const MiddleschoolPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="middleschool.schedule.title" 
-                page="middleschool" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -335,7 +311,6 @@ const MiddleschoolPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="middleschool.schedule.desc" 
-                page="middleschool" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -348,7 +323,6 @@ const MiddleschoolPage: React.FC = () => {
               <div key={index} className="card p-6 text-center">
                 <DisplayText 
                   id={`middleschool.schedule.${index}.subject`} 
-                  page="middleschool" 
                   as="h3" 
                   className="font-semibold text-gray-900 mb-2"
                 >
@@ -356,7 +330,6 @@ const MiddleschoolPage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id={`middleschool.schedule.${index}.hours`} 
-                  page="middleschool" 
                   as="p" 
                   className="text-primary font-bold text-lg"
                 >

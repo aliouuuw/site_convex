@@ -10,7 +10,6 @@ interface DisplayImageProps {
   width?: number;
   height?: number;
   fallbackSrc?: string;
-  page?: string;
 }
 
 export const DisplayImage: React.FC<DisplayImageProps> = ({
@@ -21,7 +20,6 @@ export const DisplayImage: React.FC<DisplayImageProps> = ({
   width,
   height,
   fallbackSrc,
-  page = 'home',
 }) => {
   // Get content from Convex
   const content = useQuery(api.content.getContent, { id });

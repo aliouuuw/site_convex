@@ -6,7 +6,6 @@ interface DisplayTextProps {
   id: string;
   children: React.ReactNode;
   className?: string;
-  page?: string;
   as?: React.ElementType;
 }
 
@@ -14,7 +13,6 @@ export const DisplayText: React.FC<DisplayTextProps> = ({
   id,
   children,
   className = '',
-  page = 'home',
   as: Component = 'span',
 }) => {
   // Get content from Convex

@@ -104,7 +104,6 @@ export default function BlogEditorPage() {
     handleInputChange("tags", tags);
   };
 
-  const storeMediaRecord = useMutation(api.media.storeMediaRecord);
   const handleCoverImageUpload = async (uploadData: { url: string; name: string; size: number; mediaId?: string }) => {
     try {
       // If backend already returned a mediaId, use the returned URL and metadata

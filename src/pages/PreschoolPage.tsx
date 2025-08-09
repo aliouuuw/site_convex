@@ -1,7 +1,5 @@
 import React from "react";
 import { FaPalette, FaRunning, FaUsers, FaMusic, FaLeaf, FaHeart, FaClock, FaGraduationCap, FaChild } from "react-icons/fa";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from '../components/SEO';
@@ -27,7 +25,6 @@ const PreschoolPage: React.FC = () => {
                 <div className="w-12 h-px bg-accent"></div>
                 <DisplayText 
                   id="preschool.hero.label" 
-                  page="preschool" 
                   as="span" 
                   className="text-sm font-semibold text-primary tracking-wider uppercase"
                 >
@@ -38,7 +35,6 @@ const PreschoolPage: React.FC = () => {
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
                   <DisplayText 
                     id="preschool.hero.title" 
-                    page="preschool" 
                     as="span" 
                     className="block text-gray-900"
                   >
@@ -46,7 +42,6 @@ const PreschoolPage: React.FC = () => {
                   </DisplayText>
                   <DisplayText 
                     id="preschool.hero.age" 
-                    page="preschool" 
                     as="span" 
                     className="block text-primary"
                   >
@@ -56,7 +51,6 @@ const PreschoolPage: React.FC = () => {
                 <div className="max-w-xl">
                   <DisplayText 
                     id="preschool.hero.desc" 
-                    page="preschool" 
                     as="p" 
                     className="text-xl text-gray-600 leading-relaxed mb-6"
                   >
@@ -67,7 +61,6 @@ const PreschoolPage: React.FC = () => {
                       <FaClock className="w-4 h-4" />
                       <DisplayText 
                         id="preschool.hero.hours" 
-                        page="preschool" 
                         as="span"
                       >
                         8h00 - 16h00
@@ -77,7 +70,6 @@ const PreschoolPage: React.FC = () => {
                       <FaChild className="w-4 h-4" />
                       <DisplayText 
                         id="preschool.hero.classsize" 
-                        page="preschool" 
                         as="span"
                       >
                         15 élèves/classe
@@ -92,7 +84,6 @@ const PreschoolPage: React.FC = () => {
                   <div>
                     <DisplayText 
                       id="preschool.hero.pedago.title" 
-                      page="preschool" 
                       as="h3" 
                       className="font-semibold text-gray-900 mb-2"
                     >
@@ -100,7 +91,6 @@ const PreschoolPage: React.FC = () => {
                     </DisplayText>
                     <DisplayText 
                       id="preschool.hero.pedago.desc" 
-                      page="preschool" 
                       as="p" 
                       className="text-gray-700"
                     >
@@ -115,7 +105,6 @@ const PreschoolPage: React.FC = () => {
                 <div className="relative h-[500px] w-full">
                   <DisplayImage
                     id="preschool.hero.image"
-                    page="preschool"
                     src="/images/programs/preschool-hero.jpg"
                     alt="Préscolaire Les Hirondelles"
                     className="object-cover w-full h-full"
@@ -135,7 +124,6 @@ const PreschoolPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="preschool.agegroups.title" 
-                page="preschool" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -143,7 +131,6 @@ const PreschoolPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="preschool.agegroups.desc" 
-                page="preschool" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -157,7 +144,6 @@ const PreschoolPage: React.FC = () => {
                 <div className="relative h-64 w-full">
                   <DisplayImage
                     id={`preschool.agegroup.${index}.image`}
-                    page="preschool"
                     src={`/images/programs/preschool-${['small', 'medium', 'large'][index]}.jpg`}
                     alt={`Classe ${index + 1}`}
                     className="object-cover w-full h-full"
@@ -165,7 +151,6 @@ const PreschoolPage: React.FC = () => {
                   <div className="absolute top-4 left-4 bg-accent text-black px-3 py-1 text-sm font-semibold">
                     <DisplayText 
                       id={`preschool.agegroup.${index}.age`} 
-                      page="preschool" 
                       as="span"
                     >
                       {["3-4 ans", "4-5 ans", "5-6 ans"][index]}
@@ -175,7 +160,6 @@ const PreschoolPage: React.FC = () => {
                 <div className="p-6">
                   <DisplayText 
                     id={`preschool.agegroup.${index}.name`} 
-                    page="preschool" 
                     as="h3" 
                     className="text-xl font-semibold mb-2 color-black"
                   >
@@ -183,7 +167,6 @@ const PreschoolPage: React.FC = () => {
                   </DisplayText>
                   <DisplayText 
                     id={`preschool.agegroup.${index}.focus`} 
-                    page="preschool" 
                     as="p" 
                     className="text-gray-600"
                   >
@@ -202,7 +185,6 @@ const PreschoolPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="preschool.features.title" 
-                page="preschool" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -210,7 +192,6 @@ const PreschoolPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="preschool.features.desc" 
-                page="preschool" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -231,7 +212,6 @@ const PreschoolPage: React.FC = () => {
                 <div className="text-accent mb-6">{feature.icon}</div>
                 <DisplayText 
                   id={`preschool.feature.${feature.key}.title`} 
-                  page="preschool" 
                   as="h3" 
                   className="text-xl font-semibold mb-4 color-black"
                 >
@@ -239,7 +219,6 @@ const PreschoolPage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id={`preschool.feature.${feature.key}.desc`} 
-                  page="preschool" 
                   as="p" 
                   className="text-gray-600 leading-relaxed"
                 >
@@ -264,7 +243,6 @@ const PreschoolPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="preschool.schedule.title" 
-                page="preschool" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -272,7 +250,6 @@ const PreschoolPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="preschool.schedule.desc" 
-                page="preschool" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -287,7 +264,6 @@ const PreschoolPage: React.FC = () => {
                   <div className="text-primary font-semibold text-sm min-w-[100px]">
                     <DisplayText 
                       id={`preschool.schedule.${index}.time`} 
-                      page="preschool" 
                       as="span"
                     >
                       {["8h00 - 8h30", "8h30 - 9h30", "9h30 - 10h00", "10h00 - 11h00"][index]}
@@ -297,7 +273,6 @@ const PreschoolPage: React.FC = () => {
                   <div className="text-gray-700">
                     <DisplayText 
                       id={`preschool.schedule.${index}.activity`} 
-                      page="preschool" 
                       as="span"
                     >
                       {["Accueil et jeux libres", "Activités d'éveil et apprentissage", "Récréation et collation", "Ateliers créatifs"][index]}
@@ -312,7 +287,6 @@ const PreschoolPage: React.FC = () => {
                   <div className="text-primary font-semibold text-sm min-w-[100px]">
                     <DisplayText 
                       id={`preschool.schedule.${index}.time`} 
-                      page="preschool" 
                       as="span"
                     >
                       {["11h00 - 11h30", "11h30 - 12h00", "12h00 - 13h30", "13h30 - 14h30"][index - 4]}
@@ -322,7 +296,6 @@ const PreschoolPage: React.FC = () => {
                   <div className="text-gray-700">
                     <DisplayText 
                       id={`preschool.schedule.${index}.activity`} 
-                      page="preschool" 
                       as="span"
                     >
                       {["Activités motrices", "Préparation au déjeuner", "Déjeuner et repos", "Activités calmes et lecture"][index - 4]}
@@ -340,7 +313,6 @@ const PreschoolPage: React.FC = () => {
           <div className="max-w-3xl mx-auto">
             <DisplayText 
               id="preschool.cta.title" 
-              page="preschool" 
               as="h2" 
               className="text-3xl md:text-4xl font-bold mb-6"
             >
@@ -348,7 +320,6 @@ const PreschoolPage: React.FC = () => {
             </DisplayText>
             <DisplayText 
               id="preschool.cta.desc" 
-              page="preschool" 
               as="p" 
               className="text-xl text-gray-100 mb-8 leading-relaxed"
             >

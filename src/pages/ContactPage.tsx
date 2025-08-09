@@ -1,6 +1,4 @@
 import React from 'react';
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from '../components/SEO';
@@ -32,7 +30,7 @@ const ContactPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <DisplayText id="contact.title" page="contact" as="span" className="block text-gray-900">
+                  <DisplayText id="contact.title" as="span" className="block text-gray-900">
                     Contactez-nous
                   </DisplayText>
                 </h1>
@@ -40,7 +38,6 @@ const ContactPage: React.FC = () => {
                 <div className="max-w-xl">
                   <DisplayText 
                     id="contact.description" 
-                    page="contact" 
                     as="p" 
                     className="text-xl text-gray-600 leading-relaxed mb-6"
                   >
@@ -80,7 +77,6 @@ const ContactPage: React.FC = () => {
                 <div className="relative h-[500px] w-full">
                   <DisplayImage
                     id="contact.hero.image"
-                    page="contact"
                     src="/images/contact/contact-hero.jpg"
                     alt="Contact Les Hirondelles"
                     className="object-cover w-full h-full"
@@ -101,7 +97,6 @@ const ContactPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="contact.coordinates.title" 
-                page="contact" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -109,7 +104,6 @@ const ContactPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="contact.coordinates.description" 
-                page="contact" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -126,7 +120,6 @@ const ContactPage: React.FC = () => {
               </h3>
               <DisplayText 
                 id="contact.info.address" 
-                page="contact" 
                 as="p" 
                 className="text-gray-600"
               >
@@ -142,7 +135,6 @@ const ContactPage: React.FC = () => {
               </h3>
               <DisplayText 
                 id="contact.info.phone" 
-                page="contact" 
                 as="p" 
                 className="text-gray-600"
               >
@@ -157,7 +149,6 @@ const ContactPage: React.FC = () => {
               </h3>
               <DisplayText 
                 id="contact.info.email" 
-                page="contact" 
                 as="p" 
                 className="text-gray-600"
               >
@@ -172,7 +163,6 @@ const ContactPage: React.FC = () => {
               </h3>
               <DisplayText 
                 id="contact.info.hours" 
-                page="contact" 
                 as="p" 
                 className="text-gray-600"
               >
@@ -284,7 +274,6 @@ const ContactPage: React.FC = () => {
                   <div className="card p-6">
                     <DisplayText 
                       id="contact.departments.direction.title" 
-                      page="contact" 
                       as="h4" 
                       className="font-semibold text-gray-900 mb-2"
                     >
@@ -292,7 +281,6 @@ const ContactPage: React.FC = () => {
                     </DisplayText>
                     <DisplayText 
                       id="contact.departments.direction.contact" 
-                      page="contact" 
                       as="div" 
                       className="text-sm text-gray-600 space-y-1"
                     >
@@ -305,7 +293,6 @@ const ContactPage: React.FC = () => {
                   <div className="card p-6">
                     <DisplayText 
                       id="contact.departments.admission.title" 
-                      page="contact" 
                       as="h4" 
                       className="font-semibold text-gray-900 mb-2"
                     >
@@ -313,7 +300,6 @@ const ContactPage: React.FC = () => {
                     </DisplayText>
                     <DisplayText 
                       id="contact.departments.admission.contact" 
-                      page="contact" 
                       as="div" 
                       className="text-sm text-gray-600 space-y-1"
                     >
@@ -326,7 +312,6 @@ const ContactPage: React.FC = () => {
                   <div className="card p-6">
                     <DisplayText 
                       id="contact.departments.viescolaire.title" 
-                      page="contact" 
                       as="h4" 
                       className="font-semibold text-gray-900 mb-2"
                     >
@@ -334,7 +319,6 @@ const ContactPage: React.FC = () => {
                     </DisplayText>
                     <DisplayText 
                       id="contact.departments.viescolaire.contact" 
-                      page="contact" 
                       as="div" 
                       className="text-sm text-gray-600 space-y-1"
                     >

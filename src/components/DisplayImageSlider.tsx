@@ -6,14 +6,12 @@ interface DisplayImageSliderProps {
   id: string;
   defaultImages: string[];
   className?: string;
-  page?: string;
 }
 
 export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
   id,
   defaultImages,
   className = '',
-  page = 'home',
 }) => {
   // Get content from Convex
   const content = useQuery(api.content.getContent, { id });

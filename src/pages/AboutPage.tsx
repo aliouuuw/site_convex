@@ -1,7 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
@@ -33,7 +31,7 @@ const AboutPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <DisplayText id="about.title" page="about" as="span" className="block text-gray-900">
+                  <DisplayText id="about.title" as="span" className="block text-gray-900">
                     Notre Histoire & Vision
                   </DisplayText>
                 </h1>
@@ -41,7 +39,6 @@ const AboutPage: React.FC = () => {
                 <div className="max-w-xl">
                   <DisplayText 
                     id="about.intro" 
-                    page="about" 
                     as="p" 
                     className="text-xl text-gray-600 leading-relaxed mb-6"
                   >
@@ -68,7 +65,6 @@ const AboutPage: React.FC = () => {
                   <div>
                     <DisplayText 
                       id="about.quote" 
-                      page="about" 
                       as="p" 
                       className="text-lg italic text-gray-700 mb-3"
                     >
@@ -77,7 +73,6 @@ const AboutPage: React.FC = () => {
                     </DisplayText>
                     <DisplayText 
                       id="about.quote.author" 
-                      page="about" 
                       as="div" 
                       className="text-sm font-semibold text-primary"
                     >
@@ -93,7 +88,6 @@ const AboutPage: React.FC = () => {
                 <div className="relative h-[500px] w-full">
                   <DisplayImage
                     id="about.hero.image"
-                    page="about"
                     src="/images/histoire/school-heritage.jpg"
                     alt="Héritage Les Hirondelles"
                     className="object-cover w-full h-full"
@@ -114,7 +108,6 @@ const AboutPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="about.mission.title" 
-                page="about" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -122,7 +115,6 @@ const AboutPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="about.mission.description" 
-                page="about" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -136,7 +128,6 @@ const AboutPage: React.FC = () => {
               <div className="text-4xl mb-4">🎯</div>
               <DisplayText 
                 id="about.values.excellence.title" 
-                page="about" 
                 as="h3" 
                 className="text-xl font-semibold mb-4 color-black"
               >
@@ -144,7 +135,6 @@ const AboutPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="about.values.excellence.description" 
-                page="about" 
                 as="p" 
                 className="text-gray-600 leading-relaxed"
               >
@@ -157,7 +147,6 @@ const AboutPage: React.FC = () => {
               <div className="text-4xl mb-4">🤝</div>
               <DisplayText 
                 id="about.values.respect.title" 
-                page="about" 
                 as="h3" 
                 className="text-xl font-semibold mb-4 color-black"
               >
@@ -165,7 +154,6 @@ const AboutPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="about.values.respect.description" 
-                page="about" 
                 as="p" 
                 className="text-gray-600 leading-relaxed"
               >
@@ -178,7 +166,6 @@ const AboutPage: React.FC = () => {
               <div className="text-4xl mb-4">🌱</div>
               <DisplayText 
                 id="about.values.development.title" 
-                page="about" 
                 as="h3" 
                 className="text-xl font-semibold mb-4 color-black"
               >
@@ -186,7 +173,6 @@ const AboutPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="about.values.development.description" 
-                page="about" 
                 as="p" 
                 className="text-gray-600 leading-relaxed"
               >
@@ -205,7 +191,6 @@ const AboutPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="about.timeline.title" 
-                page="about" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -213,7 +198,6 @@ const AboutPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="about.timeline.description" 
-                page="about" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -293,7 +277,6 @@ const AboutPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="about.team.title" 
-                page="about" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -301,7 +284,6 @@ const AboutPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="about.team.description" 
-                page="about" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -390,7 +372,6 @@ const AboutPage: React.FC = () => {
           <div className="max-w-3xl mx-auto">
             <DisplayText 
               id="about.cta.title" 
-              page="about" 
               as="h2" 
               className="text-3xl md:text-4xl font-bold mb-6"
             >
@@ -398,7 +379,6 @@ const AboutPage: React.FC = () => {
             </DisplayText>
             <DisplayText 
               id="about.cta.description" 
-              page="about" 
               as="p" 
               className="text-xl text-gray-100 mb-8 leading-relaxed"
             >

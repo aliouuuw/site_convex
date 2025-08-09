@@ -12,8 +12,6 @@ import {
   FaTrophy,
   FaChartLine,
 } from "react-icons/fa";
-import { useQuery } from "convex/react";
-import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
@@ -40,7 +38,6 @@ const PrimaryPage: React.FC = () => {
                 <div className="w-12 h-px bg-accent"></div>
                 <DisplayText 
                   id="primary.hero.label" 
-                  page="primary" 
                   as="span" 
                   className="text-sm font-semibold text-primary tracking-wider uppercase"
                 >
@@ -52,7 +49,6 @@ const PrimaryPage: React.FC = () => {
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
                   <DisplayText 
                     id="primary.hero.title" 
-                    page="primary" 
                     as="span" 
                     className="block text-gray-900"
                   >
@@ -60,7 +56,6 @@ const PrimaryPage: React.FC = () => {
                   </DisplayText>
                   <DisplayText 
                     id="primary.hero.age" 
-                    page="primary" 
                     as="span" 
                     className="block text-primary"
                   >
@@ -71,7 +66,6 @@ const PrimaryPage: React.FC = () => {
                 <div className="max-w-xl">
                   <DisplayText 
                     id="primary.hero.desc" 
-                    page="primary" 
                     as="p" 
                     className="text-xl text-gray-600 leading-relaxed mb-6"
                   >
@@ -83,7 +77,6 @@ const PrimaryPage: React.FC = () => {
                       <FaClock className="w-4 h-4" />
                       <DisplayText 
                         id="primary.hero.hours" 
-                        page="primary" 
                         as="span"
                       >
                         8h00 - 16h30
@@ -93,7 +86,6 @@ const PrimaryPage: React.FC = () => {
                       <FaUsers className="w-4 h-4" />
                       <DisplayText 
                         id="primary.hero.classsize" 
-                        page="primary" 
                         as="span"
                       >
                         20 élèves/classe
@@ -109,7 +101,6 @@ const PrimaryPage: React.FC = () => {
                   <div>
                     <DisplayText 
                       id="primary.hero.excellence.title" 
-                      page="primary" 
                       as="h3" 
                       className="font-semibold text-gray-900 mb-2"
                     >
@@ -117,7 +108,6 @@ const PrimaryPage: React.FC = () => {
                     </DisplayText>
                     <DisplayText 
                       id="primary.hero.excellence.desc" 
-                      page="primary" 
                       as="p" 
                       className="text-gray-700"
                     >
@@ -133,7 +123,6 @@ const PrimaryPage: React.FC = () => {
                 <div className="relative h-[500px] w-full">
                   <DisplayImage
                     id="primary.hero.image"
-                    page="primary"
                     src="/images/programs/primary-hero.jpg"
                     alt="Primaire Les Hirondelles"
                     className="object-cover w-full h-full"
@@ -162,7 +151,6 @@ const PrimaryPage: React.FC = () => {
                 </div>
                 <DisplayText 
                   id={`primary.achievement.${achievement.key}.title`} 
-                  page="primary" 
                   as="h3" 
                   className="text-2xl font-bold mb-2"
                 >
@@ -170,7 +158,6 @@ const PrimaryPage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id={`primary.achievement.${achievement.key}.desc`} 
-                  page="primary" 
                   as="p" 
                   className="text-gray-200"
                 >
@@ -189,7 +176,6 @@ const PrimaryPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="primary.levels.title" 
-                page="primary" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -197,7 +183,6 @@ const PrimaryPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="primary.levels.desc" 
-                page="primary" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -211,7 +196,6 @@ const PrimaryPage: React.FC = () => {
                 <div className="relative h-64 w-full">
                   <DisplayImage
                     id={`primary.level.${index}.image`}
-                    page="primary"
                     src={`/images/programs/primary-${['cp', 'ce', 'cm'][index]}.jpg`}
                     alt={`Niveau ${index + 1}`}
                     className="object-cover w-full h-full"
@@ -219,7 +203,6 @@ const PrimaryPage: React.FC = () => {
                   <div className="absolute top-4 left-4 bg-accent text-black px-3 py-1 text-sm font-semibold">
                     <DisplayText 
                       id={`primary.level.${index}.age`} 
-                      page="primary" 
                       as="span"
                     >
                       {["6-7 ans", "7-9 ans", "9-11 ans"][index]}
@@ -229,7 +212,6 @@ const PrimaryPage: React.FC = () => {
                 <div className="p-6">
                   <DisplayText 
                     id={`primary.level.${index}.name`} 
-                    page="primary" 
                     as="h3" 
                     className="text-xl font-semibold mb-2 color-black"
                   >
@@ -237,7 +219,6 @@ const PrimaryPage: React.FC = () => {
                   </DisplayText>
                   <DisplayText 
                     id={`primary.level.${index}.focus`} 
-                    page="primary" 
                     as="p" 
                     className="text-gray-600"
                   >
@@ -257,7 +238,6 @@ const PrimaryPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="primary.subjects.title" 
-                page="primary" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -265,7 +245,6 @@ const PrimaryPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="primary.subjects.desc" 
-                page="primary" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -286,7 +265,6 @@ const PrimaryPage: React.FC = () => {
                 <div className="text-accent mb-6">{subject.icon}</div>
                 <DisplayText 
                   id={`primary.subject.${subject.key}.title`} 
-                  page="primary" 
                   as="h3" 
                   className="text-xl font-semibold mb-4 color-black"
                 >
@@ -294,7 +272,6 @@ const PrimaryPage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id={`primary.subject.${subject.key}.desc`} 
-                  page="primary" 
                   as="p" 
                   className="text-gray-600 leading-relaxed"
                 >
@@ -320,7 +297,6 @@ const PrimaryPage: React.FC = () => {
             <div>
               <DisplayText 
                 id="primary.schedule.title" 
-                page="primary" 
                 as="h2" 
                 className="section-title-creative"
               >
@@ -328,7 +304,6 @@ const PrimaryPage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="primary.schedule.desc" 
-                page="primary" 
                 as="p" 
                 className="section-description-creative"
               >
@@ -341,7 +316,6 @@ const PrimaryPage: React.FC = () => {
               <div key={index} className="card p-6 text-center">
                 <DisplayText 
                   id={`primary.schedule.${index}.subject`} 
-                  page="primary" 
                   as="h3" 
                   className="font-semibold text-gray-900 mb-2"
                 >
@@ -349,7 +323,6 @@ const PrimaryPage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id={`primary.schedule.${index}.hours`} 
-                  page="primary" 
                   as="p" 
                   className="text-primary font-bold text-lg"
                 >
@@ -367,7 +340,6 @@ const PrimaryPage: React.FC = () => {
           <div className="max-w-3xl mx-auto">
             <DisplayText 
               id="primary.cta.title" 
-              page="primary" 
               as="h2" 
               className="text-3xl md:text-4xl font-bold mb-6"
             >
@@ -375,7 +347,6 @@ const PrimaryPage: React.FC = () => {
             </DisplayText>
             <DisplayText 
               id="primary.cta.desc" 
-              page="primary" 
               as="p" 
               className="text-xl text-gray-100 mb-8 leading-relaxed"
             >

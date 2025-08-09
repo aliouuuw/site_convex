@@ -3,28 +3,6 @@ import { v } from "convex/values";
 
 const now = () => Date.now();
 
-// Helpers
-const _blogPostDoc = {
-  _id: v.id("blog_posts"),
-  _creationTime: v.number(),
-  slug: v.string(),
-  title: v.string(),
-  excerpt: v.optional(v.string()),
-  contentHtml: v.optional(v.string()),
-  coverImageUrl: v.optional(v.string()),
-  coverImageName: v.optional(v.string()),
-  coverImageSize: v.optional(v.number()),
-  coverImageUploadedAt: v.optional(v.string()),
-  author: v.optional(v.string()),
-  category: v.optional(v.string()),
-  tags: v.optional(v.array(v.string())),
-  featured: v.optional(v.boolean()),
-  status: v.union(v.literal("draft"), v.literal("published")),
-  publishedAt: v.optional(v.number()),
-  createdAt: v.number(),
-  updatedAt: v.number(),
-};
-
 export const listPublishedBlogPosts = query({
   args: {
     limit: v.optional(v.number()),
@@ -310,12 +288,12 @@ export const getBlogPost = query({
  * Get the URL for a blog post's cover image.
  * This is a helper function that can be used by other parts of the application.
  */
-export const getBlogPostCoverUrl = query({
+export const getCoverImageUrl = query({
   args: {
     coverImageUrl: v.optional(v.string()),
   },
   returns: v.union(v.string(), v.null()),
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     return args.coverImageUrl || null;
   },
 });

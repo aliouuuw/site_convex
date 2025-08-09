@@ -73,16 +73,21 @@ const HomePage: React.FC = () => {
         <section className="hero-background-optimized">
           <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-0">
             <DisplayImageSlider
-              id="hero.background"
+              id="hero.slider"
               defaultImages={[
-                '/images/hero-school.jpg',
-                '/images/mission-main.png',
+                '/images/hero/school-building.jpg',
+                '/images/hero/students-learning.jpg',
+                '/images/hero/playground.jpg',
+                '/images/hero/library.jpg',
+                '/images/hero/science-lab.jpg',
+                '/images/hero/art-room.jpg',
+                '/images/hero/sports-field.jpg',
+                '/images/hero/computer-lab.jpg',
                 '/images/news-featured.jpg',
                 '/images/programs/preschool.jpg',
                 '/images/programs/primary.jpg',
                 '/images/programs/middleschool.jpg'
               ]}
-              page="home"
             />
           </div>
           <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[var(--primary)] to-[var(--accent)]/50 opacity-50" style={{ zIndex: 10 }}></div>
@@ -90,13 +95,12 @@ const HomePage: React.FC = () => {
           <div className="container z-20">
             <div className="hero-content-background">
               <div className="hero-badge-elegant">
-                <DisplayText id="hero.badge" page="home">
+                <DisplayText id="hero.badge">
                   Excellence depuis 20+ ans
                 </DisplayText>
               </div>
               <DisplayText 
                 id="hero.title" 
-                page="home" 
                 as="h1" 
                 className="hero-title-background"
               >
@@ -104,7 +108,6 @@ const HomePage: React.FC = () => {
               </DisplayText>
               <DisplayText 
                 id="hero.description" 
-                page="home" 
                 as="p" 
                 className="hero-description-background"
               >
@@ -121,26 +124,26 @@ const HomePage: React.FC = () => {
               </div>
               <div className="hero-stats-inline">
                 <div className="hero-stat-inline">
-                  <DisplayText id="hero.stats.students" page="home" className="stat-number-inline">
+                  <DisplayText id="hero.stats.students" className="stat-number-inline">
                     500+
                   </DisplayText>
-                  <DisplayText id="hero.stats.students.label" page="home" className="stat-label-inline">
+                  <DisplayText id="hero.stats.students.label" className="stat-label-inline">
                     Élèves
                   </DisplayText>
                 </div>
                 <div className="hero-stat-inline">
-                  <DisplayText id="hero.stats.success" page="home" className="stat-number-inline">
+                  <DisplayText id="hero.stats.success" className="stat-number-inline">
                     98%
                   </DisplayText>
-                  <DisplayText id="hero.stats.success.label" page="home" className="stat-label-inline">
+                  <DisplayText id="hero.stats.success.label" className="stat-label-inline">
                     Réussite
                   </DisplayText>
                 </div>
                 <div className="hero-stat-inline">
-                  <DisplayText id="hero.stats.years" page="home" className="stat-number-inline">
+                  <DisplayText id="hero.stats.years" className="stat-number-inline">
                     20+
                   </DisplayText>
-                  <DisplayText id="hero.stats.years.label" page="home" className="stat-label-inline">
+                  <DisplayText id="hero.stats.years.label" className="stat-label-inline">
                     Années
                   </DisplayText>
                 </div>
@@ -194,7 +197,6 @@ const HomePage: React.FC = () => {
               <div>
                 <DisplayText 
                   id="programs.title" 
-                  page="home" 
                   as="h2" 
                   className="section-title-creative"
                 >
@@ -202,7 +204,6 @@ const HomePage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id="programs.description" 
-                  page="home" 
                   as="p" 
                   className="section-description-creative"
                 >
@@ -223,7 +224,6 @@ const HomePage: React.FC = () => {
                       className="w-full h-full object-cover"
                       width={1000}
                       height={1000}
-                      page="home"
                     />
                     <div className="program-age-badge">{level.ageRange}</div>
                   </div>
@@ -258,7 +258,6 @@ const HomePage: React.FC = () => {
               <div>
                 <DisplayText 
                   id="mission.title" 
-                  page="home" 
                   as="h2" 
                   className="section-title-creative"
                 >
@@ -266,7 +265,6 @@ const HomePage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id="mission.description" 
-                  page="home" 
                   as="p" 
                   className="section-description-creative"
                 >
@@ -279,7 +277,6 @@ const HomePage: React.FC = () => {
               <div className="mission-content-simplified">
                 <DisplayText 
                   id="mission.main" 
-                  page="home" 
                   as="p" 
                   className="mission-text-large"
                 >
@@ -290,7 +287,6 @@ const HomePage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id="mission.secondary" 
-                  page="home" 
                   as="p" 
                   className="mission-text-regular"
                 >
@@ -335,7 +331,6 @@ const HomePage: React.FC = () => {
                     src="/images/mission-main.png"
                     alt="Notre mission"
                     className="object-cover object-center w-full h-full"
-                    page="home"
                   />
                 </div>
               </div>
@@ -351,7 +346,6 @@ const HomePage: React.FC = () => {
               <div>
                 <DisplayText 
                   id="news.title" 
-                  page="home" 
                   as="h2" 
                   className="section-title-creative"
                 >
@@ -359,7 +353,6 @@ const HomePage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id="news.description" 
-                  page="home" 
                   as="p" 
                   className="section-description-creative"
                 >
@@ -389,7 +382,6 @@ const HomePage: React.FC = () => {
                         className="w-full h-full object-cover"
                         width={100}
                         height={100}
-                        page="home"
                       />
                     ) : (
                       <DisplayImage
@@ -399,7 +391,6 @@ const HomePage: React.FC = () => {
                         className="w-full h-full object-cover"
                         width={100}
                         height={100}
-                        page="home"
                       />
                     )}
                     <div className="news-category">{blogPosts[0].category || "Actualité"}</div>
@@ -482,7 +473,6 @@ const HomePage: React.FC = () => {
               <div className="cta-text">
                 <DisplayText 
                   id="cta.title" 
-                  page="home" 
                   as="h2" 
                   className="cta-title"
                 >
@@ -490,7 +480,6 @@ const HomePage: React.FC = () => {
                 </DisplayText>
                 <DisplayText 
                   id="cta.description" 
-                  page="home" 
                   as="p" 
                   className="cta-description"
                 >
@@ -505,20 +494,18 @@ const HomePage: React.FC = () => {
                   </div>
                   <DisplayText 
                     id="cta.card1.title" 
-                    page="home" 
                     as="h3"
                   >
                     Planifier une visite
                   </DisplayText>
                   <DisplayText 
                     id="cta.card1.description" 
-                    page="home" 
                     as="p"
                   >
                     Découvrez nos installations
                   </DisplayText>
                   <a href="/contact" className="btn btn-primary">
-                    <DisplayText id="cta.card1.button" page="home">
+                    <DisplayText id="cta.card1.button">
                       Réserver
                     </DisplayText>
                   </a>
@@ -529,20 +516,18 @@ const HomePage: React.FC = () => {
                   </div>
                   <DisplayText 
                     id="cta.card2.title" 
-                    page="home" 
                     as="h3"
                   >
                     Dossier d&apos;inscription
                   </DisplayText>
                   <DisplayText 
                     id="cta.card2.description" 
-                    page="home" 
                     as="p"
                   >
                     Téléchargez notre brochure
                   </DisplayText>
                   <a href="/brochure" className="btn btn-secondary">
-                    <DisplayText id="cta.card2.button" page="home">
+                    <DisplayText id="cta.card2.button">
                       Télécharger
                     </DisplayText>
                   </a>
@@ -553,14 +538,12 @@ const HomePage: React.FC = () => {
                   </div>
                   <DisplayText 
                     id="cta.card3.title" 
-                    page="home" 
                     as="h3"
                   >
                     Nous contacter
                   </DisplayText>
                   <DisplayText 
                     id="cta.card3.description" 
-                    page="home" 
                     as="p"
                   >
                     Posez vos questions
@@ -569,7 +552,7 @@ const HomePage: React.FC = () => {
                     href="/contact"
                     className="btn btn-secondary"
                   >
-                    <DisplayText id="cta.card3.button" page="home">
+                    <DisplayText id="cta.card3.button">
                       Discuter
                     </DisplayText>
                   </a>

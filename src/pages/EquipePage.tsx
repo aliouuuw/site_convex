@@ -33,20 +33,41 @@ const EquipePage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <DisplayText id="equipe.title" page="equipe" as="span" className="block text-gray-900">
-                    Équipe
+                  <DisplayText id="equipe.title" as="span" className="block text-gray-900">
+                    Notre Équipe
                   </DisplayText>
                 </h1>
 
                 <div className="max-w-xl">
                   <DisplayText 
                     id="equipe.description" 
-                    page="equipe" 
                     as="p" 
                     className="text-xl text-gray-600 leading-relaxed mb-6"
                   >
-                    Découvrez les visages et les parcours de ceux qui guident et inspirent notre communauté.
+                    Découvrez notre équipe pédagogique dévouée et expérimentée qui accompagne chaque élève vers l'excellence.
                   </DisplayText>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 p-8 border-l-4 border-accent">
+                <div className="flex items-start gap-4">
+                  <div className="text-4xl text-primary leading-none">👥</div>
+                  <div>
+                    <DisplayText 
+                      id="equipe.values.title" 
+                      as="h3" 
+                      className="font-semibold text-gray-900 mb-2"
+                    >
+                      Nos Valeurs
+                    </DisplayText>
+                    <DisplayText 
+                      id="equipe.values.description" 
+                      as="p" 
+                      className="text-gray-700"
+                    >
+                      Passion, expertise et bienveillance au service de l'éducation de vos enfants.
+                    </DisplayText>
+                  </div>
                 </div>
               </div>
             </div>
@@ -56,8 +77,7 @@ const EquipePage: React.FC = () => {
                 <div className="relative h-[500px] w-full">
                   <DisplayImage
                     id="equipe.hero.image"
-                    page="equipe"
-                    src="/images/about/school-heritage.jpg"
+                    src="/images/equipe/team-hero.jpg"
                     alt="Équipe Les Hirondelles"
                     className="object-cover w-full h-full"
                   />

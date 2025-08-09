@@ -49,20 +49,18 @@ const BlogPage: React.FC = () => {
 
                 <div className="space-y-6">
                   <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                    <DisplayText id="blog.title" page="blog" as="span" className="block text-gray-900">
-                      Journal de l'école
+                    <DisplayText id="blog.title" as="span" className="block text-gray-900">
+                      Blog & Actualités
                     </DisplayText>
                   </h1>
 
                   <div className="max-w-xl">
                     <DisplayText 
                       id="blog.description" 
-                      page="blog" 
                       as="p" 
-                      className="text-xl text-gray-600 leading-relaxed"
+                      className="text-xl text-gray-600 leading-relaxed mb-6"
                     >
-                      Actualités, événements et vie scolaire à Les Hirondelles.
-                      Découvrez les moments forts de notre communauté éducative.
+                      Découvrez les dernières actualités, événements et articles sur notre école et l'éducation.
                     </DisplayText>
                   </div>
                 </div>
@@ -73,7 +71,6 @@ const BlogPage: React.FC = () => {
                   <div className="relative h-[400px] w-full">
                     <DisplayImage
                       id="blog.hero.image"
-                      page="blog"
                       src="/images/blog/blog-hero.jpg"
                       alt="Blog Les Hirondelles"
                       className="object-cover w-full h-full"

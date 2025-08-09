@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface Testimonial {
   _id: string;
   quote: string;

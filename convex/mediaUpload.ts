@@ -5,7 +5,7 @@ export const uploadMedia = action({
   args: {
     file: v.any(), // File object from the client
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     try {
       // For React + Vite + Convex, we'll use a different approach
       // We'll create a temporary URL and handle the upload on the client side
