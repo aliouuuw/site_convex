@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import SEO from '../components/SEO';
 
 const formatDate = (timestamp: number) => {
   const options: Intl.DateTimeFormatOptions = {
@@ -26,6 +27,11 @@ const BlogDetailPage: React.FC = () => {
   if (!slug) {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+        <SEO 
+          title="Article Introuvable"
+          description="L'article que vous recherchez n'existe pas ou a été supprimé."
+          url="/journal"
+        />
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -47,6 +53,11 @@ const BlogDetailPage: React.FC = () => {
   if (blogPost === undefined) {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+        <SEO 
+          title="Chargement..."
+          description="Chargement de l'article..."
+          url={`/journal/${slug}`}
+        />
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -61,6 +72,11 @@ const BlogDetailPage: React.FC = () => {
   if (blogPost === null) {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+        <SEO 
+          title="Article Introuvable"
+          description="L'article que vous recherchez n'existe pas ou a été supprimé."
+          url={`/journal/${slug}`}
+        />
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -88,6 +104,18 @@ const BlogDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title={blogPost.title}
+        description={blogPost.excerpt || blogPost.title}
+        keywords={blogPost.tags?.join(', ') || 'actualité, Les Hirondelles, école'}
+        image={blogPost.coverImageUrl || '/images/logo.svg'}
+        url={`/journal/${slug}`}
+        type="article"
+        author={blogPost.author || 'Les Hirondelles'}
+        publishedTime={blogPost.publishedAt ? new Date(blogPost.publishedAt).toISOString() : undefined}
+        section={blogPost.category || 'Actualités'}
+        tags={blogPost.tags || []}
+      />
       <main>
         {/* Hero Section */}
         <section className="relative bg-white text-gray-900 py-24 overflow-hidden">

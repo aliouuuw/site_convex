@@ -3,6 +3,7 @@ import { FaImages, FaVideo, FaPlay, FaSearch, FaTimes } from "react-icons/fa";
 import { ImageSlider } from "../components/ImageSlider";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import SEO from "../components/SEO";
 
 // Remove static data - we'll fetch from Convex
 
@@ -74,6 +75,12 @@ const GalleryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Galerie Multimédia - Les Hirondelles"
+        description="Découvrez les moments forts et les instants capturés au sein de notre école Les Hirondelles. Galerie photos et vidéos de nos activités, événements et vie scolaire."
+        keywords="galerie, photos, vidéos, moments forts, activités, événements, vie scolaire, Les Hirondelles, Dakar"
+        url="/gallery"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">

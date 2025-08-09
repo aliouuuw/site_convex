@@ -16,6 +16,7 @@ import {
   FaLeaf,
 } from "react-icons/fa";
 import { useContent } from "../components/ContentProvider";
+import SEO from "../components/SEO";
 
 const MiddleschoolPage: React.FC = () => {
   const { get, isLoading } = useContent();
@@ -131,6 +132,12 @@ const MiddleschoolPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Collège - Les Hirondelles"
+        description="Programme collège Les Hirondelles à Dakar. Préparation à l'excellence académique et personnelle avec préparation BFEM, clubs et activités, orientation."
+        keywords="collège, 11-15 ans, BFEM, préparation, orientation, clubs, activités, Les Hirondelles, Dakar"
+        url="/programs/middleschool"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">

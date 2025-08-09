@@ -1,11 +1,18 @@
 import React from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import SEO from "../components/SEO";
 
 const EquipePage: React.FC = () => {
   const teamMembers = useQuery(api.team.listTeamMembers);
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Notre Équipe - Les Hirondelles"
+        description="Découvrez les visages et les parcours de ceux qui guident et inspirent notre communauté éducative à Les Hirondelles. Équipe dévouée et expérimentée."
+        keywords="équipe, enseignants, personnel, direction, communauté éducative, Les Hirondelles, Dakar"
+        url="/equipe"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">

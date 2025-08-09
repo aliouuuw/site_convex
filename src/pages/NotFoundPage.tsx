@@ -1,9 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const NotFoundPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Page Introuvable - Les Hirondelles"
+        description="Désolé, la page que vous recherchez n'existe pas ou a été déplacée. Veuillez vérifier l'URL ou retourner à l'accueil."
+        url="/404"
+      />
       <div className="container mx-auto px-6 max-w-4xl">
         <div className="flex flex-col items-center justify-center min-h-[70vh] text-center">
           {/* 404 Number */}

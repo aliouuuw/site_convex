@@ -5,6 +5,7 @@ import DisplayImageSlider from '../components/DisplayImageSlider';
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import TestimonialsCarousel from '../components/TestimonialsCarousel';
+import SEO from '../components/SEO';
 import { FaCalendar, FaFileAlt, FaComments } from 'react-icons/fa';
 
 const translate = (text: string) => {
@@ -61,6 +62,12 @@ const HomePage: React.FC = () => {
   
   return (
     <div className="min-h-screen">
+      <SEO 
+        title="Les Hirondelles - École Privée d'Excellence à Dakar"
+        description="École privée d'excellence à Dakar, Sénégal. Formation de qualité du préscolaire au collège avec des valeurs humaines et une excellence académique depuis plus de 20 ans."
+        keywords="école privée, Dakar, Sénégal, préscolaire, primaire, collège, éducation, excellence académique, Les Hirondelles"
+        url="/"
+      />
       <main>
         {/* Hero Section - Condensed Content */}
         <section className="hero-background-optimized">

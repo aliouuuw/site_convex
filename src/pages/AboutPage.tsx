@@ -1,9 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 const AboutPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Notre Histoire & Vision"
+        description="Découvrez l'histoire de Les Hirondelles, école privée d'excellence à Dakar depuis 2003. Notre mission, nos valeurs et notre vision pour l'éducation au Sénégal."
+        keywords="histoire, vision, mission, valeurs, école privée, Dakar, Sénégal, Les Hirondelles, éducation"
+        url="/histoire"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">

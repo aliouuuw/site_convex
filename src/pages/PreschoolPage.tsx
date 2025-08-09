@@ -1,6 +1,7 @@
 import React from "react";
 import { FaPalette, FaRunning, FaUsers, FaMusic, FaLeaf, FaHeart, FaClock, FaGraduationCap, FaChild } from "react-icons/fa";
 import { useContent } from '../components/ContentProvider';
+import SEO from '../components/SEO';
 
 const PreschoolPage: React.FC = () => {
   const { get, isLoading } = useContent();
@@ -46,6 +47,12 @@ const PreschoolPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Préscolaire - Les Hirondelles"
+        description="Programme préscolaire Les Hirondelles à Dakar. Environnement bienveillant pour les 3-5 ans avec éveil artistique, développement moteur et socialisation."
+        keywords="préscolaire, maternelle, 3-5 ans, éveil artistique, développement moteur, socialisation, Les Hirondelles, Dakar"
+        url="/programs/preschool"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">

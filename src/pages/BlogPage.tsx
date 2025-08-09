@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import SEO from "../components/SEO";
 
 const formatDate = (timestamp: number | string) => {
   const date = typeof timestamp === 'string' ? new Date(timestamp) : new Date(timestamp);
@@ -21,6 +22,12 @@ const BlogPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Journal - Actualités Les Hirondelles"
+        description="Découvrez les actualités, événements et la vie scolaire à Les Hirondelles. Actualités, événements et moments forts de notre communauté éducative à Dakar."
+        keywords="actualités, journal, événements, vie scolaire, communauté éducative, Les Hirondelles, Dakar"
+        url="/journal"
+      />
       <main>
         {/* Hero Section */}
         <section className="relative bg-white text-gray-900 py-24 overflow-hidden">

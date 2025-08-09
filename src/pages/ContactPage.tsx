@@ -1,11 +1,18 @@
 import React from 'react';
 import { useContent } from '../components/ContentProvider';
+import SEO from '../components/SEO';
 
 const ContactPage: React.FC = () => {
   const content = useContent();
   
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Contactez-nous"
+        description="Contactez Les Hirondelles, école privée d'excellence à Dakar. Planifiez une visite, posez vos questions ou téléchargez notre brochure d'inscription."
+        keywords="contact, école privée, Dakar, visite, inscription, brochure, Les Hirondelles"
+        url="/contact"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">

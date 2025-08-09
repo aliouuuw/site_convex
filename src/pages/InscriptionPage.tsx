@@ -1,9 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const InscriptionPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Inscription - Rejoignez Les Hirondelles"
+        description="Inscrivez votre enfant à Les Hirondelles, école privée d'excellence à Dakar. Découvrez notre processus d'inscription simple et transparent pour l'année scolaire 2024-2025."
+        keywords="inscription, école privée, Dakar, processus, année scolaire, Les Hirondelles, admission"
+        url="/inscription"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">

@@ -13,6 +13,7 @@ import {
   FaChartLine,
 } from "react-icons/fa";
 import { useContent } from "../components/ContentProvider";
+import SEO from "../components/SEO";
 
 const PrimaryPage: React.FC = () => {
   const { get, isLoading } = useContent();
@@ -103,6 +104,12 @@ const PrimaryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
+      <SEO 
+        title="Primaire - Les Hirondelles"
+        description="Programme primaire Les Hirondelles à Dakar. Fondations solides pour l'apprentissage académique avec français, mathématiques, sciences et langues étrangères."
+        keywords="primaire, école primaire, 6-11 ans, français, mathématiques, sciences, langues étrangères, Les Hirondelles, Dakar"
+        url="/programs/primary"
+      />
       {/* Hero Section */}
       <section className="relative bg-white text-gray-900 py-24 overflow-hidden">
         <div className="absolute inset-0">
