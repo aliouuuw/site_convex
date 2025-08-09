@@ -4,7 +4,7 @@ import { api } from '../../convex/_generated/api';
 
 interface DisplayImageSliderProps {
   id: string;
-  defaultImages: string[];
+  defaultImages?: string[];
   className?: string;
 }
 
@@ -17,13 +17,26 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
   const content = useQuery(api.content.getContent, { id });
   
   // Use content from database if available, otherwise fallback to default images
-  const currentImages = content?.content ? 
-    JSON.parse(content.content).filter((img: any): img is string => img && typeof img === 'string') : 
-    defaultImages;
+  const currentImages = (() => {
+    if (content?.content) {
+      try {
+        const parsed = JSON.parse(content.content);
+        return Array.isArray(parsed) 
+          ? parsed.filter((img: any): img is string => img && typeof img === 'string')
+          : [];
+      } catch (error) {
+        console.warn('Failed to parse slider images from Convex:', error);
+        return defaultImages || [];
+      }
+    }
+    return defaultImages || [];
+  })();
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    if (currentImages.length === 0) return;
+    
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
         prevIndex === currentImages.length - 1 ? 0 : prevIndex + 1
@@ -31,6 +44,19 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
     }, 5000);
     return () => clearInterval(interval);
   }, [currentImages.length]);
+
+  // Don't render anything if no images
+  if (currentImages.length === 0) {
+    return (
+      <div className={`w-full h-full relative overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center ${className}`}>
+        <div className="text-center text-white">
+          <div className="text-6xl mb-4">🏫</div>
+          <h2 className="text-2xl font-bold mb-2">Les Hirondelles</h2>
+          <p className="text-lg opacity-90">Excellence en éducation</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`w-full h-full relative overflow-hidden ${className}`}>
@@ -46,6 +72,10 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
             alt={`Slide ${index + 1}`}
             className="w-full h-full object-cover"
             style={{ filter: 'brightness(0.7)' }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+            }}
           />
         </div>
       ))}

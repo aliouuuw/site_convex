@@ -72,23 +72,7 @@ const HomePage: React.FC = () => {
         {/* Hero Section - Condensed Content */}
         <section className="hero-background-optimized">
           <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center z-0">
-            <DisplayImageSlider
-              id="hero.slider"
-              defaultImages={[
-                '/images/hero/school-building.jpg',
-                '/images/hero/students-learning.jpg',
-                '/images/hero/playground.jpg',
-                '/images/hero/library.jpg',
-                '/images/hero/science-lab.jpg',
-                '/images/hero/art-room.jpg',
-                '/images/hero/sports-field.jpg',
-                '/images/hero/computer-lab.jpg',
-                '/images/news-featured.jpg',
-                '/images/programs/preschool.jpg',
-                '/images/programs/primary.jpg',
-                '/images/programs/middleschool.jpg'
-              ]}
-            />
+            <DisplayImageSlider id="hero.background" />
           </div>
           <div className="absolute top-0 left-0 w-full h-full bg-linear-to-r from-[var(--primary)] to-[var(--accent)]/50 opacity-50" style={{ zIndex: 10 }}></div>
           
