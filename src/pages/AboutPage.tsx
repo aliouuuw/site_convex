@@ -1,5 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import DisplayText from '../components/DisplayText';
+import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
 
 const AboutPage: React.FC = () => {
@@ -29,15 +33,22 @@ const AboutPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <span className="block text-gray-900" data-live-edit-id="about.title">Notre Histoire & Vision</span>
+                  <DisplayText id="about.title" page="about" as="span" className="block text-gray-900">
+                    Notre Histoire & Vision
+                  </DisplayText>
                 </h1>
 
                 <div className="max-w-xl">
-                  <p className="text-xl text-gray-600 leading-relaxed mb-6" data-live-edit-id="about.intro">
+                  <DisplayText 
+                    id="about.intro" 
+                    page="about" 
+                    as="p" 
+                    className="text-xl text-gray-600 leading-relaxed mb-6"
+                  >
                     Depuis plus de deux décennies, nous cultivons l'excellence
                     éducative au cœur du Sénégal, formant les leaders de demain
                     avec passion et dévouement.
-                  </p>
+                  </DisplayText>
 
                   <div className="flex items-center gap-6 text-sm text-gray-500">
                     <div className="flex items-center gap-2">
@@ -55,13 +66,23 @@ const AboutPage: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <div className="text-4xl text-primary leading-none">"</div>
                   <div>
-                    <p className="text-lg italic text-gray-700 mb-3" data-live-edit-id="about.quote">
+                    <DisplayText 
+                      id="about.quote" 
+                      page="about" 
+                      as="p" 
+                      className="text-lg italic text-gray-700 mb-3"
+                    >
                       Former les citoyens de demain en alliant excellence
                       académique, valeurs humaines et ouverture sur le monde.
-                    </p>
-                    <div className="text-sm font-semibold text-primary" data-live-edit-id="about.quote.author">
+                    </DisplayText>
+                    <DisplayText 
+                      id="about.quote.author" 
+                      page="about" 
+                      as="div" 
+                      className="text-sm font-semibold text-primary"
+                    >
                       — Notre Mission Fondamentale
-                    </div>
+                    </DisplayText>
                   </div>
                 </div>
               </div>
@@ -70,7 +91,9 @@ const AboutPage: React.FC = () => {
             <div className="lg:col-span-5">
               <div className="relative">
                 <div className="relative h-[500px] w-full">
-                  <img
+                  <DisplayImage
+                    id="about.hero.image"
+                    page="about"
                     src="/images/histoire/school-heritage.jpg"
                     alt="Héritage Les Hirondelles"
                     className="object-cover w-full h-full"
@@ -89,45 +112,87 @@ const AboutPage: React.FC = () => {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="section-header-creative mb-16">
             <div>
-              <h2 className="section-title-creative" data-live-edit-id="about.mission.title">Notre Mission</h2>
-              <p className="section-description-creative" data-live-edit-id="about.mission.description">
+              <DisplayText 
+                id="about.mission.title" 
+                page="about" 
+                as="h2" 
+                className="section-title-creative"
+              >
+                Notre Mission
+              </DisplayText>
+              <DisplayText 
+                id="about.mission.description" 
+                page="about" 
+                as="p" 
+                className="section-description-creative"
+              >
                 Les valeurs qui guident notre approche éducative
-              </p>
+              </DisplayText>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="card p-8 text-center">
               <div className="text-4xl mb-4">🎯</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
+              <DisplayText 
+                id="about.values.excellence.title" 
+                page="about" 
+                as="h3" 
+                className="text-xl font-semibold mb-4 color-black"
+              >
                 Excellence Académique
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
+              </DisplayText>
+              <DisplayText 
+                id="about.values.excellence.description" 
+                page="about" 
+                as="p" 
+                className="text-gray-600 leading-relaxed"
+              >
                 Viser les plus hauts standards dans l'enseignement et
                 l'apprentissage.
-              </p>
+              </DisplayText>
             </div>
 
             <div className="card p-8 text-center">
               <div className="text-4xl mb-4">🤝</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
+              <DisplayText 
+                id="about.values.respect.title" 
+                page="about" 
+                as="h3" 
+                className="text-xl font-semibold mb-4 color-black"
+              >
                 Respect & Intégrité
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
+              </DisplayText>
+              <DisplayText 
+                id="about.values.respect.description" 
+                page="about" 
+                as="p" 
+                className="text-gray-600 leading-relaxed"
+              >
                 Cultiver un environnement de respect mutuel, d'honnêteté et de
                 responsabilité.
-              </p>
+              </DisplayText>
             </div>
 
             <div className="card p-8 text-center">
               <div className="text-4xl mb-4">🌱</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
+              <DisplayText 
+                id="about.values.development.title" 
+                page="about" 
+                as="h3" 
+                className="text-xl font-semibold mb-4 color-black"
+              >
                 Épanouissement Global
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
+              </DisplayText>
+              <DisplayText 
+                id="about.values.development.description" 
+                page="about" 
+                as="p" 
+                className="text-gray-600 leading-relaxed"
+              >
                 Favoriser le développement intellectuel, social, émotionnel et
                 physique de chaque élève.
-              </p>
+              </DisplayText>
             </div>
           </div>
         </div>
@@ -138,10 +203,22 @@ const AboutPage: React.FC = () => {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="section-header-creative mb-16">
             <div>
-              <h2 className="section-title-creative">Notre Parcours</h2>
-              <p className="section-description-creative">
+              <DisplayText 
+                id="about.timeline.title" 
+                page="about" 
+                as="h2" 
+                className="section-title-creative"
+              >
+                Notre Parcours
+              </DisplayText>
+              <DisplayText 
+                id="about.timeline.description" 
+                page="about" 
+                as="p" 
+                className="section-description-creative"
+              >
                 Une histoire d'engagement et de croissance continue
-              </p>
+              </DisplayText>
             </div>
           </div>
 
@@ -214,13 +291,23 @@ const AboutPage: React.FC = () => {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="section-header-creative mb-16">
             <div>
-              <h2 className="section-title-creative">
+              <DisplayText 
+                id="about.team.title" 
+                page="about" 
+                as="h2" 
+                className="section-title-creative"
+              >
                 Notre Équipe de Direction
-              </h2>
-              <p className="section-description-creative">
+              </DisplayText>
+              <DisplayText 
+                id="about.team.description" 
+                page="about" 
+                as="p" 
+                className="section-description-creative"
+              >
                 Des professionnels dévoués qui guident notre institution vers
                 l'excellence
-              </p>
+              </DisplayText>
             </div>
           </div>
 
@@ -301,13 +388,23 @@ const AboutPage: React.FC = () => {
       <section className="py-24 bg-primary text-white">
         <div className="container mx-auto px-6 max-w-6xl text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <DisplayText 
+              id="about.cta.title" 
+              page="about" 
+              as="h2" 
+              className="text-3xl md:text-4xl font-bold mb-6"
+            >
               Rejoignez Notre Communauté
-            </h2>
-            <p className="text-xl text-gray-100 mb-8 leading-relaxed">
+            </DisplayText>
+            <DisplayText 
+              id="about.cta.description" 
+              page="about" 
+              as="p" 
+              className="text-xl text-gray-100 mb-8 leading-relaxed"
+            >
               Découvrez comment Les Hirondelles peut contribuer à
               l'épanouissement et à la réussite de votre enfant.
-            </p>
+            </DisplayText>
             <div className="flex flex-wrap justify-center gap-6">
               <Link to="/contact" className="btn btn-accent">
                 Nous Contacter

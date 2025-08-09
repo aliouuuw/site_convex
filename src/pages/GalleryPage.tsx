@@ -3,6 +3,8 @@ import { FaImages, FaVideo, FaPlay, FaSearch, FaTimes } from "react-icons/fa";
 import { ImageSlider } from "../components/ImageSlider";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import DisplayText from '../components/DisplayText';
+import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
 
 // Remove static data - we'll fetch from Convex
@@ -99,14 +101,21 @@ const GalleryPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  Galerie Multimédia
+                  <DisplayText id="gallery.title" page="gallery" as="span" className="block text-gray-900">
+                    Galerie Multimédia
+                  </DisplayText>
                 </h1>
 
                 <div className="max-w-xl">
-                  <p className="text-xl text-gray-600 leading-relaxed mb-6">
+                  <DisplayText 
+                    id="gallery.description" 
+                    page="gallery" 
+                    as="p" 
+                    className="text-xl text-gray-600 leading-relaxed mb-6"
+                  >
                     Découvrez les moments forts et les instants capturés au sein
                     de notre école, en images et en vidéos.
-                  </p>
+                  </DisplayText>
                 </div>
               </div>
             </div>

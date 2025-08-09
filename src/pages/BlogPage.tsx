@@ -2,6 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import DisplayText from '../components/DisplayText';
+import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
 
 const formatDate = (timestamp: number | string) => {
@@ -47,16 +49,21 @@ const BlogPage: React.FC = () => {
 
                 <div className="space-y-6">
                   <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                    <span className="block text-gray-900">
-                      Journal de l&apos;école
-                    </span>
+                    <DisplayText id="blog.title" page="blog" as="span" className="block text-gray-900">
+                      Journal de l'école
+                    </DisplayText>
                   </h1>
 
                   <div className="max-w-xl">
-                    <p className="text-xl text-gray-600 leading-relaxed">
+                    <DisplayText 
+                      id="blog.description" 
+                      page="blog" 
+                      as="p" 
+                      className="text-xl text-gray-600 leading-relaxed"
+                    >
                       Actualités, événements et vie scolaire à Les Hirondelles.
                       Découvrez les moments forts de notre communauté éducative.
-                    </p>
+                    </DisplayText>
                   </div>
                 </div>
               </div>
@@ -64,7 +71,9 @@ const BlogPage: React.FC = () => {
               <div className="lg:col-span-5 flex flex-col justify-center">
                 <div className="relative">
                   <div className="relative h-[400px] w-full">
-                    <img
+                    <DisplayImage
+                      id="blog.hero.image"
+                      page="blog"
                       src="/images/blog/blog-hero.jpg"
                       alt="Blog Les Hirondelles"
                       className="object-cover w-full h-full"
@@ -145,7 +154,7 @@ const BlogPage: React.FC = () => {
                   Toutes les Actualités
                 </h2>
                 <p className="section-description-creative">
-                  Restez informés de toute l&apos;actualité de notre
+                  Restez informés de toute l'actualité de notre
                   établissement
                 </p>
               </div>
@@ -221,7 +230,7 @@ const BlogPage: React.FC = () => {
                     </h2>
                     <p className="text-gray-600 mb-8">
                       Inscrivez-vous à notre newsletter pour recevoir les
-                      dernières actualités de l&apos;école directement dans
+                      dernières actualités de l'école directement dans
                       votre boîte mail.
                     </p>
                     <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -232,7 +241,7 @@ const BlogPage: React.FC = () => {
                         required
                       />
                       <button type="submit" className="btn btn-primary">
-                        S&apos;inscrire
+                        S'inscrire
                       </button>
                     </form>
                   </div>

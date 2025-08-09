@@ -1,6 +1,8 @@
 import React from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
+import DisplayText from '../components/DisplayText';
+import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
 
 const EquipePage: React.FC = () => {
@@ -31,13 +33,20 @@ const EquipePage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  Équipe
+                  <DisplayText id="equipe.title" page="equipe" as="span" className="block text-gray-900">
+                    Équipe
+                  </DisplayText>
                 </h1>
 
                 <div className="max-w-xl">
-                  <p className="text-xl text-gray-600 leading-relaxed mb-6">
+                  <DisplayText 
+                    id="equipe.description" 
+                    page="equipe" 
+                    as="p" 
+                    className="text-xl text-gray-600 leading-relaxed mb-6"
+                  >
                     Découvrez les visages et les parcours de ceux qui guident et inspirent notre communauté.
-                  </p>
+                  </DisplayText>
                 </div>
               </div>
             </div>
@@ -45,7 +54,9 @@ const EquipePage: React.FC = () => {
             <div className="lg:col-span-5">
               <div className="relative">
                 <div className="relative h-[500px] w-full">
-                  <img
+                  <DisplayImage
+                    id="equipe.hero.image"
+                    page="equipe"
                     src="/images/about/school-heritage.jpg"
                     alt="Équipe Les Hirondelles"
                     className="object-cover w-full h-full"

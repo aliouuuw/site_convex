@@ -1,10 +1,11 @@
 import React from 'react';
-import { useContent } from '../components/ContentProvider';
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import DisplayText from '../components/DisplayText';
+import DisplayImage from '../components/DisplayImage';
 import SEO from '../components/SEO';
 
 const ContactPage: React.FC = () => {
-  const content = useContent();
-  
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
       <SEO 
@@ -31,13 +32,20 @@ const ContactPage: React.FC = () => {
 
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-6xl font-bold leading-tight">
-                  <span className="block text-gray-900" data-live-edit-id="contact.title">{content.get('contact.title', 'Contactez-nous')}</span>
+                  <DisplayText id="contact.title" page="contact" as="span" className="block text-gray-900">
+                    Contactez-nous
+                  </DisplayText>
                 </h1>
 
                 <div className="max-w-xl">
-                  <p className="text-xl text-gray-600 leading-relaxed mb-6" data-live-edit-id="contact.description">
-                    {content.get('contact.description', 'Nous sommes là pour répondre à toutes vos questions concernant l\'éducation de votre enfant. N\'hésitez pas à nous contacter par le moyen qui vous convient le mieux.')}
-                  </p>
+                  <DisplayText 
+                    id="contact.description" 
+                    page="contact" 
+                    as="p" 
+                    className="text-xl text-gray-600 leading-relaxed mb-6"
+                  >
+                    Nous sommes là pour répondre à toutes vos questions concernant l'éducation de votre enfant. N'hésitez pas à nous contacter par le moyen qui vous convient le mieux.
+                  </DisplayText>
                 </div>
               </div>
 
@@ -70,7 +78,9 @@ const ContactPage: React.FC = () => {
             <div className="lg:col-span-5">
               <div className="relative">
                 <div className="relative h-[500px] w-full">
-                  <img
+                  <DisplayImage
+                    id="contact.hero.image"
+                    page="contact"
                     src="/images/contact/contact-hero.jpg"
                     alt="Contact Les Hirondelles"
                     className="object-cover w-full h-full"
@@ -89,79 +99,100 @@ const ContactPage: React.FC = () => {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="section-header-creative mb-16">
             <div>
-              <h2 className="section-title-creative" data-live-edit-id="contact.coordinates.title">{content.get('contact.coordinates.title', 'Nos Coordonnées')}</h2>
-              <p className="section-description-creative" data-live-edit-id="contact.coordinates.description">
-                {content.get('contact.coordinates.description', 'Plusieurs moyens de nous joindre pour votre commodité')}
-              </p>
+              <DisplayText 
+                id="contact.coordinates.title" 
+                page="contact" 
+                as="h2" 
+                className="section-title-creative"
+              >
+                Nos Coordonnées
+              </DisplayText>
+              <DisplayText 
+                id="contact.coordinates.description" 
+                page="contact" 
+                as="p" 
+                className="section-description-creative"
+              >
+                Plusieurs moyens de nous joindre pour votre commodité
+              </DisplayText>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
-              <div className="text-primary mb-6 flex justify-center text-2xl">📞</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
-                Téléphone
-              </h3>
-              <div className="space-y-2 mb-4 text-center">
-                <p className="text-gray-700 font-medium">+221 33 XXX XX XX</p>
-                <p className="text-gray-700 font-medium">+221 77 XXX XX XX</p>
-              </div>
-              <p className="text-sm text-gray-500">Lundi - Vendredi: 8h00 - 17h00</p>
-            </div>
-
-            <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
-              <div className="text-primary mb-6 flex justify-center text-2xl">✉️</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
-                Email
-              </h3>
-              <div className="space-y-2 mb-4 text-center">
-                <p className="text-gray-700 font-medium">contact@leshirondelles.sn</p>
-                <p className="text-gray-700 font-medium">inscription@leshirondelles.sn</p>
-              </div>
-              <p className="text-sm text-gray-500">Réponse sous 24h</p>
-            </div>
-
-            <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
-              <div className="text-primary mb-6 flex justify-center text-2xl">📍</div>
+              <div className="text-4xl mb-4">📍</div>
               <h3 className="text-xl font-semibold mb-4 color-black">
                 Adresse
               </h3>
-              <div className="space-y-2 mb-4 text-center">
-                <p className="text-gray-700 font-medium">Avenue Cheikh Anta Diop</p>
-                <p className="text-gray-700 font-medium">Dakar, Sénégal</p>
-              </div>
-              <p className="text-sm text-gray-500">Face à l'Université Cheikh Anta Diop</p>
+              <DisplayText 
+                id="contact.info.address" 
+                page="contact" 
+                as="p" 
+                className="text-gray-600"
+              >
+                Avenue Cheikh Anta Diop<br />
+                Dakar, Sénégal
+              </DisplayText>
             </div>
 
             <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
-              <div className="text-primary mb-6 flex justify-center text-2xl">💬</div>
+              <div className="text-4xl mb-4">📞</div>
               <h3 className="text-xl font-semibold mb-4 color-black">
-                WhatsApp
+                Téléphone
               </h3>
-              <div className="space-y-2 mb-4 text-center">
-                <p className="text-gray-700 font-medium">+221 77 XXX XX XX</p>
-              </div>
-              <p className="text-sm text-gray-500">Disponible 24h/7j</p>
+              <DisplayText 
+                id="contact.info.phone" 
+                page="contact" 
+                as="p" 
+                className="text-gray-600"
+              >
+                +221 33 XXX XX XX
+              </DisplayText>
+            </div>
+
+            <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
+              <div className="text-4xl mb-4">✉️</div>
+              <h3 className="text-xl font-semibold mb-4 color-black">
+                Email
+              </h3>
+              <DisplayText 
+                id="contact.info.email" 
+                page="contact" 
+                as="p" 
+                className="text-gray-600"
+              >
+                contact@leshirondelles.sn
+              </DisplayText>
+            </div>
+
+            <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
+              <div className="text-4xl mb-4">🕒</div>
+              <h3 className="text-xl font-semibold mb-4 color-black">
+                Horaires
+              </h3>
+              <DisplayText 
+                id="contact.info.hours" 
+                page="contact" 
+                as="p" 
+                className="text-gray-600"
+              >
+                Lun-Ven: 8h-17h<br />
+                Sam: 8h-12h
+              </DisplayText>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Contact Form & Map */}
+      {/* Contact Form */}
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <div>
-              <div className="mb-8">
-                <h2 className="text-3xl font-bold mb-4 color-black">
-                  Envoyez-nous un message
-                </h2>
-                <p className="text-gray-600">
-                  Remplissez ce formulaire et nous vous répondrons dans les plus brefs délais.
-                </p>
-              </div>
-
+              <h2 className="text-3xl font-bold mb-8 color-black">
+                Envoyez-nous un message
+              </h2>
               <form className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -173,30 +204,6 @@ const ContactPage: React.FC = () => {
                       required
                       className="w-full px-4 py-3 border border-gray-300 focus:border-primary focus:outline-none transition-colors"
                       placeholder="Votre nom complet"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Email *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 focus:border-primary focus:outline-none transition-colors"
-                      placeholder="votre@email.com"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Téléphone
-                    </label>
-                    <input
-                      type="tel"
-                      className="w-full px-4 py-3 border border-gray-300 focus:border-primary focus:outline-none transition-colors"
-                      placeholder="+221 XX XXX XX XX"
                     />
                   </div>
                   <div>
@@ -275,30 +282,66 @@ const ContactPage: React.FC = () => {
                 </h3>
                 <div className="space-y-4">
                   <div className="card p-6">
-                    <h4 className="font-semibold text-gray-900 mb-2">Direction Générale</h4>
-                    <p className="text-gray-700 mb-1">Mme. Aïssatou Diop</p>
-                    <div className="text-sm text-gray-600 space-y-1">
+                    <DisplayText 
+                      id="contact.departments.direction.title" 
+                      page="contact" 
+                      as="h4" 
+                      className="font-semibold text-gray-900 mb-2"
+                    >
+                      Direction Générale
+                    </DisplayText>
+                    <DisplayText 
+                      id="contact.departments.direction.contact" 
+                      page="contact" 
+                      as="div" 
+                      className="text-sm text-gray-600 space-y-1"
+                    >
+                      <p>Mme. Aïssatou Diop</p>
                       <p>direction@leshirondelles.sn</p>
                       <p>+221 33 XXX XX XX</p>
-                    </div>
+                    </DisplayText>
                   </div>
 
                   <div className="card p-6">
-                    <h4 className="font-semibold text-gray-900 mb-2">Admission</h4>
-                    <p className="text-gray-700 mb-1">Service des Inscriptions</p>
-                    <div className="text-sm text-gray-600 space-y-1">
+                    <DisplayText 
+                      id="contact.departments.admission.title" 
+                      page="contact" 
+                      as="h4" 
+                      className="font-semibold text-gray-900 mb-2"
+                    >
+                      Admission
+                    </DisplayText>
+                    <DisplayText 
+                      id="contact.departments.admission.contact" 
+                      page="contact" 
+                      as="div" 
+                      className="text-sm text-gray-600 space-y-1"
+                    >
+                      <p>Service des Inscriptions</p>
                       <p>inscription@leshirondelles.sn</p>
                       <p>+221 77 XXX XX XX</p>
-                    </div>
+                    </DisplayText>
                   </div>
 
                   <div className="card p-6">
-                    <h4 className="font-semibold text-gray-900 mb-2">Vie Scolaire</h4>
-                    <p className="text-gray-700 mb-1">Mme. Fatoumata Sarr</p>
-                    <div className="text-sm text-gray-600 space-y-1">
+                    <DisplayText 
+                      id="contact.departments.viescolaire.title" 
+                      page="contact" 
+                      as="h4" 
+                      className="font-semibold text-gray-900 mb-2"
+                    >
+                      Vie Scolaire
+                    </DisplayText>
+                    <DisplayText 
+                      id="contact.departments.viescolaire.contact" 
+                      page="contact" 
+                      as="div" 
+                      className="text-sm text-gray-600 space-y-1"
+                    >
+                      <p>Mme. Fatoumata Sarr</p>
                       <p>viescolaire@leshirondelles.sn</p>
                       <p>+221 77 XXX XX XX</p>
-                    </div>
+                    </DisplayText>
                   </div>
                 </div>
               </div>

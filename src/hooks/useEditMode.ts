@@ -6,6 +6,9 @@ const resolveCurrentPage = (path: string): string => {
   if (path === "/contact") return "contact";
   if (path === "/inscription") return "inscription";
   if (path === "/journal" || path.startsWith("/blog")) return "blog";
+  if (path === "/programs/preschool") return "preschool";
+  if (path === "/programs/primary") return "primary";
+  if (path === "/programs/middleschool") return "middleschool";
   if (path.startsWith("/programs/")) return "programs";
   if (path === "/gallery") return "gallery";
   if (path === "/equipe") return "equipe";
