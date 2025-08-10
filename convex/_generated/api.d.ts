@@ -22,6 +22,7 @@ import type * as mediaUpload from "../mediaUpload.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as team from "../team.js";
 import type * as testimonials from "../testimonials.js";
+import type * as timeline from "../timeline.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -41,6 +42,7 @@ declare const fullApi: ApiFromModules<{
   myFunctions: typeof myFunctions;
   team: typeof team;
   testimonials: typeof testimonials;
+  timeline: typeof timeline;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

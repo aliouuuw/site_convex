@@ -1,10 +1,19 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
 
 const AboutPage: React.FC = () => {
+  const timelineEntries = useQuery(api.timeline.listTimelineEntries) || [];
+  const leadershipTeam = useQuery(api.team.listTeamMembersByCategory, { category: "leadership" }) || [];
+  const administrationTeam = useQuery(api.team.listTeamMembersByCategory, { category: "administration" }) || [];
+  
+  // Combine leadership and administration team members
+  const allTeamMembers = [...leadershipTeam, ...administrationTeam];
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
       <SEO 
@@ -49,11 +58,21 @@ const AboutPage: React.FC = () => {
 
                   <div className="flex items-center gap-6 text-sm text-gray-500">
                     <div className="flex items-center gap-2">
-                      <span>Fondée en 2003</span>
+                      <DisplayText 
+                        id="about.founded" 
+                        as="span"
+                      >
+                        Fondée en 2003
+                      </DisplayText>
                     </div>
                     <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                     <div className="flex items-center gap-2">
-                      <span>Dakar, Sénégal</span>
+                      <DisplayText 
+                        id="about.location" 
+                        as="span"
+                      >
+                        Dakar, Sénégal
+                      </DisplayText>
                     </div>
                   </div>
                 </div>
@@ -207,65 +226,88 @@ const AboutPage: React.FC = () => {
           </div>
 
           <div className="space-y-12">
-            <div className="flex items-center gap-8">
-              <div className="text-4xl font-bold text-primary min-w-[120px]">
-                2003
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold mb-2 color-black">
-                  Fondation de L'Institution
-                </h3>
-                <p className="text-gray-600">
-                  Création de Les Hirondelles avec la vision d'une éducation
-                  d'excellence au Sénégal.
-                </p>
-              </div>
-            </div>
+            {timelineEntries.length === 0 ? (
+              // Fallback to hardcoded content if no entries in database
+              <>
+                <div className="flex items-center gap-8">
+                  <div className="text-4xl font-bold text-primary min-w-[120px]">
+                    2003
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2 color-black">
+                      Fondation de L'Institution
+                    </h3>
+                    <p className="text-gray-600">
+                      Création de Les Hirondelles avec la vision d'une éducation
+                      d'excellence au Sénégal.
+                    </p>
+                  </div>
+                </div>
 
-            <div className="flex items-center gap-8">
-              <div className="text-4xl font-bold text-primary min-w-[120px]">
-                2008
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold mb-2 color-black">
-                  Première Promotion du Primaire
-                </h3>
-                <p className="text-gray-600">
-                  Célébration de nos premiers diplômés du cycle primaire,
-                  marquant une étape clé.
-                </p>
-              </div>
-            </div>
+                <div className="flex items-center gap-8">
+                  <div className="text-4xl font-bold text-primary min-w-[120px]">
+                    2008
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2 color-black">
+                      Première Promotion du Primaire
+                    </h3>
+                    <p className="text-gray-600">
+                      Célébration de nos premiers diplômés du cycle primaire,
+                      marquant une étape clé.
+                    </p>
+                  </div>
+                </div>
 
-            <div className="flex items-center gap-8">
-              <div className="text-4xl font-bold text-primary min-w-[120px]">
-                2015
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold mb-2 color-black">
-                  Expansion avec le Collège
-                </h3>
-                <p className="text-gray-600">
-                  Ouverture du cycle collégial pour offrir un parcours éducatif
-                  continu et cohérent.
-                </p>
-              </div>
-            </div>
+                <div className="flex items-center gap-8">
+                  <div className="text-4xl font-bold text-primary min-w-[120px]">
+                    2015
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2 color-black">
+                      Expansion avec le Collège
+                    </h3>
+                    <p className="text-gray-600">
+                      Ouverture du cycle collégial pour offrir un parcours éducatif
+                      continu et cohérent.
+                    </p>
+                  </div>
+                </div>
 
-            <div className="flex items-center gap-8">
-              <div className="text-4xl font-bold text-accent min-w-[120px]">
-                Aujourd'hui
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold mb-2 color-black">
-                  Vers de Nouveaux Horizons
-                </h3>
-                <p className="text-gray-600">
-                  Fiers de notre héritage, nous continuons d'innover pour former
-                  les leaders de demain.
-                </p>
-              </div>
-            </div>
+                <div className="flex items-center gap-8">
+                  <div className="text-4xl font-bold text-accent min-w-[120px]">
+                    Aujourd'hui
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2 color-black">
+                      Vers de Nouveaux Horizons
+                    </h3>
+                    <p className="text-gray-600">
+                      Fiers de notre héritage, nous continuons d'innover pour former
+                      les leaders de demain.
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              timelineEntries.map((entry, index) => (
+                <div key={entry._id} className="flex items-center gap-8">
+                  <div className={`text-4xl font-bold min-w-[120px] ${
+                    index === timelineEntries.length - 1 ? 'text-accent' : 'text-primary'
+                  }`}>
+                    {entry.year}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-2 color-black">
+                      {entry.title}
+                    </h3>
+                    <p className="text-gray-600">
+                      {entry.description}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -294,74 +336,110 @@ const AboutPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            <div className="card overflow-hidden">
-              <div className="relative h-72 w-full">
-                <img
-                  src="/images/equipe/supervisor.jpg"
-                  alt="Mme. NDIAYE Cheikh SY"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-semibold mb-3 color-black">
-                  Mme. NDIAYE Cheikh SY
-                </h3>
-                <p className="text-primary font-medium mb-4">
-                  Déclarante Responsable
-                </p>
-                <p className="text-gray-600 leading-relaxed">
-                  Mme. NDIAYE, fondatrice de l'école, est dédiée à la gestion
-                  administrative de l'école, favorisant un environnement
-                  scolaire positif et inclusif pour tous.
-                </p>
-              </div>
-            </div>
+            {allTeamMembers.length === 0 ? (
+              // Fallback to hardcoded content if no team members in database
+              <>
+                <div className="card overflow-hidden">
+                  <div className="relative h-72 w-full">
+                    <img
+                      src="/images/equipe/supervisor.jpg"
+                      alt="Mme. NDIAYE Cheikh SY"
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-semibold mb-3 color-black">
+                      Mme. NDIAYE Cheikh SY
+                    </h3>
+                    <p className="text-primary font-medium mb-4">
+                      Déclarante Responsable
+                    </p>
+                    <p className="text-gray-600 leading-relaxed">
+                      Mme. NDIAYE, fondatrice de l'école, est dédiée à la gestion
+                      administrative de l'école, favorisant un environnement
+                      scolaire positif et inclusif pour tous.
+                    </p>
+                  </div>
+                </div>
 
-            <div className="card overflow-hidden">
-              <div className="relative h-72 w-full">
-                <img
-                  src="/images/equipe/director.jpg"
-                  alt="Mme. Ndiaye Fatou Dabo"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-semibold mb-3 color-black">
-                  Mme. Ndiaye Fatou Dabo
-                </h3>
-                <p className="text-primary font-medium mb-4">
-                  Directrice Générale
-                </p>
-                <p className="text-gray-600 leading-relaxed">
-                  Avec plus de 20 ans d'expérience dans l'éducation, Mme. Ndiaye
-                  inspire notre vision stratégique et notre engagement envers
-                  l'excellence.
-                </p>
-              </div>
-            </div>
+                <div className="card overflow-hidden">
+                  <div className="relative h-72 w-full">
+                    <img
+                      src="/images/equipe/director.jpg"
+                      alt="Mme. Ndiaye Fatou Dabo"
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-semibold mb-3 color-black">
+                      Mme. Ndiaye Fatou Dabo
+                    </h3>
+                    <p className="text-primary font-medium mb-4">
+                      Directrice Générale
+                    </p>
+                    <p className="text-gray-600 leading-relaxed">
+                      Avec plus de 20 ans d'expérience dans l'éducation, Mme. Ndiaye
+                      inspire notre vision stratégique et notre engagement envers
+                      l'excellence.
+                    </p>
+                  </div>
+                </div>
 
-            <div className="card overflow-hidden">
-              <div className="relative h-72 w-full">
-                <img
-                  src="/images/equipe/pedagogical-lead.jpg"
-                  alt="M. Aliou GOUDIABY"
-                  className="object-cover w-full h-full"
-                />
-              </div>
-              <div className="p-8">
-                <h3 className="text-2xl font-semibold mb-3 color-black">
-                  M. Aliou GOUDIABY
-                </h3>
-                <p className="text-primary font-medium mb-4">
-                  Gestionnaire Pédagogique
-                </p>
-                <p className="text-gray-600 leading-relaxed">
-                  Passionné par l'innovation pédagogique, M. GOUDIABY veille à
-                  la qualité de nos programmes et à l'épanouissement de chaque
-                  élève.
-                </p>
-              </div>
-            </div>
+                <div className="card overflow-hidden">
+                  <div className="relative h-72 w-full">
+                    <img
+                      src="/images/equipe/pedagogical-lead.jpg"
+                      alt="M. Aliou GOUDIABY"
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-semibold mb-3 color-black">
+                      M. Aliou GOUDIABY
+                    </h3>
+                    <p className="text-primary font-medium mb-4">
+                      Gestionnaire Pédagogique
+                    </p>
+                    <p className="text-gray-600 leading-relaxed">
+                      Passionné par l'innovation pédagogique, M. GOUDIABY veille à
+                      la qualité de nos programmes et à l'épanouissement de chaque
+                      élève.
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              allTeamMembers.map((member) => (
+                <div key={member._id} className="card overflow-hidden">
+                  <div className="relative h-72 w-full">
+                    {member.photo ? (
+                      <img
+                        src={member.photo}
+                        alt={member.name}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                        <div className="text-6xl font-bold text-gray-600">
+                          {member.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-8">
+                    <h3 className="text-2xl font-semibold mb-3 color-black">
+                      {member.name}
+                    </h3>
+                    <p className="text-primary font-medium mb-4">
+                      {member.role || "—"}
+                    </p>
+                    <p className="text-gray-600 leading-relaxed">
+                      {member.bio || "—"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>

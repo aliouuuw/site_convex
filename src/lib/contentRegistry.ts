@@ -61,6 +61,8 @@ export const contentRegistry: ContentRegistry = {
     hero: [
       { id: 'about.title', type: 'text', label: 'Page Title', section: 'hero', page: 'about' },
       { id: 'about.intro', type: 'text', label: 'Introduction Text', section: 'hero', page: 'about' },
+      { id: 'about.founded', type: 'text', label: 'Founded Year', section: 'hero', page: 'about' },
+      { id: 'about.location', type: 'text', label: 'Location', section: 'hero', page: 'about' },
       { id: 'about.quote', type: 'text', label: 'Quote Text', section: 'hero', page: 'about' },
       { id: 'about.quote.author', type: 'text', label: 'Quote Author', section: 'hero', page: 'about' },
       { id: 'about.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'about' },

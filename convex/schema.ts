@@ -50,6 +50,7 @@ export default defineSchema({
   team_members: defineTable({
     name: v.string(),
     role: v.optional(v.string()),
+    category: v.optional(v.string()), // e.g., "leadership", "administration", "teachers"
     photo: v.optional(v.string()), // URL to media
     bio: v.optional(v.string()),
     order: v.optional(v.number()),
@@ -58,7 +59,8 @@ export default defineSchema({
     updatedAt: v.number(),
   })
     .index("by_visible_order", ["visible", "order"]) // list visible in order
-    .index("by_order", ["order"]),
+    .index("by_order", ["order"])
+    .index("by_category_visible", ["category", "visible"]), // for filtering by category
 
   // New: Testimonials
   testimonials: defineTable({
@@ -96,4 +98,17 @@ export default defineSchema({
   })
     .index("by_uploadedAt", ["uploadedAt"]) // for recent media
     .index("by_tag", ["tags"]), // basic tag search
+
+  // Timeline entries for the about page
+  timeline_entries: defineTable({
+    year: v.string(),
+    title: v.string(),
+    description: v.string(),
+    order: v.optional(v.number()),
+    visible: v.optional(v.boolean()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_visible_order", ["visible", "order"]) // list visible in order
+    .index("by_order", ["order"]),
 });

@@ -6,7 +6,120 @@ import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
 
 const EquipePage: React.FC = () => {
-  const teamMembers = useQuery(api.team.listTeamMembers);
+  // Fetch team members by category
+  const leadershipTeam = useQuery(api.team.listTeamMembersByCategory, { category: "leadership" }) || [];
+  const administrationTeam = useQuery(api.team.listTeamMembersByCategory, { category: "administration" }) || [];
+  const teachersTeam = useQuery(api.team.listTeamMembersByCategory, { category: "teachers" }) || [];
+  const staffTeam = useQuery(api.team.listTeamMembersByCategory, { category: "staff" }) || [];
+  const otherTeam = useQuery(api.team.listTeamMembersByCategory, { category: "other" }) || [];
+
+  // Helper function to render team member card
+  const renderTeamMemberCard = (member: any) => {
+    const getCategoryBadgeColor = (category: string) => {
+      switch (category) {
+        case 'leadership': return 'bg-blue-100 text-blue-800';
+        case 'administration': return 'bg-purple-100 text-purple-800';
+        case 'teachers': return 'bg-green-100 text-green-800';
+        case 'staff': return 'bg-orange-100 text-orange-800';
+        default: return 'bg-gray-100 text-gray-800';
+      }
+    };
+
+    const getCategoryLabel = (category: string) => {
+      switch (category) {
+        case 'leadership': return 'Direction';
+        case 'administration': return 'Administration';
+        case 'teachers': return 'Enseignant';
+        case 'staff': return 'Personnel';
+        default: return 'Autre';
+      }
+    };
+
+    return (
+      <div
+        key={member._id}
+        className="team-card-container bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"
+      >
+        <div className="relative h-64">
+          {member.photo ? (
+            <img
+              src={member.photo}
+              alt={member.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to initials if image fails to load
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+              <div className="text-4xl font-bold text-gray-400">
+                {member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+              </div>
+            </div>
+          )}
+          {/* Category badge */}
+          {member.category && (
+            <div className="absolute top-4 right-4">
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryBadgeColor(member.category)}`}>
+                {getCategoryLabel(member.category)}
+              </span>
+            </div>
+          )}
+        </div>
+        <div className="p-6">
+          <h3 className="text-2xl font-bold text-gray-900 mb-2">
+            {member.name}
+          </h3>
+          <p className="text-primary font-semibold mb-4">
+            {member.role || "Membre de l'équipe"}
+          </p>
+          <p className="text-gray-700 leading-relaxed">
+            {member.bio || "Aucune biographie disponible pour le moment."}
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  // Helper function to render team section
+  const renderTeamSection = (title: string, description: string, members: any[], category: string) => {
+    if (members.length === 0) return null;
+    
+    const getCategoryColor = (cat: string) => {
+      switch (cat) {
+        case 'leadership': return 'from-blue-500 to-blue-600';
+        case 'administration': return 'from-purple-500 to-purple-600';
+        case 'teachers': return 'from-green-500 to-green-600';
+        case 'staff': return 'from-orange-500 to-orange-600';
+        default: return 'from-gray-500 to-gray-600';
+      }
+    };
+    
+    return (
+      <section className={`py-24 ${category === 'leadership' ? 'bg-white' : category === 'administration' ? 'bg-gray-50' : category === 'teachers' ? 'bg-white' : category === 'staff' ? 'bg-gray-50' : 'bg-white'}`}>
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="section-header-creative mb-16">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <div className={`w-1 h-8 bg-gradient-to-b ${getCategoryColor(category)} rounded-full`}></div>
+                <h2 className="section-title-creative">{title}</h2>
+                <div className={`w-1 h-8 bg-gradient-to-b ${getCategoryColor(category)} rounded-full`}></div>
+              </div>
+              <p className="section-description-creative">
+                {description}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {members.map(renderTeamMemberCard)}
+          </div>
+        </div>
+      </section>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
       <SEO 
@@ -90,69 +203,60 @@ const EquipePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <div className="section-header-creative mb-16">
-            <div>
-              <h2 className="section-title-creative">Notre Équipe</h2>
-              <p className="section-description-creative">
-                Une équipe dévouée prête à accompagner chaque élève.
-              </p>
-            </div>
-          </div>
+      {/* Leadership Team Section */}
+      {renderTeamSection(
+        "Direction & Leadership",
+        "Notre équipe de direction qui guide notre institution vers l'excellence",
+        leadershipTeam,
+        "leadership"
+      )}
 
-          {teamMembers === undefined ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-            </div>
-          ) : teamMembers.length === 0 ? (
+      {/* Administration Team Section */}
+      {renderTeamSection(
+        "Administration",
+        "L'équipe administrative qui assure le bon fonctionnement de notre école",
+        administrationTeam,
+        "administration"
+      )}
+
+      {/* Teachers Team Section */}
+      {renderTeamSection(
+        "Corps Enseignant",
+        "Nos enseignants passionnés qui transmettent le savoir avec dévouement",
+        teachersTeam,
+        "teachers"
+      )}
+
+      {/* Staff Team Section */}
+      {renderTeamSection(
+        "Personnel de Soutien",
+        "Notre équipe de soutien qui contribue au bien-être de notre communauté",
+        staffTeam,
+        "staff"
+      )}
+
+      {/* Other Team Section */}
+      {renderTeamSection(
+        "Autres Membres",
+        "Autres membres de notre équipe qui enrichissent notre communauté",
+        otherTeam,
+        "other"
+      )}
+
+      {/* Empty State */}
+      {leadershipTeam.length === 0 && 
+       administrationTeam.length === 0 && 
+       teachersTeam.length === 0 && 
+       staffTeam.length === 0 && 
+       otherTeam.length === 0 && (
+        <section className="py-24 bg-white">
+          <div className="container mx-auto px-6 max-w-6xl">
             <div className="text-center py-12">
               <p className="text-gray-500">Aucun membre d'équipe disponible pour le moment.</p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {teamMembers.map((member) => (
-                <div
-                  key={member._id}
-                  className="team-card-container bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300"
-                >
-                  <div className="relative h-64">
-                    {member.photo ? (
-                      <img
-                        src={member.photo}
-                        alt={member.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          // Fallback to initials if image fails to load
-                          e.currentTarget.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <div className="text-4xl font-bold text-gray-400">
-                          {member.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      {member.name}
-                    </h3>
-                    <p className="text-primary font-semibold mb-4">
-                      {member.role || "Membre de l'équipe"}
-                    </p>
-                    <p className="text-gray-700 leading-relaxed">
-                      {member.bio || "Aucune biographie disponible pour le moment."}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="py-24 bg-primary text-white">

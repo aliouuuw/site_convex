@@ -32,6 +32,7 @@ export const createTeamMember = mutation({
   args: {
     name: v.string(),
     role: v.optional(v.string()),
+    category: v.optional(v.string()),
     photo: v.optional(v.string()),
     bio: v.optional(v.string()),
     order: v.optional(v.number()),
@@ -41,6 +42,7 @@ export const createTeamMember = mutation({
     const id = await ctx.db.insert("team_members", {
       name: args.name,
       role: args.role,
+      category: args.category,
       photo: args.photo,
       bio: args.bio,
       order: args.order ?? 0,
@@ -57,6 +59,7 @@ export const updateTeamMember = mutation({
     id: v.id("team_members"),
     name: v.optional(v.string()),
     role: v.optional(v.string()),
+    category: v.optional(v.string()),
     photo: v.optional(v.string()),
     bio: v.optional(v.string()),
     order: v.optional(v.number()),
@@ -64,7 +67,7 @@ export const updateTeamMember = mutation({
   },
   handler: async (ctx, args) => {
     const updates: any = { updatedAt: now() };
-    for (const k of ["name", "role", "photo", "bio", "order", "visible"]) {
+    for (const k of ["name", "role", "category", "photo", "bio", "order", "visible"]) {
       if (args[k as keyof typeof args] !== undefined) updates[k] = (args as any)[k];
     }
     await ctx.db.patch(args.id, updates);
@@ -90,5 +93,21 @@ export const countTeamMembers = query({
       .order("asc")
       .collect();
     return members.length;
+  },
+});
+
+export const listTeamMembersByCategory = query({
+  args: {
+    category: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const members = await ctx.db
+      .query("team_members")
+      .withIndex("by_category_visible", (q) => 
+        q.eq("category", args.category).eq("visible", true)
+      )
+      .order("asc")
+      .collect();
+    return members;
   },
 });

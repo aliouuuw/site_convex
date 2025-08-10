@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaEdit, FaImages, FaUsers, FaQuoteLeft } from "react-icons/fa";
+import { FaEdit, FaImages, FaUsers, FaQuoteLeft, FaHistory } from "react-icons/fa";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 
@@ -12,6 +12,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const mediaFileCount = useQuery(api.media.countMediaFiles) ?? 0;
   const teamMemberCount = useQuery(api.team.countTeamMembers) ?? 0;
   const testimonialsCount = useQuery(api.testimonials.listAllTestimonials, { limit: 1000 })?.length ?? 0;
+  const timelineEntriesCount = useQuery(api.timeline.countTimelineEntries) ?? 0;
 
   return (
     <div className="flex min-h-screen bg-gray-50">
@@ -24,6 +25,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {[
             { path: "/admin/blog", label: "Blog Posts", icon: <FaEdit className="text-lg" /> },
             { path: "/admin/testimonials", label: "Testimonials", icon: <FaQuoteLeft className="text-lg" /> },
+            { path: "/admin/timeline", label: "Timeline", icon: <FaHistory className="text-lg" /> },
             { path: "/admin/media", label: "Media Library", icon: <FaImages className="text-lg" /> },
             { path: "/admin/team", label: "Team Members", icon: <FaUsers className="text-lg" /> },
           ].map((item) => (
@@ -59,6 +61,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Testimonials</span>
               <span className="font-medium">{testimonialsCount}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Timeline Entries</span>
+              <span className="font-medium">{timelineEntriesCount}</span>
             </div>
           </div>
         </div>
