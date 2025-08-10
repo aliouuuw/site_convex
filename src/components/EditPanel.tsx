@@ -3,7 +3,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import { getPageRegistry } from '../lib/contentRegistry';
 import { useEditMode as useEditModeHook } from '../hooks/useEditMode';
-import MediaPicker from './MediaPicker';
+import MediaSelector from './MediaSelector';
 import { Id } from '../../convex/_generated/dataModel';
 import RichTextEditor from './RichTextEditor';
 import { FaTrash } from 'react-icons/fa6';
@@ -17,8 +17,6 @@ interface EditPanelProps {
 export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
   const { isEditMode } = useEditModeHook();
   const registry = getPageRegistry(page);
-  const [editingItem, setEditingItem] = useState<string | null>(null);
-  const [showMediaPicker, setShowMediaPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const updateContent = useMutation(api.content.updateContent);
@@ -52,108 +50,7 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
     }
   };
 
-  const handleImageUpload = async (id: string, page: string, payload: {
-    previews: string[];
-    uploadData: Array<{ url: string; name: string; size: number; mediaId?: string }>;
-  }) => {
-    try {
-      setIsUploading(true);
-      const uploadItem = payload.uploadData[0];
-      
-      if (!uploadItem) {
-        throw new Error('No upload data received');
-      }
 
-      // Store media record in Convex
-      let mediaId: Id<"media"> | undefined;
-      if (!uploadItem.mediaId) {
-        mediaId = await storeMediaRecord({
-          url: uploadItem.url,
-          name: uploadItem.name,
-          size: uploadItem.size,
-          type: 'image',
-          alt: '',
-          uploadedBy: 'admin', // TODO: Get from auth context
-        });
-      } else {
-        mediaId = uploadItem.mediaId as Id<"media">;
-      }
-
-      // Update content with new image
-      await updateContent({
-        id,
-        content: uploadItem.url,
-        type: 'image',
-        page,
-        mediaId,
-      });
-
-      setShowMediaPicker(false);
-      setEditingItem(null);
-    } catch (error) {
-      console.error('Failed to update image:', error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleSliderUpload = async (id: string, page: string, payload: {
-    previews: string[];
-    uploadData: Array<{ url: string; name: string; size: number; mediaId?: string }>;
-  }) => {
-    try {
-      setIsUploading(true);
-      const uploadItem = payload.uploadData[0];
-      
-      if (!uploadItem) {
-        throw new Error('No upload data received');
-      }
-
-      // Get current images from hydrated map
-      const currentImages = (() => {
-        const existing = contentMap.get(id)?.content;
-        if (!existing) return [] as string[];
-        try {
-          const parsed = JSON.parse(existing);
-          return Array.isArray(parsed) ? parsed.filter((x: unknown): x is string => typeof x === 'string') : [];
-        } catch {
-          return [] as string[];
-        }
-      })();
-      
-      // Add new image to the array
-      const updatedImages = [...currentImages, uploadItem.url];
-
-      // Store media record
-      let mediaId: Id<"media"> | undefined;
-      if (!uploadItem.mediaId) {
-        mediaId = await storeMediaRecord({
-          url: uploadItem.url,
-          name: uploadItem.name,
-          size: uploadItem.size,
-          type: 'image',
-          alt: `${id} image`,
-          uploadedBy: 'admin',
-        });
-      }
-
-      // Update content
-      await updateContent({
-        id,
-        content: JSON.stringify(updatedImages),
-        type: 'image',
-        page,
-        mediaId,
-      });
-
-      setShowMediaPicker(false);
-      setEditingItem(null);
-    } catch (error) {
-      console.error('Failed to update slider:', error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
 
   const TextEditor = ({ id, page }: { id: string; page: string }) => {
     const hydrated = contentMap.get(id)?.content || '';
@@ -175,7 +72,7 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
 
     const handleSave = () => {
       if (hasChanges) {
-        handleTextChange(id, value, page);
+        void handleTextChange(id, value, page);
         setHasChanges(false);
       }
     };
@@ -223,26 +120,66 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
       }
     };
 
+    const handleMediaSelect = async (media: { url: string; name: string; size: number; mediaId?: string }) => {
+      try {
+        setIsUploading(true);
+        
+        // Store media record in Convex if it doesn't exist
+        let mediaId: Id<"media"> | undefined;
+        if (!media.mediaId) {
+          mediaId = await storeMediaRecord({
+            url: media.url,
+            name: media.name,
+            size: media.size,
+            type: 'image',
+            alt: '',
+            uploadedBy: 'admin', // TODO: Get from auth context
+          });
+        } else {
+          mediaId = media.mediaId as Id<"media">;
+        }
+
+        // Update content with new image
+        await updateContent({
+          id,
+          content: media.url,
+          type: 'image',
+          page,
+          mediaId,
+        });
+
+        console.log('Image updated successfully');
+      } catch (error) {
+        console.error('Failed to update image:', error);
+        alert(`Failed to update image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      } finally {
+        setIsUploading(false);
+      }
+    };
+
     return (
       <div className="space-y-2">
         {currentSrc && (
           <img src={currentSrc} alt="Current" className="w-full h-20 object-cover rounded" />
         )}
         <div className="space-y-1">
-          <button
-            onClick={() => {
-              setEditingItem(id);
-              setShowMediaPicker(true);
+          <MediaSelector
+            onSelect={(media) => {
+              void handleMediaSelect(media);
             }}
-            className="w-full text-xs bg-gray-100 hover:bg-gray-200 p-2 rounded border"
-          >
-            {currentSrc ? 'Change Image' : 'Add Image'}
-          </button>
+            currentImageUrl={currentSrc}
+            accept="image/*"
+            className="w-full"
+            disabled={isUploading}
+          />
           {currentSrc && (
             <button
-              onClick={removeImage}
+              onClick={() => {
+                void removeImage();
+              }}
               className="w-full text-xs bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 p-2 rounded border border-red-200 hover:border-red-300 flex items-center justify-center gap-1"
               title="Remove this image"
+              disabled={isUploading}
             >
               <FaTrash className="text-xs" />
               Remove Image
@@ -297,6 +234,44 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
       }
     };
 
+    const handleSliderMediaSelect = async (media: { url: string; name: string; size: number; mediaId?: string }) => {
+      try {
+        setIsUploading(true);
+        
+        // Add new image to the array
+        const updatedImages = [...currentImages, media.url];
+
+        // Store media record in Convex if it doesn't exist
+        let mediaId: Id<"media"> | undefined;
+        if (!media.mediaId) {
+          mediaId = await storeMediaRecord({
+            url: media.url,
+            name: media.name,
+            size: media.size,
+            type: 'image',
+            alt: `${id} image`,
+            uploadedBy: 'admin',
+          });
+        }
+
+        // Update content
+        await updateContent({
+          id,
+          content: JSON.stringify(updatedImages),
+          type: 'image',
+          page,
+          mediaId,
+        });
+
+        console.log('Slider image added successfully');
+      } catch (error) {
+        console.error('Failed to add slider image:', error);
+        alert(`Failed to add image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      } finally {
+        setIsUploading(false);
+      }
+    };
+
     return (
       <div className="space-y-2">
         {currentImages.length > 0 && (
@@ -307,7 +282,9 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
                   <img src={img} alt={`Slide ${index + 1}`} className="w-8 h-8 object-cover rounded" />
                   <span className="text-xs flex-1 truncate">{img.split('/').pop()}</span>
                   <button
-                    onClick={() => removeImage(index)}
+                    onClick={() => {
+                      void removeImage(index);
+                    }}
                     className="text-xs text-red-500 hover:text-red-700 px-2 py-1 rounded flex items-center gap-1"
                     title={`Remove image ${index + 1}`}
                   >
@@ -318,7 +295,9 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
             </div>
             {currentImages.length > 1 && (
               <button
-                onClick={clearAllImages}
+                onClick={() => {
+                  void clearAllImages();
+                }}
                 className="w-full text-xs bg-red-50 hover:bg-red-100 text-red-700 hover:text-red-800 p-2 rounded border border-red-200 hover:border-red-300 flex items-center justify-center gap-1"
                 title="Remove all images"
               >
@@ -328,15 +307,14 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
             )}
           </div>
         )}
-        <button
-          onClick={() => {
-            setEditingItem(id);
-            setShowMediaPicker(true);
+        <MediaSelector
+          onSelect={(media) => {
+            void handleSliderMediaSelect(media);
           }}
-          className="w-full text-xs bg-gray-100 hover:bg-gray-200 p-2 rounded border"
-        >
-          Add Image
-        </button>
+          accept="image/*"
+          className="w-full"
+          disabled={isUploading}
+        />
       </div>
     );
   };
@@ -372,7 +350,9 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
         <RichTextEditor content={value} onChange={(v) => { setValue(v); setHasChanges(v !== hydrated); }} minHeight={200} maxHeight={400} />
         {hasChanges && (
           <button
-            onClick={handleSave}
+            onClick={() => {
+              void handleSave();
+            }}
             className="text-xs bg-primary text-white px-2 py-1 rounded hover:bg-primary/90"
           >
             Save Changes
@@ -458,7 +438,8 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
       </div>
 
       {/* Media Picker Modal */}
-      {showMediaPicker && editingItem && (
+      {/* This section is no longer needed as MediaSelector handles its own state */}
+      {/* {showMediaPicker && editingItem && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[1001] p-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
@@ -482,7 +463,7 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
               </button>
             </div>
             
-            <MediaPicker
+            <MediaSelector
               onUploadComplete={(payload) => {
                 const itemType = Object.values(registry)
                   .flat()
@@ -524,7 +505,7 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </>
   );
 }
