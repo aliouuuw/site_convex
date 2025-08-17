@@ -90,10 +90,20 @@ const BlogPage: React.FC = () => {
             <div className="container mx-auto px-6 max-w-6xl">
               <div className="section-header-creative mb-16">
                 <div>
-                  <h2 className="section-title-creative">À la Une</h2>
-                  <p className="section-description-creative">
+                  <DisplayText 
+                    id="blog.featured.title" 
+                    as="h2" 
+                    className="section-title-creative"
+                  >
+                    À la Une
+                  </DisplayText>
+                  <DisplayText 
+                    id="blog.featured.description" 
+                    as="p" 
+                    className="section-description-creative"
+                  >
                     Notre article vedette de la semaine
-                  </p>
+                  </DisplayText>
                 </div>
               </div>
 
@@ -145,17 +155,25 @@ const BlogPage: React.FC = () => {
         {/* Regular Posts Grid */}
         <section className="py-24 bg-gray-50">
           <div className="container mx-auto px-6 max-w-6xl">
-            <div className="section-header-creative mb-16">
-              <div>
-                <h2 className="section-title-creative">
-                  Toutes les Actualités
-                </h2>
-                <p className="section-description-creative">
-                  Restez informés de toute l'actualité de notre
-                  établissement
-                </p>
+                          <div className="section-header-creative mb-16">
+                <div>
+                  <DisplayText 
+                    id="blog.posts.title" 
+                    as="h2" 
+                    className="section-title-creative"
+                  >
+                    Toutes les Actualités
+                  </DisplayText>
+                  <DisplayText 
+                    id="blog.posts.description" 
+                    as="p" 
+                    className="section-description-creative"
+                  >
+                    Restez informés de toute l'actualité de notre
+                    établissement
+                  </DisplayText>
+                </div>
               </div>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {regularPosts.map((post: any) => (
@@ -222,14 +240,22 @@ const BlogPage: React.FC = () => {
               <div className="bg-gray-50 p-12 border-l-4 border-accent">
                 <div className="flex items-start gap-4 justify-center">
                   <div className="text-center">
-                    <h2 className="text-3xl font-bold mb-4 text-gray-900">
+                    <DisplayText 
+                      id="blog.newsletter.title" 
+                      as="h2" 
+                      className="text-3xl font-bold mb-4 text-gray-900"
+                    >
                       Restez informé
-                    </h2>
-                    <p className="text-gray-600 mb-8">
+                    </DisplayText>
+                    <DisplayText 
+                      id="blog.newsletter.description" 
+                      as="p" 
+                      className="text-gray-600 mb-8"
+                    >
                       Inscrivez-vous à notre newsletter pour recevoir les
                       dernières actualités de l'école directement dans
                       votre boîte mail.
-                    </p>
+                    </DisplayText>
                     <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                       <input
                         type="email"
@@ -238,7 +264,9 @@ const BlogPage: React.FC = () => {
                         required
                       />
                       <button type="submit" className="btn btn-primary">
-                        S'inscrire
+                        <DisplayText id="blog.newsletter.button">
+                          S'inscrire
+                        </DisplayText>
                       </button>
                     </form>
                   </div>

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { FaImages, FaVideo, FaPlay, FaSearch, FaTimes } from "react-icons/fa";
-import { ImageSlider } from "../components/ImageSlider";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
+import DisplayImage from '../components/DisplayImage';
 import SEO from "../components/SEO";
 
 // Remove static data - we'll fetch from Convex
@@ -117,8 +117,19 @@ const GalleryPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-5">
-              <ImageSlider />
+            <div className="lg:col-span-5 flex flex-col justify-center">
+              <div className="relative">
+                <div className="relative h-[400px] w-full">
+                  <DisplayImage
+                    id="gallery.hero.image"
+                    src="/images/gallery/gallery-hero.jpg"
+                    alt="Galerie Multimédia - Les Hirondelles"
+                    className="object-cover w-full h-full"
+                  />
+                </div>
+                <div className="absolute -top-6 -left-6 w-12 h-12 bg-accent"></div>
+                <div className="absolute -bottom-6 -right-6 w-8 h-8 bg-primary"></div>
+              </div>
             </div>
           </div>
         </div>

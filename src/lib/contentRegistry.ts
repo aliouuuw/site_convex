@@ -153,6 +153,77 @@ export const contentRegistry: ContentRegistry = {
       { id: 'inscription.requirements.description', type: 'text', label: 'Requirements Description', section: 'requirements', page: 'inscription' },
     ],
   },
+  preschool: {
+    hero: [
+      { id: 'preschool.hero.label', type: 'text', label: 'Hero Label', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.title', type: 'text', label: 'Hero Title', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.age', type: 'text', label: 'Age Range', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.desc', type: 'text', label: 'Hero Description', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.hours', type: 'text', label: 'School Hours', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.classsize', type: 'text', label: 'Class Size', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.pedago.title', type: 'text', label: 'Pedagogy Title', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.pedago.desc', type: 'text', label: 'Pedagogy Description', section: 'hero', page: 'preschool' },
+      { id: 'preschool.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'preschool' },
+    ],
+    agegroups: [
+      { id: 'preschool.agegroups.title', type: 'text', label: 'Age Groups Title', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroups.desc', type: 'text', label: 'Age Groups Description', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.0.image', type: 'image', label: 'Small Section Image', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.0.age', type: 'text', label: 'Small Section Age', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.0.name', type: 'text', label: 'Small Section Name', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.0.focus', type: 'text', label: 'Small Section Focus', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.1.image', type: 'image', label: 'Medium Section Image', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.1.age', type: 'text', label: 'Medium Section Age', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.1.name', type: 'text', label: 'Medium Section Name', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.1.focus', type: 'text', label: 'Medium Section Focus', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.2.image', type: 'image', label: 'Large Section Image', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.2.age', type: 'text', label: 'Large Section Age', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.2.name', type: 'text', label: 'Large Section Name', section: 'agegroups', page: 'preschool' },
+      { id: 'preschool.agegroup.2.focus', type: 'text', label: 'Large Section Focus', section: 'agegroups', page: 'preschool' },
+    ],
+
+    cta: [
+      { id: 'preschool.cta.title', type: 'text', label: 'CTA Title', section: 'cta', page: 'preschool' },
+      { id: 'preschool.cta.desc', type: 'text', label: 'CTA Description', section: 'cta', page: 'preschool' },
+    ],
+  },
+  middleschool: {
+    hero: [
+      { id: 'middleschool.hero.label', type: 'text', label: 'Hero Label', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.title', type: 'text', label: 'Hero Title', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.age', type: 'text', label: 'Age Range', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.desc', type: 'text', label: 'Hero Description', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.hours', type: 'text', label: 'School Hours', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.classsize', type: 'text', label: 'Class Size', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.excellence.title', type: 'text', label: 'Excellence Title', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.excellence.desc', type: 'text', label: 'Excellence Description', section: 'hero', page: 'middleschool' },
+      { id: 'middleschool.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'middleschool' },
+    ],
+    levels: [
+      { id: 'middleschool.levels.title', type: 'text', label: 'Levels Title', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.levels.desc', type: 'text', label: 'Levels Description', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.0.image', type: 'image', label: '6ème Level Image', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.0.age', type: 'text', label: '6ème Age Range', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.0.name', type: 'text', label: '6ème Level Name', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.0.focus', type: 'text', label: '6ème Focus Area', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.1.image', type: 'image', label: '5ème-4ème Level Image', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.1.age', type: 'text', label: '5ème-4ème Age Range', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.1.name', type: 'text', label: '5ème-4ème Level Name', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.1.focus', type: 'text', label: '5ème-4ème Focus Area', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.2.image', type: 'image', label: '3ème Level Image', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.2.age', type: 'text', label: '3ème Age Range', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.2.name', type: 'text', label: '3ème Level Name', section: 'levels', page: 'middleschool' },
+      { id: 'middleschool.level.2.focus', type: 'text', label: '3ème Focus Area', section: 'levels', page: 'middleschool' },
+    ],
+    subjects: [
+      { id: 'middleschool.subjects.title', type: 'text', label: 'Subjects Title', section: 'subjects', page: 'middleschool' },
+      { id: 'middleschool.subjects.desc', type: 'text', label: 'Subjects Description', section: 'subjects', page: 'middleschool' },
+    ],
+    schedule: [
+      { id: 'middleschool.schedule.title', type: 'text', label: 'Schedule Title', section: 'schedule', page: 'middleschool' },
+      { id: 'middleschool.schedule.desc', type: 'text', label: 'Schedule Description', section: 'schedule', page: 'middleschool' },
+    ],
+  },
   primary: {
     hero: [
       { id: 'primary.hero.label', type: 'text', label: 'Hero Label', section: 'hero', page: 'primary' },
@@ -181,20 +252,7 @@ export const contentRegistry: ContentRegistry = {
       { id: 'primary.level.2.name', type: 'text', label: 'CM Level Name', section: 'levels', page: 'primary' },
       { id: 'primary.level.2.focus', type: 'text', label: 'CM Focus Area', section: 'levels', page: 'primary' },
     ],
-    subjects: [
-      { id: 'primary.subjects.title', type: 'text', label: 'Subjects Title', section: 'subjects', page: 'primary' },
-      { id: 'primary.subjects.desc', type: 'text', label: 'Subjects Description', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.francais.title', type: 'text', label: 'French Subject Title', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.francais.desc', type: 'text', label: 'French Subject Description', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.mathematiques.title', type: 'text', label: 'Math Subject Title', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.mathematiques.desc', type: 'text', label: 'Math Subject Description', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.sciences.title', type: 'text', label: 'Science Subject Title', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.sciences.desc', type: 'text', label: 'Science Subject Description', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.langues.title', type: 'text', label: 'Languages Subject Title', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.langues.desc', type: 'text', label: 'Languages Subject Description', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.informatique.title', type: 'text', label: 'IT Subject Title', section: 'subjects', page: 'primary' },
-      { id: 'primary.subject.informatique.desc', type: 'text', label: 'IT Subject Description', section: 'subjects', page: 'primary' },
-    ],
+
     schedule: [
       { id: 'primary.schedule.title', type: 'text', label: 'Schedule Title', section: 'schedule', page: 'primary' },
       { id: 'primary.schedule.desc', type: 'text', label: 'Schedule Description', section: 'schedule', page: 'primary' },
@@ -208,6 +266,20 @@ export const contentRegistry: ContentRegistry = {
     hero: [
       { id: 'blog.title', type: 'text', label: 'Page Title', section: 'hero', page: 'blog' },
       { id: 'blog.description', type: 'text', label: 'Page Description', section: 'hero', page: 'blog' },
+      { id: 'blog.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'blog' },
+    ],
+    featured: [
+      { id: 'blog.featured.title', type: 'text', label: 'Featured Section Title', section: 'featured', page: 'blog' },
+      { id: 'blog.featured.description', type: 'text', label: 'Featured Section Description', section: 'featured', page: 'blog' },
+    ],
+    posts: [
+      { id: 'blog.posts.title', type: 'text', label: 'Posts Section Title', section: 'posts', page: 'blog' },
+      { id: 'blog.posts.description', type: 'text', label: 'Posts Section Description', section: 'posts', page: 'blog' },
+    ],
+    newsletter: [
+      { id: 'blog.newsletter.title', type: 'text', label: 'Newsletter Title', section: 'newsletter', page: 'blog' },
+      { id: 'blog.newsletter.description', type: 'text', label: 'Newsletter Description', section: 'newsletter', page: 'blog' },
+      { id: 'blog.newsletter.button', type: 'text', label: 'Newsletter Button', section: 'newsletter', page: 'blog' },
     ],
   },
   programs: {
@@ -220,6 +292,7 @@ export const contentRegistry: ContentRegistry = {
     hero: [
       { id: 'gallery.title', type: 'text', label: 'Page Title', section: 'hero', page: 'gallery' },
       { id: 'gallery.description', type: 'text', label: 'Page Description', section: 'hero', page: 'gallery' },
+      { id: 'gallery.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'gallery' },
     ],
   },
   equipe: {
