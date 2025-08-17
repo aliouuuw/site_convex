@@ -62,7 +62,9 @@ const EquipePage: React.FC = () => {
           {member.category && (
             <div className="absolute top-4 right-4">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryBadgeColor(member.category)}`}>
-                {getCategoryLabel(member.category)}
+                <DisplayText id={`equipe.category.${member.category}.label`}>
+                  {getCategoryLabel(member.category)}
+                </DisplayText>
               </span>
             </div>
           )}
@@ -72,10 +74,20 @@ const EquipePage: React.FC = () => {
             {member.name}
           </h3>
           <p className="text-primary font-semibold mb-4">
-            {member.role || "Membre de l'équipe"}
+            {member.role ? (
+              member.role
+            ) : (
+              <DisplayText id="equipe.member.role.fallback">Membre de l'équipe</DisplayText>
+            )}
           </p>
           <p className="text-gray-700 leading-relaxed">
-            {member.bio || "Aucune biographie disponible pour le moment."}
+            {member.bio ? (
+              member.bio
+            ) : (
+              <DisplayText id="equipe.member.bio.fallback">
+                Aucune biographie disponible pour le moment.
+              </DisplayText>
+            )}
           </p>
         </div>
       </div>
@@ -83,7 +95,7 @@ const EquipePage: React.FC = () => {
   };
 
   // Helper function to render team section
-  const renderTeamSection = (title: string, description: string, members: any[], category: string) => {
+  const renderTeamSection = (titleId: string, descriptionId: string, members: any[], category: string) => {
     if (members.length === 0) return null;
     
     const getCategoryColor = (cat: string) => {
@@ -103,12 +115,29 @@ const EquipePage: React.FC = () => {
             <div className="text-center">
               <div className="inline-flex items-center gap-3 mb-4">
                 <div className={`w-1 h-8 bg-gradient-to-b ${getCategoryColor(category)} rounded-full`}></div>
-                <h2 className="section-title-creative">{title}</h2>
+                <DisplayText 
+                  id={titleId} 
+                  as="h2" 
+                  className="section-title-creative"
+                >
+                  {category === 'leadership' ? 'Direction & Leadership' :
+                   category === 'administration' ? 'Administration' :
+                   category === 'teachers' ? 'Corps Enseignant' :
+                   category === 'staff' ? 'Personnel de Soutien' : 'Autres Membres'}
+                </DisplayText>
                 <div className={`w-1 h-8 bg-gradient-to-b ${getCategoryColor(category)} rounded-full`}></div>
               </div>
-              <p className="section-description-creative">
-                {description}
-              </p>
+              <DisplayText 
+                id={descriptionId} 
+                as="p" 
+                className="section-description-creative"
+              >
+                {category === 'leadership' ? 'Notre équipe de direction qui guide notre institution vers l\'excellence' :
+                 category === 'administration' ? 'L\'équipe administrative qui assure le bon fonctionnement de notre école' :
+                 category === 'teachers' ? 'Nos enseignants passionnés qui transmettent le savoir avec dévouement' :
+                 category === 'staff' ? 'Notre équipe de soutien qui contribue au bien-être de notre communauté' :
+                 'Autres membres de notre équipe qui enrichissent notre communauté'}
+              </DisplayText>
             </div>
           </div>
 
@@ -140,7 +169,9 @@ const EquipePage: React.FC = () => {
               <div className="flex items-center gap-4">
                 <div className="w-12 h-px bg-accent"></div>
                 <span className="text-sm font-semibold text-primary tracking-wider uppercase">
-                  Équipe
+                  <DisplayText id="equipe.badge">
+                    Équipe
+                  </DisplayText>
                 </span>
               </div>
 
@@ -205,40 +236,40 @@ const EquipePage: React.FC = () => {
 
       {/* Leadership Team Section */}
       {renderTeamSection(
-        "Direction & Leadership",
-        "Notre équipe de direction qui guide notre institution vers l'excellence",
+        "equipe.sections.leadership.title",
+        "equipe.sections.leadership.description",
         leadershipTeam,
         "leadership"
       )}
 
       {/* Administration Team Section */}
       {renderTeamSection(
-        "Administration",
-        "L'équipe administrative qui assure le bon fonctionnement de notre école",
+        "equipe.sections.administration.title",
+        "equipe.sections.administration.description",
         administrationTeam,
         "administration"
       )}
 
       {/* Teachers Team Section */}
       {renderTeamSection(
-        "Corps Enseignant",
-        "Nos enseignants passionnés qui transmettent le savoir avec dévouement",
+        "equipe.sections.teachers.title",
+        "equipe.sections.teachers.description",
         teachersTeam,
         "teachers"
       )}
 
       {/* Staff Team Section */}
       {renderTeamSection(
-        "Personnel de Soutien",
-        "Notre équipe de soutien qui contribue au bien-être de notre communauté",
+        "equipe.sections.staff.title",
+        "equipe.sections.staff.description",
         staffTeam,
         "staff"
       )}
 
       {/* Other Team Section */}
       {renderTeamSection(
-        "Autres Membres",
-        "Autres membres de notre équipe qui enrichissent notre communauté",
+        "equipe.sections.other.title",
+        "equipe.sections.other.description",
         otherTeam,
         "other"
       )}
@@ -252,7 +283,13 @@ const EquipePage: React.FC = () => {
         <section className="py-24 bg-white">
           <div className="container mx-auto px-6 max-w-6xl">
             <div className="text-center py-12">
-              <p className="text-gray-500">Aucun membre d'équipe disponible pour le moment.</p>
+              <DisplayText 
+                id="equipe.empty.message" 
+                as="p" 
+                className="text-gray-500"
+              >
+                Aucun membre d'équipe disponible pour le moment.
+              </DisplayText>
             </div>
           </div>
         </section>
@@ -262,14 +299,24 @@ const EquipePage: React.FC = () => {
       <section className="py-24 bg-primary text-white">
         <div className="container mx-auto px-6 max-w-6xl text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <DisplayText 
+              id="equipe.cta.title" 
+              as="h2" 
+              className="text-3xl md:text-4xl font-bold mb-6"
+            >
               Rejoignez Notre Aventure Éducative
-            </h2>
-            <p className="text-xl text-gray-100 mb-8 leading-relaxed">
+            </DisplayText>
+            <DisplayText 
+              id="equipe.cta.description" 
+              as="p" 
+              className="text-xl text-gray-100 mb-8 leading-relaxed"
+            >
               Contactez-nous pour rencontrer notre équipe et découvrir notre philosophie.
-            </p>
+            </DisplayText>
             <a href="/contact" className="btn btn-accent">
-              Nous Contacter
+              <DisplayText id="equipe.cta.button">
+                Nous Contacter
+              </DisplayText>
             </a>
           </div>
         </div>

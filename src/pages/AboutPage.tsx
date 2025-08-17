@@ -33,9 +33,13 @@ const AboutPage: React.FC = () => {
             <div className="lg:col-span-7 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-px bg-accent"></div>
-                <span className="text-sm font-semibold text-primary tracking-wider uppercase">
+                <DisplayText 
+                  id="about.badge" 
+                  as="span" 
+                  className="text-sm font-semibold text-primary tracking-wider uppercase"
+                >
                   Histoire
-                </span>
+                </DisplayText>
               </div>
 
               <div className="space-y-6">
@@ -231,61 +235,93 @@ const AboutPage: React.FC = () => {
               <>
                 <div className="flex items-center gap-8">
                   <div className="text-4xl font-bold text-primary min-w-[120px]">
-                    2003
+                    <DisplayText id="about.timeline.2003.year">2003</DisplayText>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 color-black">
+                    <DisplayText 
+                      id="about.timeline.2003.title" 
+                      as="h3" 
+                      className="text-xl font-semibold mb-2 color-black"
+                    >
                       Fondation de L'Institution
-                    </h3>
-                    <p className="text-gray-600">
+                    </DisplayText>
+                    <DisplayText 
+                      id="about.timeline.2003.description" 
+                      as="p" 
+                      className="text-gray-600"
+                    >
                       Création de Les Hirondelles avec la vision d'une éducation
                       d'excellence au Sénégal.
-                    </p>
+                    </DisplayText>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-8">
                   <div className="text-4xl font-bold text-primary min-w-[120px]">
-                    2008
+                    <DisplayText id="about.timeline.2008.year">2008</DisplayText>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 color-black">
+                    <DisplayText 
+                      id="about.timeline.2008.title" 
+                      as="h3" 
+                      className="text-xl font-semibold mb-2 color-black"
+                    >
                       Première Promotion du Primaire
-                    </h3>
-                    <p className="text-gray-600">
+                    </DisplayText>
+                    <DisplayText 
+                      id="about.timeline.2008.description" 
+                      as="p" 
+                      className="text-gray-600"
+                    >
                       Célébration de nos premiers diplômés du cycle primaire,
                       marquant une étape clé.
-                    </p>
+                    </DisplayText>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-8">
                   <div className="text-4xl font-bold text-primary min-w-[120px]">
-                    2015
+                    <DisplayText id="about.timeline.2015.year">2015</DisplayText>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 color-black">
+                    <DisplayText 
+                      id="about.timeline.2015.title" 
+                      as="h3" 
+                      className="text-xl font-semibold mb-2 color-black"
+                    >
                       Expansion avec le Collège
-                    </h3>
-                    <p className="text-gray-600">
+                    </DisplayText>
+                    <DisplayText 
+                      id="about.timeline.2015.description" 
+                      as="p" 
+                      className="text-gray-600"
+                    >
                       Ouverture du cycle collégial pour offrir un parcours éducatif
                       continu et cohérent.
-                    </p>
+                    </DisplayText>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-8">
                   <div className="text-4xl font-bold text-accent min-w-[120px]">
-                    Aujourd'hui
+                    <DisplayText id="about.timeline.today.year">Aujourd'hui</DisplayText>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-semibold mb-2 color-black">
+                    <DisplayText 
+                      id="about.timeline.today.title" 
+                      as="h3" 
+                      className="text-xl font-semibold mb-2 color-black"
+                    >
                       Vers de Nouveaux Horizons
-                    </h3>
-                    <p className="text-gray-600">
+                    </DisplayText>
+                    <DisplayText 
+                      id="about.timeline.today.description" 
+                      as="p" 
+                      className="text-gray-600"
+                    >
                       Fiers de notre héritage, nous continuons d'innover pour former
                       les leaders de demain.
-                    </p>
+                    </DisplayText>
                   </div>
                 </div>
               </>
@@ -465,13 +501,17 @@ const AboutPage: React.FC = () => {
             </DisplayText>
             <div className="flex flex-wrap justify-center gap-6">
               <Link to="/contact" className="btn btn-accent">
-                Nous Contacter
+                <DisplayText id="about.cta.contact.button">
+                  Nous Contacter
+                </DisplayText>
               </Link>
               <Link
                 to="/inscription"
                 className="font-family-poppins font-medium text-[0.875rem] px-[2rem] py-[1rem] tracking-[0.025em] text-white border-1 border-white hover:underline transition-all duration-300 translate-y-0 hover:translate-y-[-1px]"
               >
-                Processus d'inscription
+                <DisplayText id="about.cta.inscription.button">
+                  Processus d'inscription
+                </DisplayText>
               </Link>
             </div>
           </div>

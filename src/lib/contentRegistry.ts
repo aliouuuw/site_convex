@@ -59,6 +59,7 @@ export const contentRegistry: ContentRegistry = {
   },
   about: {
     hero: [
+      { id: 'about.badge', type: 'text', label: 'Badge Text', section: 'hero', page: 'about' },
       { id: 'about.title', type: 'text', label: 'Page Title', section: 'hero', page: 'about' },
       { id: 'about.intro', type: 'text', label: 'Introduction Text', section: 'hero', page: 'about' },
       { id: 'about.founded', type: 'text', label: 'Founded Year', section: 'hero', page: 'about' },
@@ -94,9 +95,16 @@ export const contentRegistry: ContentRegistry = {
   },
   contact: {
     hero: [
+      { id: 'contact.badge', type: 'text', label: 'Badge Text', section: 'hero', page: 'contact' },
       { id: 'contact.title', type: 'text', label: 'Page Title', section: 'hero', page: 'contact' },
       { id: 'contact.description', type: 'text', label: 'Page Description', section: 'hero', page: 'contact' },
       { id: 'contact.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'contact' },
+      { id: 'contact.hours.title', type: 'text', label: 'Hours Title', section: 'hero', page: 'contact' },
+      { id: 'contact.hours.weekdays.label', type: 'text', label: 'Weekdays Label', section: 'hero', page: 'contact' },
+      { id: 'contact.hours.weekdays.time', type: 'text', label: 'Weekdays Time', section: 'hero', page: 'contact' },
+      { id: 'contact.hours.saturday.label', type: 'text', label: 'Saturday Label', section: 'hero', page: 'contact' },
+      { id: 'contact.hours.saturday.time', type: 'text', label: 'Saturday Time', section: 'hero', page: 'contact' },
+      { id: 'contact.hours.sunday.label', type: 'text', label: 'Sunday Label', section: 'hero', page: 'contact' },
     ],
     coordinates: [
       { id: 'contact.coordinates.title', type: 'text', label: 'Coordinates Title', section: 'coordinates', page: 'contact' },
@@ -119,8 +127,11 @@ export const contentRegistry: ContentRegistry = {
   },
   inscription: {
     hero: [
+      { id: 'inscription.badge', type: 'text', label: 'Badge Text', section: 'hero', page: 'inscription' },
       { id: 'inscription.title', type: 'text', label: 'Page Title', section: 'hero', page: 'inscription' },
       { id: 'inscription.description', type: 'text', label: 'Page Description', section: 'hero', page: 'inscription' },
+      { id: 'inscription.notice.message', type: 'text', label: 'Notice Message', section: 'hero', page: 'inscription' },
+      { id: 'inscription.notice.limited', type: 'text', label: 'Limited Spots Notice', section: 'hero', page: 'inscription' },
       { id: 'inscription.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'inscription' },
     ],
     process: [
@@ -140,6 +151,57 @@ export const contentRegistry: ContentRegistry = {
     requirements: [
       { id: 'inscription.requirements.title', type: 'text', label: 'Requirements Title', section: 'requirements', page: 'inscription' },
       { id: 'inscription.requirements.description', type: 'text', label: 'Requirements Description', section: 'requirements', page: 'inscription' },
+    ],
+  },
+  primary: {
+    hero: [
+      { id: 'primary.hero.label', type: 'text', label: 'Hero Label', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.title', type: 'text', label: 'Hero Title', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.age', type: 'text', label: 'Age Range', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.desc', type: 'text', label: 'Hero Description', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.hours', type: 'text', label: 'School Hours', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.classsize', type: 'text', label: 'Class Size', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.excellence.title', type: 'text', label: 'Excellence Title', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.excellence.desc', type: 'text', label: 'Excellence Description', section: 'hero', page: 'primary' },
+      { id: 'primary.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'primary' },
+    ],
+    levels: [
+      { id: 'primary.levels.title', type: 'text', label: 'Levels Title', section: 'levels', page: 'primary' },
+      { id: 'primary.levels.desc', type: 'text', label: 'Levels Description', section: 'levels', page: 'primary' },
+      { id: 'primary.level.0.image', type: 'image', label: 'CP Level Image', section: 'levels', page: 'primary' },
+      { id: 'primary.level.0.age', type: 'text', label: 'CP Age Range', section: 'levels', page: 'primary' },
+      { id: 'primary.level.0.name', type: 'text', label: 'CP Level Name', section: 'levels', page: 'primary' },
+      { id: 'primary.level.0.focus', type: 'text', label: 'CP Focus Area', section: 'levels', page: 'primary' },
+      { id: 'primary.level.1.image', type: 'image', label: 'CE Level Image', section: 'levels', page: 'primary' },
+      { id: 'primary.level.1.age', type: 'text', label: 'CE Age Range', section: 'levels', page: 'primary' },
+      { id: 'primary.level.1.name', type: 'text', label: 'CE Level Name', section: 'levels', page: 'primary' },
+      { id: 'primary.level.1.focus', type: 'text', label: 'CE Focus Area', section: 'levels', page: 'primary' },
+      { id: 'primary.level.2.image', type: 'image', label: 'CM Level Image', section: 'levels', page: 'primary' },
+      { id: 'primary.level.2.age', type: 'text', label: 'CM Age Range', section: 'levels', page: 'primary' },
+      { id: 'primary.level.2.name', type: 'text', label: 'CM Level Name', section: 'levels', page: 'primary' },
+      { id: 'primary.level.2.focus', type: 'text', label: 'CM Focus Area', section: 'levels', page: 'primary' },
+    ],
+    subjects: [
+      { id: 'primary.subjects.title', type: 'text', label: 'Subjects Title', section: 'subjects', page: 'primary' },
+      { id: 'primary.subjects.desc', type: 'text', label: 'Subjects Description', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.francais.title', type: 'text', label: 'French Subject Title', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.francais.desc', type: 'text', label: 'French Subject Description', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.mathematiques.title', type: 'text', label: 'Math Subject Title', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.mathematiques.desc', type: 'text', label: 'Math Subject Description', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.sciences.title', type: 'text', label: 'Science Subject Title', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.sciences.desc', type: 'text', label: 'Science Subject Description', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.langues.title', type: 'text', label: 'Languages Subject Title', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.langues.desc', type: 'text', label: 'Languages Subject Description', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.informatique.title', type: 'text', label: 'IT Subject Title', section: 'subjects', page: 'primary' },
+      { id: 'primary.subject.informatique.desc', type: 'text', label: 'IT Subject Description', section: 'subjects', page: 'primary' },
+    ],
+    schedule: [
+      { id: 'primary.schedule.title', type: 'text', label: 'Schedule Title', section: 'schedule', page: 'primary' },
+      { id: 'primary.schedule.desc', type: 'text', label: 'Schedule Description', section: 'schedule', page: 'primary' },
+    ],
+    cta: [
+      { id: 'primary.cta.title', type: 'text', label: 'CTA Title', section: 'cta', page: 'primary' },
+      { id: 'primary.cta.desc', type: 'text', label: 'CTA Description', section: 'cta', page: 'primary' },
     ],
   },
   blog: {
@@ -162,8 +224,40 @@ export const contentRegistry: ContentRegistry = {
   },
   equipe: {
     hero: [
+      { id: 'equipe.badge', type: 'text', label: 'Badge Text', section: 'hero', page: 'equipe' },
       { id: 'equipe.title', type: 'text', label: 'Page Title', section: 'hero', page: 'equipe' },
       { id: 'equipe.description', type: 'text', label: 'Page Description', section: 'hero', page: 'equipe' },
+      { id: 'equipe.values.title', type: 'text', label: 'Values Title', section: 'hero', page: 'equipe' },
+      { id: 'equipe.values.description', type: 'text', label: 'Values Description', section: 'hero', page: 'equipe' },
+      { id: 'equipe.hero.image', type: 'image', label: 'Hero Image', section: 'hero', page: 'equipe' },
+    ],
+    sections: [
+      { id: 'equipe.sections.leadership.title', type: 'text', label: 'Leadership Title', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.leadership.description', type: 'text', label: 'Leadership Description', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.administration.title', type: 'text', label: 'Administration Title', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.administration.description', type: 'text', label: 'Administration Description', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.teachers.title', type: 'text', label: 'Teachers Title', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.teachers.description', type: 'text', label: 'Teachers Description', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.staff.title', type: 'text', label: 'Staff Title', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.staff.description', type: 'text', label: 'Staff Description', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.other.title', type: 'text', label: 'Other Title', section: 'sections', page: 'equipe' },
+      { id: 'equipe.sections.other.description', type: 'text', label: 'Other Description', section: 'sections', page: 'equipe' },
+    ],
+    categories: [
+      { id: 'equipe.category.leadership.label', type: 'text', label: 'Leadership Category Label', section: 'categories', page: 'equipe' },
+      { id: 'equipe.category.administration.label', type: 'text', label: 'Administration Category Label', section: 'categories', page: 'equipe' },
+      { id: 'equipe.category.teachers.label', type: 'text', label: 'Teachers Category Label', section: 'categories', page: 'equipe' },
+      { id: 'equipe.category.staff.label', type: 'text', label: 'Staff Category Label', section: 'categories', page: 'equipe' },
+    ],
+    fallbacks: [
+      { id: 'equipe.member.role.fallback', type: 'text', label: 'Member Role Fallback', section: 'fallbacks', page: 'equipe' },
+      { id: 'equipe.member.bio.fallback', type: 'text', label: 'Member Bio Fallback', section: 'fallbacks', page: 'equipe' },
+      { id: 'equipe.empty.message', type: 'text', label: 'Empty State Message', section: 'fallbacks', page: 'equipe' },
+    ],
+    cta: [
+      { id: 'equipe.cta.title', type: 'text', label: 'CTA Title', section: 'cta', page: 'equipe' },
+      { id: 'equipe.cta.description', type: 'text', label: 'CTA Description', section: 'cta', page: 'equipe' },
+      { id: 'equipe.cta.button', type: 'text', label: 'CTA Button', section: 'cta', page: 'equipe' },
     ],
   },
 };

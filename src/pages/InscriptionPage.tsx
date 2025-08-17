@@ -24,9 +24,13 @@ const InscriptionPage: React.FC = () => {
             <div className="lg:col-span-7 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-px bg-accent"></div>
-                <span className="text-sm font-semibold text-primary tracking-wider uppercase">
+                <DisplayText 
+                  id="inscription.badge" 
+                  as="span" 
+                  className="text-sm font-semibold text-primary tracking-wider uppercase"
+                >
                   Inscription
-                </span>
+                </DisplayText>
               </div>
 
               <div className="space-y-6">
@@ -52,12 +56,20 @@ const InscriptionPage: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <div className="text-4xl text-primary leading-none">📚</div>
                   <div>
-                    <p className="text-lg text-gray-700 mb-3">
+                    <DisplayText 
+                      id="inscription.notice.message" 
+                      as="p" 
+                      className="text-lg text-gray-700 mb-3"
+                    >
                       Les inscriptions pour l'année scolaire 2024-2025 sont ouvertes !
-                    </p>
-                    <div className="text-sm font-semibold text-primary">
+                    </DisplayText>
+                    <DisplayText 
+                      id="inscription.notice.limited" 
+                      as="div" 
+                      className="text-sm font-semibold text-primary"
+                    >
                       — Places limitées
-                    </div>
+                    </DisplayText>
                   </div>
                 </div>
               </div>
@@ -212,37 +224,49 @@ const InscriptionPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="card p-8">
               <div className="text-4xl mb-4">📄</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
+              <DisplayText 
+                id="inscription.documents.identity.title" 
+                as="h3" 
+                className="text-xl font-semibold mb-4 color-black"
+              >
                 Documents d'Identité
-              </h3>
+              </DisplayText>
               <ul className="space-y-2 text-gray-600">
-                <li>• Extrait d'acte de naissance</li>
-                <li>• Carte d'identité nationale</li>
-                <li>• Photos d'identité (4 exemplaires)</li>
+                <li>• <DisplayText id="inscription.documents.identity.birth">Extrait d'acte de naissance</DisplayText></li>
+                <li>• <DisplayText id="inscription.documents.identity.id">Carte d'identité nationale</DisplayText></li>
+                <li>• <DisplayText id="inscription.documents.identity.photos">Photos d'identité (4 exemplaires)</DisplayText></li>
               </ul>
             </div>
 
             <div className="card p-8">
               <div className="text-4xl mb-4">📚</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
+              <DisplayText 
+                id="inscription.documents.school.title" 
+                as="h3" 
+                className="text-xl font-semibold mb-4 color-black"
+              >
                 Documents Scolaires
-              </h3>
+              </DisplayText>
               <ul className="space-y-2 text-gray-600">
-                <li>• Certificat de scolarité</li>
-                <li>• Bulletins de notes</li>
-                <li>• Certificat de fin d'année</li>
+                <li>• <DisplayText id="inscription.documents.school.certificate">Certificat de scolarité</DisplayText></li>
+                <li>• <DisplayText id="inscription.documents.school.grades">Bulletins de notes</DisplayText></li>
+                <li>• <DisplayText id="inscription.documents.school.end">Certificat de fin d'année</DisplayText></li>
               </ul>
             </div>
 
             <div className="card p-8">
               <div className="text-4xl mb-4">💉</div>
-              <h3 className="text-xl font-semibold mb-4 color-black">
+              <DisplayText 
+                id="inscription.documents.medical.title" 
+                as="h3" 
+                className="text-xl font-semibold mb-4 color-black"
+              >
                 Documents Médicaux
-              </h3>
+              </DisplayText>
               <ul className="space-y-2 text-gray-600">
-                <li>• Carnet de vaccination</li>
-                <li>• Certificat médical</li>
-                <li>• Groupe sanguin</li>
+                <li>• <DisplayText id="inscription.documents.medical.vaccination">Carnet de vaccination</DisplayText></li>
+                <li>• <DisplayText id="inscription.documents.medical.certificate">Certificat médical</DisplayText></li>
+                <li>• <DisplayText id="inscription.documents.medical.blood">Groupe sanguin</DisplayText></li>
               </ul>
             </div>
           </div>
@@ -253,21 +277,33 @@ const InscriptionPage: React.FC = () => {
       <section className="py-24 bg-primary text-white">
         <div className="container mx-auto px-6 max-w-6xl text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <DisplayText 
+              id="inscription.cta.title" 
+              as="h2" 
+              className="text-3xl md:text-4xl font-bold mb-6"
+            >
               Prêt à Rejoindre Les Hirondelles ?
-            </h2>
-            <p className="text-xl text-gray-100 mb-8 leading-relaxed">
+            </DisplayText>
+            <DisplayText 
+              id="inscription.cta.description" 
+              as="p" 
+              className="text-xl text-gray-100 mb-8 leading-relaxed"
+            >
               Contactez-nous dès aujourd'hui pour commencer le processus d'inscription de votre enfant.
-            </p>
+            </DisplayText>
             <div className="flex flex-wrap justify-center gap-6">
               <Link to="/contact" className="btn btn-accent">
-                Nous Contacter
+                <DisplayText id="inscription.cta.contact.button">
+                  Nous Contacter
+                </DisplayText>
               </Link>
               <Link
                 to="/contact"
                 className="font-family-poppins font-medium text-[0.875rem] px-[2rem] py-[1rem] tracking-[0.025em] text-white border-1 border-white hover:underline transition-all duration-300 translate-y-0 hover:translate-y-[-1px]"
               >
-                Planifier une visite
+                <DisplayText id="inscription.cta.visit.button">
+                  Planifier une visite
+                </DisplayText>
               </Link>
             </div>
           </div>

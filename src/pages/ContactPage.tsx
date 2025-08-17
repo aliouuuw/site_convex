@@ -23,9 +23,13 @@ const ContactPage: React.FC = () => {
             <div className="lg:col-span-7 space-y-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-px bg-accent"></div>
-                <span className="text-sm font-semibold text-primary tracking-wider uppercase">
+                <DisplayText 
+                  id="contact.badge" 
+                  as="span" 
+                  className="text-sm font-semibold text-primary tracking-wider uppercase"
+                >
                   Contact
-                </span>
+                </DisplayText>
               </div>
 
               <div className="space-y-6">
@@ -50,21 +54,37 @@ const ContactPage: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <div className="text-2xl text-accent mt-1">🕒</div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">
+                    <DisplayText 
+                      id="contact.hours.title" 
+                      as="h3" 
+                      className="font-semibold text-gray-900 mb-2"
+                    >
                       Horaires d'ouverture
-                    </h3>
+                    </DisplayText>
                     <div className="space-y-1 text-gray-700">
                       <div className="flex justify-between">
-                        <span>Lundi - Vendredi:</span>
-                        <span className="font-medium">8h00 - 17h00</span>
+                        <DisplayText id="contact.hours.weekdays.label" as="span">
+                          Lundi - Vendredi:
+                        </DisplayText>
+                        <DisplayText id="contact.hours.weekdays.time" as="span" className="font-medium">
+                          8h00 - 17h00
+                        </DisplayText>
                       </div>
                       <div className="flex justify-between">
-                        <span>Samedi:</span>
-                        <span className="font-medium">8h00 - 12h00</span>
+                        <DisplayText id="contact.hours.saturday.label" as="span">
+                          Samedi:
+                        </DisplayText>
+                        <DisplayText id="contact.hours.saturday.time" as="span" className="font-medium">
+                          8h00 - 12h00
+                        </DisplayText>
                       </div>
                       <div className="flex justify-between">
-                        <span>Dimanche:</span>
-                        <span className="font-medium">Fermé</span>
+                        <DisplayText id="contact.hours.sunday.label" as="span">
+                          Dimanche:
+                        </DisplayText>
+                        <DisplayText id="contact.hours.sunday.time" as="span" className="font-medium">
+                          Fermé
+                        </DisplayText>
                       </div>
                     </div>
                   </div>
@@ -241,7 +261,7 @@ const ContactPage: React.FC = () => {
                   type="submit"
                   className="w-full btn btn-primary flex items-center justify-center gap-2"
                 >
-                  ✈️ Envoyer le message
+                  ✈️ <DisplayText id="contact.form.submit">Envoyer le message</DisplayText>
                 </button>
               </form>
             </div>
@@ -250,26 +270,42 @@ const ContactPage: React.FC = () => {
             <div className="space-y-8">
               {/* Map Placeholder */}
               <div>
-                <h3 className="text-2xl font-bold mb-4 color-black">
+                <DisplayText 
+                  id="contact.location.title" 
+                  as="h3" 
+                  className="text-2xl font-bold mb-4 color-black"
+                >
                   Notre Localisation
-                </h3>
+                </DisplayText>
                 <div className="bg-gray-300 h-64 flex items-center justify-center text-gray-600">
                   <div className="text-center">
                     <div className="text-4xl mb-2">🗺️</div>
-                    <p>Carte interactive</p>
-                    <p className="text-sm">Avenue Cheikh Anta Diop, Dakar</p>
+                    <DisplayText id="contact.location.map.label" as="p">
+                      Carte interactive
+                    </DisplayText>
+                    <DisplayText id="contact.location.address" as="p" className="text-sm">
+                      Avenue Cheikh Anta Diop, Dakar
+                    </DisplayText>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mt-2">
+                <DisplayText 
+                  id="contact.location.description" 
+                  as="p" 
+                  className="text-sm text-gray-600 mt-2"
+                >
                   Face à l'Université Cheikh Anta Diop, près de la station Total
-                </p>
+                </DisplayText>
               </div>
 
               {/* Department Contacts */}
               <div>
-                <h3 className="text-2xl font-bold mb-6 color-black">
+                <DisplayText 
+                  id="contact.departments.title" 
+                  as="h3" 
+                  className="text-2xl font-bold mb-6 color-black"
+                >
                   Contacts par Service
-                </h3>
+                </DisplayText>
                 <div className="space-y-4">
                   <div className="card p-6">
                     <DisplayText 
@@ -339,10 +375,20 @@ const ContactPage: React.FC = () => {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="section-header-creative mb-16">
             <div>
-              <h2 className="section-title-creative">Suivez-nous</h2>
-              <p className="section-description-creative">
+              <DisplayText 
+                id="contact.social.title" 
+                as="h2" 
+                className="section-title-creative"
+              >
+                Suivez-nous
+              </DisplayText>
+              <DisplayText 
+                id="contact.social.description" 
+                as="p" 
+                className="section-description-creative"
+              >
                 Restez connectés avec notre communauté scolaire
-              </p>
+              </DisplayText>
             </div>
           </div>
 
@@ -354,10 +400,20 @@ const ContactPage: React.FC = () => {
               <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">
                 📘
               </div>
-              <h3 className="text-xl font-semibold mb-2 color-black">
+              <DisplayText 
+                id="contact.social.facebook.title" 
+                as="h3" 
+                className="text-xl font-semibold mb-2 color-black"
+              >
                 Facebook
-              </h3>
-              <p className="text-gray-600">@LesHirondellesSN</p>
+              </DisplayText>
+              <DisplayText 
+                id="contact.social.facebook.handle" 
+                as="p" 
+                className="text-gray-600"
+              >
+                @LesHirondellesSN
+              </DisplayText>
             </a>
 
             <a
@@ -367,10 +423,20 @@ const ContactPage: React.FC = () => {
               <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">
                 📷
               </div>
-              <h3 className="text-xl font-semibold mb-2 color-black">
+              <DisplayText 
+                id="contact.social.instagram.title" 
+                as="h3" 
+                className="text-xl font-semibold mb-2 color-black"
+              >
                 Instagram
-              </h3>
-              <p className="text-gray-600">@leshirondelles_sn</p>
+              </DisplayText>
+              <DisplayText 
+                id="contact.social.instagram.handle" 
+                as="p" 
+                className="text-gray-600"
+              >
+                @leshirondelles_sn
+              </DisplayText>
             </a>
 
             <a
@@ -380,10 +446,20 @@ const ContactPage: React.FC = () => {
               <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">
                 💼
               </div>
-              <h3 className="text-xl font-semibold mb-2 color-black">
+              <DisplayText 
+                id="contact.social.linkedin.title" 
+                as="h3" 
+                className="text-xl font-semibold mb-2 color-black"
+              >
                 LinkedIn
-              </h3>
-              <p className="text-gray-600">Institution Les Hirondelles</p>
+              </DisplayText>
+              <DisplayText 
+                id="contact.social.linkedin.handle" 
+                as="p" 
+                className="text-gray-600"
+              >
+                Institution Les Hirondelles
+              </DisplayText>
             </a>
           </div>
         </div>
@@ -393,24 +469,32 @@ const ContactPage: React.FC = () => {
       <section className="py-24 bg-primary text-white">
         <div className="container mx-auto px-6 max-w-6xl text-center">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            <DisplayText 
+              id="contact.cta.title" 
+              as="h2" 
+              className="text-3xl md:text-4xl font-bold mb-6"
+            >
               Prêt à Rejoindre Notre Famille ?
-            </h2>
-            <p className="text-xl text-gray-100 mb-8 leading-relaxed">
+            </DisplayText>
+            <DisplayText 
+              id="contact.cta.description" 
+              as="p" 
+              className="text-xl text-gray-100 mb-8 leading-relaxed"
+            >
               Contactez-nous dès aujourd'hui pour découvrir comment Les Hirondelles peut accompagner votre enfant vers l'excellence.
-            </p>
+            </DisplayText>
             <div className="flex flex-wrap justify-center gap-6">
               <a
                 href="tel:+22133XXXXXX"
                 className="btn btn-accent flex items-center gap-2"
               >
-                📞 Appeler Maintenant
+                📞 <DisplayText id="contact.cta.call.button">Appeler Maintenant</DisplayText>
               </a>
               <a
                 href="https://wa.me/22177XXXXXX"
                 className="flex items-center gap-2 font-family-poppins font-medium text-[0.875rem] px-[2rem] py-[1rem] tracking-[0.025em] text-white border-1 border-white hover:underline transition-all duration-300 translate-y-0 hover:translate-y-[-1px]"
               >
-                💬 WhatsApp
+                💬 <DisplayText id="contact.cta.whatsapp.button">WhatsApp</DisplayText>
               </a>
             </div>
           </div>
