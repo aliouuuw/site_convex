@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { FaChevronUp } from "react-icons/fa";
+import { ProfileButton } from "./ProfileButton";
 
 const Navigation = () => {
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
@@ -69,7 +70,7 @@ const Navigation = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-200">
+    <header className="fixed top-0 left-0 right-0 z-[1000] bg-white/80 backdrop-blur-lg border-b border-gray-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -239,7 +240,7 @@ const Navigation = () => {
             </NavLink>
           </nav>
 
-          {/* CTA Button & Mobile Menu Toggle */}
+          {/* CTA Button, Profile Button & Mobile Menu Toggle */}
           <div className="flex items-center gap-4">
             {!isAdminPage && (
               <Link
@@ -249,6 +250,11 @@ const Navigation = () => {
                 Inscription
               </Link>
             )}
+
+            {/* Profile Button - Desktop */}
+            <div className="hidden lg:block">
+              <ProfileButton />
+            </div>
 
             {/* Mobile Menu Button */}
             <button
@@ -412,6 +418,11 @@ const Navigation = () => {
               >
                 Contact
               </NavLink>
+
+              {/* Profile Button - Mobile */}
+              <div className="px-4 py-2">
+                <ProfileButton />
+              </div>
 
               {!isAdminPage && (
                 <Link
