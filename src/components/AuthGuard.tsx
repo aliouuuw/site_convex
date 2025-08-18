@@ -10,10 +10,9 @@ interface AuthGuardProps {
 
 export default function AuthGuard({ 
   children, 
-  requireAdmin = false, 
-  redirectTo = "/" 
+  requireAdmin = false,
 }: AuthGuardProps) {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
 
   // Show loading state while checking authentication
