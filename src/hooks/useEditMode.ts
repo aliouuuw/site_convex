@@ -31,7 +31,7 @@ export const useEditMode = () => {
 
   const showAuthenticationPrompt = () => {
     // Show a user-friendly message about authentication requirement
-    const message = "Authentication required to access edit mode. Please sign in to continue.";
+    const message = "Authentification requise pour accéder au mode édition. Veuillez vous connecter pour continuer.";
     
     // You can replace this with a more sophisticated notification system
     // For now, we'll use a simple alert, but this could be enhanced with a toast notification

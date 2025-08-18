@@ -49,32 +49,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (err instanceof Error) {
       const message = err.message.toLowerCase();
       
-      // Provide more user-friendly error messages
+      // Provide more user-friendly error messages in French
       if (message.includes("invalid credentials") || message.includes("wrong password")) {
-        return "Invalid email or password. Please check your credentials and try again.";
+        return "Email ou mot de passe incorrect. Veuillez vérifier vos identifiants et réessayer.";
       }
       if (message.includes("user not found")) {
-        return "No account found with this email address. Please check your email or create a new account.";
+        return "Aucun compte trouvé avec cette adresse email. Veuillez vérifier votre email ou créer un nouveau compte.";
       }
       if (message.includes("email already exists") || message.includes("already registered")) {
-        return "An account with this email already exists. Please sign in instead.";
+        return "Un compte avec cette adresse email existe déjà. Veuillez vous connecter à la place.";
       }
       if (message.includes("network") || message.includes("connection")) {
-        return "Network error. Please check your internet connection and try again.";
+        return "Erreur de réseau. Veuillez vérifier votre connexion internet et réessayer.";
       }
       if (message.includes("rate limit") || message.includes("too many requests")) {
-        return "Too many attempts. Please wait a moment before trying again.";
+        return "Trop de tentatives. Veuillez attendre un moment avant de réessayer.";
       }
       if (message.includes("weak password")) {
-        return "Password is too weak. Please choose a stronger password.";
+        return "Le mot de passe est trop faible. Veuillez choisir un mot de passe plus fort.";
       }
       if (message.includes("invalid email")) {
-        return "Please enter a valid email address.";
+        return "Veuillez entrer une adresse email valide.";
       }
       
       return err.message;
     }
-    return "An unexpected error occurred. Please try again.";
+    return "Une erreur inattendue s'est produite. Veuillez réessayer.";
   };
 
   const signIn = async (email: string, password: string) => {

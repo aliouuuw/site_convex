@@ -1,16 +1,7 @@
-import React, { useState } from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { Eye, EyeOff, AlertCircle, User, Mail, Lock } from "lucide-react";
-
-interface LoginPopoverProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onLoginSuccess?: () => void;
-  trigger: React.ReactNode;
-}
 
 interface LoginFormData {
   email: string;
@@ -18,13 +9,11 @@ interface LoginFormData {
   isSignUp: boolean;
 }
 
-export function LoginPopover({ 
-  isOpen, 
-  onClose, 
-  onLoginSuccess,
-  trigger 
-}: LoginPopoverProps) {
-  const { signIn, signUp, isLoading, error, clearError } = useAuth();
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const { signIn, signUp, isLoading, error, clearError, isAuthenticated } = useAuth();
+  
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -32,6 +21,16 @@ export function LoginPopover({
   });
   const [showPassword, setShowPassword] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+
+  // Get redirect URL from query parameters
+  const redirectTo = searchParams.get("redirect") || "/admin";
+
+  // If already authenticated, redirect to the intended destination
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(redirectTo, { replace: true });
+    }
+  }, [isAuthenticated, navigate, redirectTo]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -82,7 +81,8 @@ export function LoginPopover({
       
       // Reset form on success
       setFormData({ email: "", password: "", isSignUp: false });
-      onLoginSuccess?.();
+      
+      // Redirect will be handled by the useEffect above
     } catch (err) {
       // Error is handled by the auth context
       console.error("Authentication failed:", err);
@@ -98,45 +98,34 @@ export function LoginPopover({
   const displayError = formError || error;
 
   return (
-    <Popover open={isOpen} onOpenChange={onClose}>
-      <PopoverTrigger asChild>
-        {trigger}
-      </PopoverTrigger>
-      <PopoverContent className="w-96" align="end">
-        <div className="p-6">
-          {/* Header */}
-          <div className="text-center mb-6">
-            <div className="flex justify-center mb-4">
-              <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                <User className="w-6 h-6 text-white" />
-              </div>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
+              <User className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              {formData.isSignUp ? "Créer un compte" : "Bienvenue"}
-            </h3>
-            <p className="text-sm text-gray-600">
-              {formData.isSignUp 
-                ? "Créez un compte pour accéder aux fonctionnalités d'édition" 
-                : "Connectez-vous pour accéder aux fonctionnalités d'édition"
-              }
-            </p>
           </div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            {formData.isSignUp ? "Créer un compte" : "Bienvenue"}
+          </h2>
+          <p className="text-gray-600">
+            {formData.isSignUp 
+              ? "Créez un compte pour accéder au panneau d'administration" 
+              : "Connectez-vous pour accéder au panneau d'administration"
+            }
+          </p>
+        </div>
 
-          {/* Form */}
-          <form 
-            onSubmit={(e) => {
-              e.preventDefault();
-              void handleSubmit(e);
-            }} 
-            className="space-y-5"
-          >
+        <div className="bg-white py-8 px-6 shadow-lg rounded-lg">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Input */}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium text-gray-700 flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 Adresse email
               </label>
-              <Input
+              <input
                 id="email"
                 name="email"
                 type="email"
@@ -145,7 +134,7 @@ export function LoginPopover({
                 placeholder="Entrez votre adresse email"
                 disabled={isLoading}
                 required
-                className="pl-10"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -156,7 +145,7 @@ export function LoginPopover({
                 Mot de passe
               </label>
               <div className="relative">
-                <Input
+                <input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
@@ -165,7 +154,7 @@ export function LoginPopover({
                   placeholder="Entrez votre mot de passe"
                   disabled={isLoading}
                   required
-                  className="pl-10 pr-10"
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-primary focus:border-primary"
                 />
                 <button
                   type="button"
@@ -197,11 +186,10 @@ export function LoginPopover({
             )}
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-3 transition-all duration-200"
+            <button
+              type="submit"
               disabled={isLoading}
-              formNoValidate
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading 
                 ? (
@@ -214,11 +202,11 @@ export function LoginPopover({
                   ? "Créer un compte" 
                   : "Se connecter"
               }
-            </Button>
+            </button>
           </form>
 
           {/* Mode Toggle */}
-          <div className="mt-6 pt-4 border-t border-gray-200">
+          <div className="mt-6 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={toggleMode}
@@ -232,14 +220,18 @@ export function LoginPopover({
             </button>
           </div>
 
-          {/* Additional Info */}
+          {/* Back to Home */}
           <div className="mt-4 text-center">
-            <p className="text-xs text-gray-500">
-              En continuant, vous acceptez nos Conditions d'utilisation et notre Politique de confidentialité
-            </p>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              ← Retour à l'accueil
+            </button>
           </div>
         </div>
-      </PopoverContent>
-    </Popover>
+      </div>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import Navigation from "./components/Navigation";
 import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollToTop";
 import EditProvider from "./components/EditProvider";
+import AuthGuard from "./components/AuthGuard";
 
 import HomePage from "./pages/HomePage";
 import AboutPage from "./pages/AboutPage";
@@ -17,6 +18,7 @@ import PrimaryPage from "./pages/PrimaryPage";
 import MiddleschoolPage from "./pages/MiddleschoolPage";
 import GalleryPage from "./pages/GalleryPage";
 import EquipePage from "./pages/EquipePage";
+import LoginPage from "./pages/LoginPage";
 // Admin pages
 import BlogAdminPage from "./pages/admin/BlogAdminPage";
 import BlogEditorPage from "./pages/admin/BlogEditorPage";
@@ -53,15 +55,74 @@ export default function App() {
               <Route path="/gallery" element={<GalleryPage />} />
               <Route path="/equipe" element={<EquipePage />} />
 
-              {/* Admin Routes */}
-              <Route path="/admin" element={<BlogAdminPage />} />
-              <Route path="/admin/blog" element={<BlogAdminPage />} />
-              <Route path="/admin/blog/create" element={<BlogEditorPage />} />
-              <Route path="/admin/blog/edit/:slug" element={<BlogEditorPage />} />
-              <Route path="/admin/testimonials" element={<TestimonialsAdminPage />} />
-              <Route path="/admin/timeline" element={<TimelineAdminPage />} />
-              <Route path="/admin/media" element={<MediaAdminPage />} />
-              <Route path="/admin/team" element={<TeamAdminPage />} />
+              {/* Authentication Route */}
+              <Route path="/login" element={<LoginPage />} />
+
+              {/* Protected Admin Routes */}
+              <Route
+                path="/admin"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <BlogAdminPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/admin/blog"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <BlogAdminPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/admin/blog/create"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <BlogEditorPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/admin/blog/edit/:slug"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <BlogEditorPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/admin/testimonials"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <TestimonialsAdminPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/admin/timeline"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <TimelineAdminPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/admin/media"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <MediaAdminPage />
+                  </AuthGuard>
+                }
+              />
+              <Route
+                path="/admin/team"
+                element={
+                  <AuthGuard requireAdmin={true}>
+                    <TeamAdminPage />
+                  </AuthGuard>
+                }
+              />
 
               {/* Catch-all route for 404 */}
               <Route path="*" element={<NotFoundPage />} />

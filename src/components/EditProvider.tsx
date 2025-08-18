@@ -12,6 +12,7 @@ import EditPanel from "./EditPanel";
 import { useEditMode as useEditModeHook } from "../hooks/useEditMode";
 import { FaPenToSquare } from "react-icons/fa6";
 import { useAuth } from "../contexts/AuthContext";
+import { useLocation } from "react-router-dom";
 
 interface EditContextType {
   liveEdit: LiveEditPrototype | null;
@@ -40,6 +41,8 @@ export default function EditProvider({ children }: EditProviderProps) {
   const liveEditRef = useRef<LiveEditPrototype | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [previousAuthState, setPreviousAuthState] = useState(isAuthenticated);
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
 
   // Session expiry detection and automatic edit mode disabling
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function EditProvider({ children }: EditProviderProps) {
       console.log("Session expired - disabling edit mode");
       
       // Show user-friendly message about session expiry
-      const message = "Your session has expired. Edit mode has been disabled. Please sign in again to continue editing.";
+      const message = "Votre session a expiré. Le mode édition a été désactivé. Veuillez vous reconnecter pour continuer à éditer.";
       alert(message);
       
       // Automatically disable edit mode when session expires
@@ -117,20 +120,19 @@ export default function EditProvider({ children }: EditProviderProps) {
   return (
     <EditContext.Provider value={contextValue}>
       {children}
-      {isAuthenticated && isInitialized && liveEditRef.current && (
+      {isAuthenticated && isInitialized && liveEditRef.current && !isAdminRoute && (
         <div className="edit-buttons-container">
           {/* Floating action button to open the panel when in edit mode */}
           {canEdit && !editPanelOpen && ( // Use canEdit instead of isEditMode
             <button
               className="edit-content-fab"
               onClick={openEditPanel}
-              title="Open the content editing panel (Ctrl+E to toggle)"
+              title="Ouvrir le panneau d'édition de contenu (Ctrl+E pour basculer)"
             >
               <FaPenToSquare className="text-base" />
-              <span className="font-medium">Open Panel</span>
+              <span className="font-medium">Ouvrir le panneau</span>
             </button>
           )}
-          {/* EditModeToggle component commented out as per requirements */}
           <EditModeToggle liveEdit={liveEditRef.current} />
         </div>
       )}

@@ -12,7 +12,7 @@ const Navigation = () => {
   const [isDesktopAboutOpen, setIsDesktopAboutOpen] = useState(false);
   const [isAdminPage, setIsAdminPage] = useState(false);
   const location = useLocation();
-  
+
   // Use the enhanced useEditMode hook with authentication checks
   const { canEdit } = useEditMode();
 
@@ -125,7 +125,7 @@ const Navigation = () => {
                 }`}
               >
                 <div className="px-4 py-2">
-                      {aboutLinks.map((link) => (
+                  {aboutLinks.map((link) => (
                     <Link
                       key={link.href}
                       to={link.href}
@@ -412,20 +412,21 @@ const Navigation = () => {
                 Contact
               </NavLink>
 
-              {/* Profile Button - Mobile */}
-              <div className="px-4 py-2">
-                <ProfileButton />
+              <div className="flex items-center justify-center">
+                {!isAdminPage && (
+                  <Link
+                    to="/inscription"
+                    className="mx-4 btn btn-primary text-center hover:underline"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Inscription
+                  </Link>
+                )}
+                {/* Profile Button - Mobile */}
+                <div className="px-4 py-2">
+                  <ProfileButton />
+                </div>
               </div>
-
-              {!isAdminPage && (
-                <Link
-                  to="/inscription"
-                  className="mx-4 btn btn-primary text-center hover:underline"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Inscription
-                </Link>
-              )}
             </div>
           </div>
         )}
