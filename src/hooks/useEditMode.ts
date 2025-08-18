@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 const resolveCurrentPage = (path: string): string => {
   if (path === "/") return "home";
@@ -18,15 +19,36 @@ const resolveCurrentPage = (path: string): string => {
 export const useEditMode = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // For now, assume authenticated - can be enhanced later TODO: add auth
-  const isAuthenticated = true;
+  const { isAuthenticated } = useAuth();
 
   const searchParams = new URLSearchParams(location.search);
   const isEditMode = searchParams.get("edit") === "true";
   const editPanelOpen = searchParams.get("panel") === "true";
   const currentPage = resolveCurrentPage(location.pathname);
 
+  // New computed property that combines authentication and edit mode state
+  const canEdit = isAuthenticated && isEditMode;
+
+  const showAuthenticationPrompt = () => {
+    // Show a user-friendly message about authentication requirement
+    const message = "Authentication required to access edit mode. Please sign in to continue.";
+    
+    // You can replace this with a more sophisticated notification system
+    // For now, we'll use a simple alert, but this could be enhanced with a toast notification
+    alert(message);
+    
+    // Optionally, you could trigger the login popover here
+    // This would require passing a callback from the parent component
+    console.log("Authentication required for edit mode access");
+  };
+
   const enableEditMode = () => {
+    // Only allow enabling edit mode if user is authenticated
+    if (!isAuthenticated) {
+      showAuthenticationPrompt();
+      return;
+    }
+    
     const urlParams = new URLSearchParams(location.search);
     urlParams.set("edit", "true");
     void navigate(`${location.pathname}?${urlParams.toString()}`, { replace: true });
@@ -43,6 +65,12 @@ export const useEditMode = () => {
   };
 
   const toggleEditMode = () => {
+    // Only allow toggling edit mode if user is authenticated
+    if (!isAuthenticated) {
+      showAuthenticationPrompt();
+      return;
+    }
+    
     if (isEditMode) {
       disableEditMode();
     } else {
@@ -51,6 +79,12 @@ export const useEditMode = () => {
   };
 
   const openEditPanel = () => {
+    // Only allow opening edit panel if user is authenticated
+    if (!isAuthenticated) {
+      showAuthenticationPrompt();
+      return;
+    }
+    
     const urlParams = new URLSearchParams(location.search);
     urlParams.set("panel", "true");
     // Ensure edit mode is on when opening panel
@@ -72,10 +106,13 @@ export const useEditMode = () => {
     disableEditMode,
     toggleEditMode,
     isAuthenticated,
+    canEdit, // New property that combines auth + edit mode
     // New centralized panel fields
     editPanelOpen,
     openEditPanel,
     closeEditPanel,
     currentPage,
+    // New error handling functions
+    showAuthenticationPrompt,
   };
 };

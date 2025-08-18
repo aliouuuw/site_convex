@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { FaChevronUp } from "react-icons/fa";
 import { ProfileButton } from "./ProfileButton";
+import { useEditMode } from "../hooks/useEditMode";
 
 const Navigation = () => {
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
@@ -9,26 +10,18 @@ const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
   const [isDesktopAboutOpen, setIsDesktopAboutOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
   const [isAdminPage, setIsAdminPage] = useState(false);
   const location = useLocation();
+  
+  // Use the enhanced useEditMode hook with authentication checks
+  const { canEdit } = useEditMode();
 
   useEffect(() => {
     setIsAdminPage(location.pathname.startsWith("/admin"));
   }, [location]);
 
-
-  // Check for edit mode from URL
-  useEffect(() => {
-    const checkEditMode = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      setIsEditMode(urlParams.get('edit') === 'true');
-    };
-
-    checkEditMode();
-    window.addEventListener('popstate', checkEditMode);
-    return () => window.removeEventListener('popstate', checkEditMode);
-  }, []);
+  // Remove the old edit mode checking logic since we're now using the enhanced hook
+  // The useEditMode hook handles URL parameter checking internally
 
   const programLinks = [
     { name: "Préscolaire", href: "/programs/preschool", age: "3-5 ans" },
@@ -82,7 +75,7 @@ const Navigation = () => {
               height={40}
             />
             <span className="font-semibold text-lg">Les Hirondelles</span>
-            {isEditMode && (
+            {canEdit && (
               <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full ml-2">
                 ÉDITION
               </span>

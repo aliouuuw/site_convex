@@ -24,7 +24,7 @@ export function LoginPopover({
   onLoginSuccess,
   trigger 
 }: LoginPopoverProps) {
-  const { signIn, signUp, isLoading, error } = useAuth();
+  const { signIn, signUp, isLoading, error, clearError } = useAuth();
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -38,6 +38,7 @@ export function LoginPopover({
     setFormData(prev => ({ ...prev, [name]: value }));
     // Clear errors when user starts typing
     if (formError) setFormError(null);
+    if (error) clearError();
   };
 
   const validateForm = (): boolean => {
@@ -70,6 +71,7 @@ export function LoginPopover({
     if (!validateForm()) return;
     
     setFormError(null);
+    clearError();
     
     try {
       if (formData.isSignUp) {
@@ -90,6 +92,7 @@ export function LoginPopover({
   const toggleMode = () => {
     setFormData(prev => ({ ...prev, isSignUp: !prev.isSignUp }));
     setFormError(null);
+    clearError();
   };
 
   const displayError = formError || error;

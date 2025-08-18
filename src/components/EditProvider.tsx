@@ -7,10 +7,11 @@ import React, {
 } from "react";
 import { ConvexReactClient } from "convex/react";
 import { LiveEditPrototype } from "../lib/liveEdit";
-import EditModeToggle from "./EditModeToggle";
+import EditModeToggle from "./EditModeToggle"; // Commented out as per requirements
 import EditPanel from "./EditPanel";
 import { useEditMode as useEditModeHook } from "../hooks/useEditMode";
 import { FaPenToSquare } from "react-icons/fa6";
+import { useAuth } from "../contexts/AuthContext";
 
 interface EditContextType {
   liveEdit: LiveEditPrototype | null;
@@ -34,13 +35,33 @@ interface EditProviderProps {
 }
 
 export default function EditProvider({ children }: EditProviderProps) {
-  // For now, assume authenticated - can be enhanced later
-  const isAuthenticated = true;
-  const { isEditMode, toggleEditMode, editPanelOpen, openEditPanel, closeEditPanel, currentPage } = useEditModeHook();
+  const { isAuthenticated } = useAuth();
+  const { isEditMode, toggleEditMode, editPanelOpen, openEditPanel, closeEditPanel, currentPage, canEdit, disableEditMode } = useEditModeHook();
   const liveEditRef = useRef<LiveEditPrototype | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [previousAuthState, setPreviousAuthState] = useState(isAuthenticated);
 
-  // Initialize live edit system
+  // Session expiry detection and automatic edit mode disabling
+  useEffect(() => {
+    // If user was previously authenticated but is no longer authenticated
+    if (previousAuthState && !isAuthenticated) {
+      console.log("Session expired - disabling edit mode");
+      
+      // Show user-friendly message about session expiry
+      const message = "Your session has expired. Edit mode has been disabled. Please sign in again to continue editing.";
+      alert(message);
+      
+      // Automatically disable edit mode when session expires
+      if (isEditMode) {
+        disableEditMode();
+      }
+    }
+    
+    // Update previous auth state
+    setPreviousAuthState(isAuthenticated);
+  }, [isAuthenticated, previousAuthState, isEditMode, disableEditMode]);
+
+  // Initialize live edit system only for authenticated users
   useEffect(() => {
     if (isAuthenticated) {
       const convex = new ConvexReactClient(
@@ -53,6 +74,13 @@ export default function EditProvider({ children }: EditProviderProps) {
         }
       });
       setIsInitialized(true);
+    } else {
+      // Clean up live edit system when user is not authenticated
+      if (liveEditRef.current) {
+        liveEditRef.current.disableEditMode();
+        liveEditRef.current = null;
+      }
+      setIsInitialized(false);
     }
   }, [isAuthenticated, toggleEditMode, isEditMode]);
 
@@ -62,7 +90,7 @@ export default function EditProvider({ children }: EditProviderProps) {
 
     // Ensure the DOM is fully loaded before scanning for editable elements
     setTimeout(() => {
-      if (isEditMode) {
+      if (canEdit) { // Use canEdit instead of isEditMode to include auth check
         liveEditRef.current?.enableEditMode();
         console.log(
           "Edit mode enabled, editable elements:",
@@ -78,7 +106,7 @@ export default function EditProvider({ children }: EditProviderProps) {
         });
       }
     }, 100);
-  }, [isEditMode]);
+  }, [canEdit]); // Use canEdit as dependency instead of isEditMode
 
   const contextValue: EditContextType = {
     liveEdit: liveEditRef.current,
@@ -92,7 +120,7 @@ export default function EditProvider({ children }: EditProviderProps) {
       {isAuthenticated && isInitialized && liveEditRef.current && (
         <div className="edit-buttons-container">
           {/* Floating action button to open the panel when in edit mode */}
-          {isEditMode && !editPanelOpen && (
+          {canEdit && !editPanelOpen && ( // Use canEdit instead of isEditMode
             <button
               className="edit-content-fab"
               onClick={openEditPanel}
@@ -102,10 +130,11 @@ export default function EditProvider({ children }: EditProviderProps) {
               <span className="font-medium">Open Panel</span>
             </button>
           )}
+          {/* EditModeToggle component commented out as per requirements */}
           <EditModeToggle liveEdit={liveEditRef.current} />
         </div>
       )}
-      {/* Centralized Edit Panel */}
+      {/* Centralized Edit Panel - only show for authenticated users */}
       {isAuthenticated && (
         <EditPanel page={currentPage} isOpen={editPanelOpen} onClose={closeEditPanel} />
       )}
