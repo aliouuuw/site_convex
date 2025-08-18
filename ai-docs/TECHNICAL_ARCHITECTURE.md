@@ -1,302 +1,126 @@
-# Technical Architecture - Les Hirondelles Website Migration
+# Technical Architecture: Les Hirondelles Website
 
-## Architecture Overview
+## System Overview
 
-### Original Architecture (NextJS + Sanity - To Migrate From)
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Next.js App  │───▶│   Sanity CMS    │───▶│   Content API   │
-│   (Frontend)    │    │   (Headless)    │    │   (GraphQL)     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Static Pages  │    │   Content       │    │   CDN Delivery  │
-│   + SSR/SSG     │    │   Management    │    │   (Images)      │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-### Current Implementation (React + Vite + Convex) ✅
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   React + Vite  │───▶│     Convex      │───▶│   Real-time     │
-│   (Frontend) ✅ │    │   (Backend) ✅  │    │   Updates ✅    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                       │                       │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   SPA + CSR ✅  │    │   Content +     │    │   Edge Delivery │
-│   Fast Builds ✅│    │   Auth ✅ + CMS │    │   (Via Hosting) │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-### **COMPLETE MIGRATION ARCHITECTURE ✅**
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    ALL PAGES MIGRATED AND CONFIGURED               │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌─────────────────────────────────────────────────────────────────┐ │
-│  │                    React + Vite (Current) ✅                   │ │
-│  │                         /src/                                  │ │
-│  └─────────────────────────────────────────────────────────────────┘ │
-│                              │                                      │
-│                              ▼                                      │
-│  ┌─────────────────────────────────────────────────────────────────┐ │
-│  │ • All 10+ pages migrated ✅                                    │ │
-│  │ • Complete live edit system ✅                                 │ │
-│  │ • Centralized panel system ✅                                  │ │
-│  │ • 200+ editable fields ✅                                      │ │
-│  │ • Consistent hero image style ✅                               │ │
-│  │ • Dynamic content ready ✅                                     │ │
-│  └─────────────────────────────────────────────────────────────────┘ │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-                                    │
-                                    ▼
-                    ┌─────────────────────────────────┐
-                    │         Convex Backend          │
-                    │    (Complete System) ✅         │
-                    │  • Auth system ✅               │
-                    │  • Database ✅                  │  
-                    │  • Real-time sync ✅            │
-                    │  • Live Edit System ✅          │
-                    │  • Content Registry ✅          │
-                    │  • Admin Panel Ready ✅         │
-                    └─────────────────────────────────┘
-```
-
-### **LIVE EDIT SYSTEM ARCHITECTURE ✅**
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    LIVE EDIT SYSTEM IMPLEMENTED                    │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │   React Pages   │───▶│  LiveEditProto  │───▶│   Convex DB     │ │
-│  │  (data-live-    │    │     type        │    │   (Content)     │ │
-│  │   edit-id)      │    │                 │    │                 │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
-│           │                       │                       │         │
-│           ▼                       ▼                       ▼         │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │ EditProvider    │    │ DOM Scanning    │    │ Real-time       │ │
-│  │ Context         │    │ & Enhancement   │    │ Updates         │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
-│           │                       │                       │         │
-│           ▼                       ▼                       ▼         │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │ EditModeToggle  │    │ Inline Editor   │    │ Content         │ │
-│  │ (Ctrl+E)        │    │ (Input/Textarea)│    │ Persistence     │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-**Status Legend:**
-- ✅ = Implemented and working
-- 🔄 = In progress / dual state
-- ⏳ = Planned for next phase
+The Les Hirondelles website is built on a modern React + Vite stack with Convex as the backend, featuring a comprehensive authentication system, live editing capabilities, and a protected admin panel. The architecture emphasizes security, performance, and user experience with complete French localization.
 
 ## Technology Stack
 
-### Frontend Technologies ✅
+### Frontend
+- **Framework**: React 19 + Vite 6
+- **Language**: TypeScript (strict mode)
+- **Routing**: React Router v7.7.0
+- **Styling**: Tailwind CSS 4.0 + Custom CSS system
+- **Icons**: React Icons (Font Awesome, Lucide)
+- **State Management**: React Context + Convex real-time state
 
-#### **React + Vite (Primary - Active Development)**
-```yaml
-Core Framework:
-  - React 19 ✅ (Latest with concurrent features)
-  - Vite 6.2.0 ✅ (Ultra-fast dev server & builds)
-  - TypeScript 5.7.2 ✅ (Strict type safety)
+### Backend
+- **Platform**: Convex (serverless backend)
+- **Database**: Convex Database (built on FoundationDB)
+- **Authentication**: Convex Auth with Password provider
+- **File Storage**: Convex File Storage
+- **Real-time**: Built-in real-time subscriptions
 
-Routing:
-  - React Router v7.7.0 ✅ (Client-side routing)
-  - Dynamic imports for code splitting ✅
+### Development Tools
+- **Package Manager**: npm/bun
+- **Linting**: ESLint
+- **Type Checking**: TypeScript
+- **Hot Reload**: Vite dev server
 
-Styling:
-  - Custom CSS with CSS Variables ✅
-  - Tailwind CSS 4.0.14 ✅ (Latest version)
-  - PostCSS ✅ (Processing and optimization)
+## Architecture Components
 
-State Management:
-  - React Context API ✅ (Global state)
-  - Convex React hooks ✅ (Server state)
-  - Local component state ✅ (useState, useReducer)
+### 1. Authentication System ✅
 
-Development Tools:
-  - ESLint 9.21.0 ✅ (Code quality)
-  - Prettier 3.5.3 ✅ (Code formatting)
-  - TypeScript ESLint ✅ (Type-aware linting)
-  - Vite DevTools ✅
+**Core Components:**
+```
+src/
+├── contexts/
+│   └── AuthContext.tsx              ✅ (Convex Auth integration)
+├── components/
+│   ├── AuthGuard.tsx                ✅ (Route protection)
+│   ├── ProfileButton.tsx            ✅ (Authentication UI)
+│   ├── LoginPopover.tsx             ✅ (Login modal)
+│   └── LoginPage.tsx                ✅ (Full-page login)
+├── hooks/
+│   └── useEditMode.ts               ✅ (Enhanced with auth checks)
+└── pages/
+    └── admin/                       ✅ (Protected admin routes)
 ```
 
-#### **Live Edit System ✅**
-```yaml
-Core Components:
-  - LiveEditPrototype ✅ (Main editing engine)
-  - EditProvider ✅ (React context integration)
-  - EditModeToggle ✅ (UI controls with shortcuts)
-  - ContentProvider ✅ (Convex data integration)
+**Authentication Flow:**
+1. **User Authentication**: Convex Auth with Password provider
+2. **Route Protection**: AuthGuard component for admin routes
+3. **Session Management**: Automatic session expiry detection
+4. **State Synchronization**: Authentication state across components
 
-Features:
-  - DOM scanning for data-live-edit-id ✅
-  - Inline text editing ✅
-  - Auto-save to Convex ✅
-  - Visual indicators ✅
-  - Keyboard shortcuts (Ctrl+E, Enter, Escape) ✅
-  - Element counter ✅
-  - Error handling ✅
+**Security Features:**
+- ✅ **Route Protection**: All `/admin/*` routes require authentication
+- ✅ **Edit Mode Gating**: Live edit functionality requires authentication
+- ✅ **Session Security**: Automatic session expiry detection
+- ✅ **Error Handling**: User-friendly French error messages
 
-Styling:
-  - Edit mode CSS classes ✅
-  - Hover effects and outlines ✅
-  - Inline editor styling ✅
-  - Responsive design ✅
+### 2. Live Edit System ✅
+
+**Core Components:**
+```
+src/
+├── lib/
+│   └── liveEdit.ts                  ✅ (LiveEditPrototype class)
+├── components/
+│   ├── EditProvider.tsx             ✅ (Edit mode context with auth)
+│   ├── EditModeToggle.tsx           ✅ (Toggle button with shortcuts)
+│   ├── EditPanel.tsx                ✅ (Centralized editing interface)
+│   └── ContentProvider.tsx          ✅ (Convex content integration)
+├── hooks/
+│   └── useEditMode.ts               ✅ (Edit mode state management with auth)
+└── lib/
+    └── contentRegistry.ts           ✅ (Content field definitions)
 ```
 
-### Backend Technologies ✅
+**Live Edit Features:**
+- ✅ **Inline Editing**: Direct content editing on live pages
+- ✅ **Real-time Persistence**: Changes saved to Convex database
+- ✅ **Authentication Gating**: Edit mode requires authentication
+- ✅ **Visual Feedback**: Hover effects and edit indicators
+- ✅ **Keyboard Shortcuts**: Ctrl+E to toggle, Enter/Escape for actions
 
-#### **Convex (Real-time Backend)**
-```yaml
-Database:
-  - Convex Database ✅ (Real-time document database)
-  - Schema validation ✅ (Type-safe schemas)
-  - Indexes ✅ (Optimized queries)
+### 3. Admin Panel System ✅
 
-Authentication:
-  - Convex Auth ✅ (Built-in auth system)
-  - User management ✅ (Ready for roles)
-  - Session handling ✅
-
-Functions:
-  - Queries ✅ (Real-time data fetching)
-  - Mutations ✅ (Data modifications)
-  - Actions ✅ (External API calls)
-  - HTTP endpoints ✅ (API routes)
-
-Content Management:
-  - Content table ✅ (With proper indexes)
-  - CRUD operations ✅ (Create, read, update, delete)
-  - Real-time updates ✅ (Live content sync)
+**Admin Components:**
+```
+src/pages/admin/
+├── AdminLayout.tsx                  ✅ (Admin interface with French localization)
+├── BlogAdminPage.tsx                ✅ (Blog management)
+├── BlogEditorPage.tsx               ✅ (Blog editing)
+├── TestimonialsAdminPage.tsx        ✅ (Testimonials management)
+├── MediaAdminPage.tsx               ✅ (Media library)
+├── TeamAdminPage.tsx                ✅ (Team management)
+└── TimelineAdminPage.tsx            ✅ (Timeline management)
 ```
 
-### **NEXT PHASE ARCHITECTURE (Phase 2) ⏳**
+**Admin Features:**
+- ✅ **Protected Routes**: All admin routes require authentication
+- ✅ **CRUD Operations**: Create, read, update, delete for all content types
+- ✅ **French Localization**: Complete French language support
+- ✅ **Real-time Updates**: Live content updates across admin interface
+- ✅ **Media Management**: File upload and management capabilities
 
-#### **Enhanced Content Management System**
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    PHASE 2: ENHANCED CMS                           │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │   React Pages   │───▶│  LiveEditProto  │───▶│   Convex DB     │ │
-│  │  (Complete      │    │  (Enhanced)     │    │   (Enhanced)    │ │
-│  │   attribution)  │    │                 │    │                 │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
-│           │                       │                       │         │
-│           ▼                       ▼                       ▼         │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │ Authentication  │    │ Rich Media      │    │ Rich Text       │ │
-│  │ (User Roles)    │    │ (Images/Videos) │    │ (TipTap)        │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
-│           │                       │                       │         │
-│           ▼                       ▼                       ▼         │
-│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
-│  │ File Storage    │    │ Media Library   │    │ Blog System     │ │
-│  │ (Convex)        │    │ Management      │    │ (Complete)      │ │
-│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
+### 4. Content Management System ✅
 
-#### **New Technologies to Add**
-```yaml
-Authentication:
-  - User roles (admin, editor, viewer) ⏳
-  - Permission-based access control ⏳
-  - Secure edit mode access ⏳
-
-Rich Media:
-  - Convex file storage ⏳
-  - Image upload and optimization ⏳
-  - Video embedding ⏳
-  - Media library management ⏳
-
-Rich Text Editing:
-  - TipTap editor ⏳
-  - Rich text formatting ⏳
-  - Content blocks ⏳
-  - HTML sanitization ⏳
-
-Blog System:
-  - Blog posts schema ⏳
-  - Rich text content ⏳
-  - Categories and tags ⏳
-  - SEO management ⏳
-```
-
-## Database Schema
-
-### Current Schema ✅
+**Content Structure:**
 ```typescript
-// convex/schema.ts
+// Convex Schema
 export default defineSchema({
-  ...authTables,
-  
-  // Basic content management
+  // Content management
   content: defineTable({
-    id: v.string(),
-    content: v.string(),
-    type: v.union(v.literal("text"), v.literal("image")),
     page: v.string(),
-    lastModified: v.number(),
-  }).index("by_content_id", ["id"])
-    .index("by_page", ["page"]),
-    
-  // Numbers table (example)
-  numbers: defineTable({
-    value: v.number(),
-  }),
-});
-```
-
-### Enhanced Schema (Phase 2) ⏳
-```typescript
-// convex/schema.ts (Enhanced)
-export default defineSchema({
-  ...authTables,
-  
-  // User management
-  users: defineTable({
-    name: v.string(),
-    email: v.string(),
-    role: v.union(v.literal("admin"), v.literal("editor"), v.literal("viewer")),
-    permissions: v.array(v.string()),
-    lastLogin: v.optional(v.number()),
-  }).index("by_email", ["email"]),
-  
-  // Enhanced content management
-  content: defineTable({
-    id: v.string(),
-    content: v.string(),
-    type: v.union(v.literal("text"), v.literal("image"), v.literal("video")),
-    page: v.string(),
-    lastModified: v.number(),
-    lastModifiedBy: v.id("users"),
-  }).index("by_content_id", ["id"])
-    .index("by_page", ["page"]),
-    
-  // Media library (Convex File Storage)
-  media: defineTable({
-    storageId: v.id("_storage"),
-    type: v.union(v.literal("image"), v.literal("video")),
-    alt: v.optional(v.string()),
-    width: v.optional(v.number()),
-    height: v.optional(v.number()),
-    tags: v.optional(v.array(v.string())),
-    createdAt: v.number(),
-  }).index("by_createdAt", ["createdAt"])
-    .index("by_tag", ["tags"]),
+    section: v.string(),
+    key: v.string(),
+    value: v.string(),
+    type: v.union(v.literal("text"), v.literal("rich_text"), v.literal("image")),
+    updatedAt: v.number(),
+  }).index("by_page_section", ["page", "section"])
+    .index("by_key", ["key"]),
     
   // Blog system
   blog_posts: defineTable({
@@ -316,6 +140,58 @@ export default defineSchema({
   }).index("by_slug", ["slug"])
     .index("by_status_publishedAt", ["status", "publishedAt"])
     .index("by_featured", ["featured"]),
+    
+  // Team management
+  team_members: defineTable({
+    name: v.string(),
+    position: v.string(),
+    bio: v.optional(v.string()),
+    image: v.optional(v.string()),
+    email: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    order: v.number(),
+    active: v.boolean(),
+  }).index("by_order", ["order"]),
+    
+  // Media management
+  media_files: defineTable({
+    filename: v.string(),
+    originalName: v.string(),
+    contentType: v.string(),
+    size: v.number(),
+    url: v.string(),
+    thumbnailUrl: v.optional(v.string()),
+    alt: v.optional(v.string()),
+    tags: v.optional(v.array(v.string())),
+    uploadedBy: v.optional(v.string()),
+    uploadedAt: v.number(),
+  }).index("by_uploadedAt", ["uploadedAt"])
+    .index("by_contentType", ["contentType"]),
+    
+  // Testimonials
+  testimonials: defineTable({
+    author: v.string(),
+    content: v.string(),
+    rating: v.optional(v.number()),
+    authorImage: v.optional(v.string()),
+    authorTitle: v.optional(v.string()),
+    featured: v.optional(v.boolean()),
+    order: v.number(),
+    active: v.boolean(),
+  }).index("by_order", ["order"])
+    .index("by_featured", ["featured"]),
+    
+  // Timeline
+  timeline_entries: defineTable({
+    title: v.string(),
+    description: v.string(),
+    date: v.number(),
+    image: v.optional(v.string()),
+    category: v.optional(v.string()),
+    order: v.number(),
+    active: v.boolean(),
+  }).index("by_date", ["date"])
+    .index("by_order", ["order"]),
 });
 ```
 
@@ -325,57 +201,38 @@ export default defineSchema({
 ```
 src/
 ├── components/
-│   ├── Navigation.tsx          ✅ (Header navigation)
-│   ├── Footer.tsx              ✅ (Site footer)
-│   ├── ImageSlider.tsx         ✅ (Hero carousel)
-│   ├── ScrollToTop.tsx         ✅ (Scroll behavior)
-│   ├── EditProvider.tsx        ✅ (Edit mode context)
-│   ├── EditModeToggle.tsx      ✅ (Edit controls)
-│   └── ContentProvider.tsx     ✅ (Content context)
+│   ├── Navigation.tsx               ✅ (Header navigation with auth)
+│   ├── Footer.tsx                   ✅ (Site footer)
+│   ├── ImageSlider.tsx              ✅ (Hero carousel)
+│   ├── ScrollToTop.tsx              ✅ (Scroll behavior)
+│   ├── EditProvider.tsx             ✅ (Edit mode context with auth)
+│   ├── EditModeToggle.tsx           ✅ (Edit controls)
+│   ├── EditPanel.tsx                ✅ (Centralized editing interface)
+│   ├── ContentProvider.tsx          ✅ (Content context)
+│   ├── AuthGuard.tsx                ✅ (Route protection)
+│   ├── ProfileButton.tsx            ✅ (Authentication UI)
+│   ├── LoginPopover.tsx             ✅ (Login modal)
+│   └── LoginPage.tsx                ✅ (Full-page authentication)
 ├── hooks/
-│   └── useEditMode.ts          ✅ (Edit mode state)
+│   └── useEditMode.ts               ✅ (Edit mode state with auth)
 ├── lib/
-│   └── liveEdit.ts             ✅ (Live edit engine)
-└── pages/
-    ├── HomePage.tsx            ✅ (Complete with live edit)
-    ├── AboutPage.tsx           ✅ (Complete)
-    ├── ContactPage.tsx         ✅ (Complete)
-    ├── InscriptionPage.tsx     ✅ (Complete)
-    └── NotFoundPage.tsx        ✅ (Complete)
-```
-
-### Enhanced Components (Phase 2) ⏳
-```
-src/
-├── components/
-│   ├── [Existing components]   ✅
-│   ├── MediaUpload.tsx         ⏳ (File upload)
-│   ├── MediaLibrary.tsx        ⏳ (Media management)
-│   ├── RichTextEditor.tsx      ⏳ (TipTap editor)
-│   ├── BlogEditor.tsx          ⏳ (Blog management)
-│   ├── BlogList.tsx            ⏳ (Blog listing)
-│   ├── BlogDetail.tsx          ⏳ (Blog display)
-│   ├── AuthGuard.tsx           ⏳ (Authentication)
-│   └── UserManagement.tsx      ⏳ (User admin)
-├── hooks/
-│   ├── [Existing hooks]        ✅
-│   ├── useAuth.ts              ⏳ (Authentication)
-│   ├── useMedia.ts             ⏳ (Media management)
-│   └── useBlog.ts              ⏳ (Blog operations)
-├── lib/
-│   ├── [Existing lib]          ✅
-│   ├── media.ts                ⏳ (Media utilities)
-│   ├── auth.ts                 ⏳ (Auth utilities)
-│   └── blog.ts                 ⏳ (Blog utilities)
-└── pages/
-    ├── [Existing pages]        ✅
-    ├── BlogPage.tsx            ⏳ (Blog listing)
-    ├── BlogDetailPage.tsx      ⏳ (Blog detail)
-    ├── AdminPage.tsx           ⏳ (Admin panel)
-    └── programs/               ⏳ (Program pages)
-        ├── PreschoolPage.tsx   ⏳
-        ├── PrimaryPage.tsx     ⏳
-        └── MiddleschoolPage.tsx⏳
+│   ├── liveEdit.ts                  ✅ (Live edit engine)
+│   └── contentRegistry.ts           ✅ (Content field definitions)
+└── pages/                           ✅ (All pages with auth integration)
+    ├── HomePage.tsx                 ✅ (Complete with live edit + auth)
+    ├── AboutPage.tsx                ✅ (Complete)
+    ├── ContactPage.tsx              ✅ (Complete)
+    ├── InscriptionPage.tsx          ✅ (Complete)
+    ├── LoginPage.tsx                ✅ (Authentication)
+    ├── NotFoundPage.tsx             ✅ (Complete)
+    └── admin/                       ✅ (Protected admin pages)
+        ├── AdminLayout.tsx          ✅ (Admin interface)
+        ├── BlogAdminPage.tsx        ✅ (Blog management)
+        ├── BlogEditorPage.tsx       ✅ (Blog editing)
+        ├── TestimonialsAdminPage.tsx ✅ (Testimonials)
+        ├── MediaAdminPage.tsx       ✅ (Media library)
+        ├── TeamAdminPage.tsx        ✅ (Team management)
+        └── TimelineAdminPage.tsx    ✅ (Timeline management)
 ```
 
 ## API Architecture
@@ -387,155 +244,128 @@ export const updateContent = mutation({...}) ✅
 export const getContent = query({...}) ✅
 export const getContentByPage = query({...}) ✅
 export const getAllContent = query({...}) ✅
-```
 
-### Enhanced Functions (Phase 2) ⏳
-```typescript
 // convex/auth.ts
-export const createUser = mutation({...}) ⏳
-export const getUserRole = query({...}) ⏳
-export const updateUserPermissions = mutation({...}) ⏳
-
-// convex/media.ts (Convex File Storage)
-export const generateUploadUrl = mutation({
-  args: {},
-  returns: v.string(),
-  handler: async (ctx) => await ctx.storage.generateUploadUrl(),
-});
-export const storeMediaRecord = mutation({
-  args: {
-    storageId: v.id("_storage"),
-    type: v.union(v.literal("image"), v.literal("video")),
-    alt: v.optional(v.string()),
-    width: v.optional(v.number()),
-    height: v.optional(v.number()),
-    tags: v.optional(v.array(v.string())),
-  },
-  returns: v.id("media"),
-  handler: async (ctx, args) => ctx.db.insert("media", { ...args, createdAt: Date.now() }),
-});
-export const getSignedUrl = query({
-  args: { storageId: v.id("_storage") },
-  returns: v.union(v.string(), v.null()),
-  handler: async (ctx, { storageId }) => ctx.storage.getUrl(storageId),
-});
-export const searchMedia = query({
-  args: { tag: v.optional(v.string()), limit: v.optional(v.number()) },
-  handler: async (ctx, args) => {
-    const limit = Math.min(args.limit ?? 20, 50);
-    const items = typeof args.tag === "string"
-      ? await ctx.db.query("media").withIndex("by_tag", (q) => q.eq("tags", [args.tag])).order("desc").take(limit)
-      : await ctx.db.query("media").withIndex("by_createdAt").order("desc").take(limit);
-    return Promise.all(items.map(async (m) => ({ ...m, url: await ctx.storage.getUrl(m.storageId) })));
-  },
-});
-export const deleteMedia = mutation({
-  args: { id: v.id("media"), deleteBlob: v.optional(v.boolean()) },
-  returns: v.null(),
-  handler: async (ctx, { id, deleteBlob }) => {
-    const doc = await ctx.db.get(id);
-    if (doc && deleteBlob) await ctx.storage.delete(doc.storageId);
-    if (doc) await ctx.db.delete(id);
-    return null;
-  },
-});
+export const getCurrentUser = query({...}) ✅
 
 // convex/blog.ts
-export const createBlogPost = mutation({...}) ⏳
-export const updateBlogPost = mutation({...}) ⏳
-export const getBlogPost = query({...}) ⏳
-export const listBlogPosts = query({...}) ⏳
-export const deleteBlogPost = mutation({...}) ⏳
+export const listAllBlogPosts = query({...}) ✅
+export const getBlogPost = query({...}) ✅
+export const createBlogPost = mutation({...}) ✅
+export const updateBlogPost = mutation({...}) ✅
+export const deleteBlogPost = mutation({...}) ✅
+export const publishBlogPost = mutation({...}) ✅
+export const unpublishBlogPost = mutation({...}) ✅
+export const countBlogPosts = query({...}) ✅
+
+// convex/team.ts
+export const listAllTeamMembers = query({...}) ✅
+export const createTeamMember = mutation({...}) ✅
+export const updateTeamMember = mutation({...}) ✅
+export const deleteTeamMember = mutation({...}) ✅
+export const countTeamMembers = query({...}) ✅
+
+// convex/media.ts
+export const listAllMediaFiles = query({...}) ✅
+export const generateUploadUrl = mutation({...}) ✅
+export const storeMediaRecord = mutation({...}) ✅
+export const deleteMediaFile = mutation({...}) ✅
+export const countMediaFiles = query({...}) ✅
+
+// convex/testimonials.ts
+export const listAllTestimonials = query({...}) ✅
+export const createTestimonial = mutation({...}) ✅
+export const updateTestimonial = mutation({...}) ✅
+export const deleteTestimonial = mutation({...}) ✅
+
+// convex/timeline.ts
+export const listAllTimelineEntries = query({...}) ✅
+export const createTimelineEntry = mutation({...}) ✅
+export const updateTimelineEntry = mutation({...}) ✅
+export const deleteTimelineEntry = mutation({...}) ✅
+export const countTimelineEntries = query({...}) ✅
 ```
-
-## Performance Considerations
-
-### Current Performance ✅
-- **Build Time**: < 30 seconds with Vite
-- **Page Load**: < 3 seconds initial load
-- **Live Edit**: < 100ms response time
-- **Bundle Size**: Optimized with code splitting
-
-### Phase 2 Optimizations ⏳
-- **Image Optimization**: Automatic resizing and compression
-- **Lazy Loading**: Media and blog content
-- **Caching**: Convex query caching
-- **CDN**: Static asset delivery
-- **Code Splitting**: Route-based splitting
 
 ## Security Architecture
 
-### Current Security ✅
-- **Convex Auth**: Built-in authentication
-- **Type Safety**: TypeScript strict mode
-- **Input Validation**: Convex validators
-- **HTTPS**: Secure connections
+### Authentication & Authorization
+- **Convex Auth**: Secure authentication with Password provider
+- **Route Protection**: AuthGuard component for admin routes
+- **Session Management**: Automatic session expiry detection
+- **Access Control**: Edit mode gated behind authentication
 
-### Phase 2 Security ⏳
-- **Role-based Access**: User permissions
-- **Content Validation**: Rich text sanitization
-- **File Upload Security**: Type and size validation
-- **API Rate Limiting**: Request throttling
-- **Audit Logging**: User action tracking
+### Data Security
+- **Input Validation**: Convex validators for all data
+- **Type Safety**: TypeScript strict mode throughout
+- **Error Handling**: Graceful error handling with user feedback
+- **Session Security**: Secure session management
+
+## Performance Architecture
+
+### Frontend Performance
+- **Vite Build**: Fast development and optimized production builds
+- **Code Splitting**: Automatic code splitting by routes
+- **Lazy Loading**: Components loaded on demand
+- **State Optimization**: Efficient React state management
+
+### Backend Performance
+- **Convex Database**: High-performance FoundationDB backend
+- **Real-time Subscriptions**: Efficient real-time updates
+- **Caching**: Built-in caching for queries
+- **Serverless**: Automatic scaling and optimization
 
 ## Deployment Architecture
 
-### Current Deployment ✅
-- **Frontend**: Vercel/Netlify (SPA)
-- **Backend**: Convex (Serverless)
-- **Database**: Convex (Managed)
-- **CDN**: Vercel/Netlify edge
+### Development Environment
+- **Local Development**: Vite dev server with hot reload
+- **Convex Dev**: Local Convex development environment
+- **TypeScript**: Strict type checking
+- **ESLint**: Code quality enforcement
 
-### Phase 2 Deployment ⏳
-- **Media Storage**: Convex file storage
-- **Image Processing**: On-demand optimization
-- **Caching**: Multi-layer caching
-- **Monitoring**: Performance and error tracking
+### Production Environment
+- **Vercel**: Frontend deployment platform
+- **Convex**: Backend deployment platform
+- **CDN**: Global content delivery
+- **SSL**: Secure HTTPS connections
 
-## Migration Strategy
+## Monitoring & Analytics
 
-### Phase 1: Foundation ✅
-- ✅ React + Vite setup
-- ✅ Core components migration
-- ✅ Basic routing
-- ✅ Live edit system
-- ✅ Convex integration
+### Error Tracking
+- **Error Boundaries**: React error boundaries for graceful error handling
+- **Console Logging**: Structured logging for debugging
+- **User Feedback**: User-friendly error messages
 
-### Phase 2: Enhancement ⏳
-- ⏳ Complete page migration
-- ⏳ Authentication integration
-- ⏳ Rich media support
-- ⏳ Rich text editing
-- ⏳ Blog system
+### Performance Monitoring
+- **Vite Metrics**: Build and runtime performance metrics
+- **Convex Analytics**: Backend performance monitoring
+- **User Experience**: Real user monitoring
 
-### Phase 3: Advanced Features ⏳
-- ⏳ Content workflow
-- ⏳ SEO management
-- ⏳ Analytics integration
-- ⏳ Performance optimization
+## Future Enhancements
 
-## Success Metrics
+### Planned Features
+- **Role-Based Access**: Different permission levels for users
+- **Multi-Factor Authentication**: Additional security layer
+- **Content Workflow**: Draft/publish states and approval workflow
+- **SEO Tools**: Meta tag management and SEO optimization
+- **Analytics Integration**: User behavior tracking and analytics
 
-### Technical Metrics ✅
-- **Build Performance**: < 30s ✅
-- **Runtime Performance**: < 3s load ✅
-- **Edit Response**: < 100ms ✅
-- **Uptime**: 99.9% ✅
+### Technical Improvements
+- **Service Workers**: Offline support and caching
+- **Progressive Web App**: PWA capabilities
+- **Internationalization**: Multi-language support beyond French
+- **Advanced Media**: Video embedding and advanced media management
 
-### User Experience Metrics
-- **Content Editing**: Intuitive and fast ✅
-- **Mobile Responsive**: All devices ✅
-- **Accessibility**: WCAG compliant ✅
-- **SEO**: Optimized structure ✅
+## Implementation Status: ✅ PRODUCTION READY
 
-### Business Metrics
-- **Development Speed**: 50% faster ✅
-- **Content Updates**: Real-time ✅
-- **Maintenance**: Reduced complexity ✅
-- **Scalability**: Ready for growth ✅
+The Les Hirondelles website architecture is complete and production-ready with:
 
----
+- ✅ **Complete Authentication System**: Secure login/logout with French localization
+- ✅ **Live Edit System**: Inline content editing with authentication gating
+- ✅ **Admin Panel**: Protected content management interface
+- ✅ **Real-time Updates**: Live content synchronization
+- ✅ **Responsive Design**: Mobile-first approach
+- ✅ **Performance Optimized**: Fast loading and efficient state management
+- ✅ **Security Hardened**: Route protection and session management
+- ✅ **French Localization**: Complete French language support
 
-**Status**: ✅ **LIVE EDIT SYSTEM COMPLETE**
-**Next Phase**: Authentication, Rich Media, Rich Text Editing
-**Timeline**: 2 weeks to full CMS implementation
+The architecture provides a solid foundation for future enhancements while delivering a professional, secure, and user-friendly experience for the Les Hirondelles school website.

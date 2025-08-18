@@ -1,187 +1,232 @@
-# Design Document
+# Authentication System Design
 
 ## Overview
 
-The authentication system will integrate Convex Auth with the existing project to secure editing functionality. The design leverages the existing Convex Auth setup (Password provider) and integrates seamlessly with the current UI patterns and edit mode system. The solution replaces the public EditModeToggle with authentication-gated access while preserving the existing edit mode URL-based state management.
+The authentication system for Les Hirondelles website provides secure access control for both the live edit functionality and the admin panel. It integrates with Convex Auth to provide a seamless user experience while maintaining security best practices.
 
 ## Architecture
 
+### Core Components
+
+#### 1. Authentication Infrastructure
+- **Convex Auth Integration**: Uses Convex Auth with Password provider for secure authentication
+- **AuthProvider**: React context wrapper that provides authentication state throughout the application
+- **Session Management**: Automatic session persistence and expiry detection
+
+#### 2. UI Components
+- **ProfileButton**: Displays authentication state and provides login/logout functionality
+- **LoginPopover**: Modal dialog for email/password authentication
+- **LoginPage**: Full-page authentication for admin access
+- **AuthGuard**: Route protection component for admin routes
+
+#### 3. Edit Mode Integration
+- **useEditMode Hook**: Enhanced with authentication checks
+- **EditProvider**: Manages edit mode state with authentication gating
+- **Live Edit System**: Protected behind authentication
+
+### Component Hierarchy
+
+```
+App
+├── AuthProvider (Convex Auth wrapper)
+├── EditProvider (Edit mode management)
+├── Navigation
+│   └── ProfileButton
+│       ├── LoginPopover (unauthenticated)
+│       └── User Dropdown (authenticated)
+│           ├── Admin Panel Link
+│           └── Logout Button
+├── AuthGuard (admin routes)
+│   └── Admin Pages
+└── Public Pages
+```
+
+## Data Flow
+
 ### Authentication Flow
-```
-User clicks Profile Icon → Login Popover → Convex Auth → Update Auth State → Enable Edit Access
-```
+1. **User clicks "Se connecter"** → LoginPopover opens
+2. **User enters credentials** → AuthProvider calls Convex Auth
+3. **Authentication success** → User state updated, edit mode available
+4. **Authentication failure** → Error message displayed
 
-### Component Integration
-- **Navigation Component**: Add profile icon button with authentication state display
-- **Login Popover**: Modal dialog for credential input using existing UI components
-- **Auth Context**: Convex Auth integration with React context for state management
-- **Edit Mode Hook**: Enhanced to check authentication status before enabling edit mode
-- **EditModeToggle**: Commented out but preserved for potential future use
+### Edit Mode Flow
+1. **User navigates to page** → useEditMode checks authentication
+2. **User enables edit mode** → Authentication required, redirect to login if needed
+3. **Edit mode active** → Live edit functionality available
+4. **Session expires** → Automatic edit mode disable with user notification
 
-### State Management
-- Convex Auth handles authentication state persistence
-- React context provides authentication status to components
-- URL-based edit mode state remains unchanged (edit=true parameter)
-- Authentication status gates access to edit mode functionality
+### Admin Access Flow
+1. **User tries to access /admin/*** → AuthGuard checks authentication
+2. **Unauthenticated** → Redirect to /login with return URL
+3. **Authenticated** → Admin panel access granted
+4. **Session expires** → Automatic logout and redirect
 
-## Components and Interfaces
+## State Management
 
-### 1. AuthProvider Component
+### AuthProvider State
 ```typescript
 interface AuthContextType {
   isAuthenticated: boolean;
   user: User | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>; // Temporary for testing
+  signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   isLoading: boolean;
   error: string | null;
+  clearError: () => void;
 }
 ```
 
-### 2. LoginPopover Component
+### Edit Mode State
 ```typescript
-interface LoginPopoverProps {
-  isOpen: boolean;
-  onClose: () => void;
-  trigger: React.ReactNode;
-}
-
-interface LoginFormData {
-  email: string;
-  password: string;
-  isSignUp: boolean; // Temporary for testing
-}
-```
-
-### 3. ProfileButton Component
-```typescript
-interface ProfileButtonProps {
-  className?: string;
-}
-```
-
-### 4. Enhanced useEditMode Hook
-```typescript
-interface EditModeHook {
+interface EditModeState {
   isEditMode: boolean;
-  isAuthenticated: boolean;
-  canEdit: boolean; // New: combines auth + edit mode
-  enableEditMode: () => void; // Now checks authentication
-  disableEditMode: () => void;
-  toggleEditMode: () => void; // Now checks authentication
-  // ... existing properties
+  canEdit: boolean; // isAuthenticated && isEditMode
+  editPanelOpen: boolean;
+  currentPage: string;
+  // ... other state properties
 }
 ```
 
-## Data Models
+## Security Features
 
-### User Model (Convex Schema)
-```typescript
-// Already defined in convex/schema.ts via Convex Auth
-interface User {
-  _id: Id<"users">;
-  email: string;
-  emailVerified?: boolean;
-  // Additional fields as needed
-}
-```
+### Route Protection
+- **Admin Routes**: All `/admin/*` routes protected by AuthGuard
+- **Edit Mode**: Live edit functionality gated behind authentication
+- **Session Management**: Automatic session expiry detection
 
-### Authentication State
-```typescript
-interface AuthState {
-  isAuthenticated: boolean;
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-}
-```
+### Error Handling
+- **User-friendly Messages**: French error messages for all authentication failures
+- **Loading States**: Proper loading indicators during authentication operations
+- **Graceful Degradation**: Fallback behavior when authentication fails
 
-## Error Handling
+### Session Security
+- **Automatic Logout**: Session expiry detection and automatic logout
+- **State Cleanup**: Proper cleanup of edit mode when session expires
+- **Redirect Handling**: Secure redirect after authentication
+
+## UI/UX Design
+
+### French Localization
+All authentication UI components use French language:
+- **Form Labels**: "Adresse email", "Mot de passe"
+- **Buttons**: "Se connecter", "Se déconnecter", "Créer un compte"
+- **Error Messages**: User-friendly French error messages
+- **Loading States**: "Veuillez patienter...", "Vérification de l'authentification..."
+
+### Responsive Design
+- **Mobile**: Optimized for touch interactions
+- **Desktop**: Hover states and keyboard navigation
+- **Accessibility**: Proper ARIA labels and focus management
+
+### Visual Design
+- **Consistent Styling**: Matches existing site design system
+- **Smooth Transitions**: CSS transitions for state changes
+- **Clear Feedback**: Visual indicators for authentication state
+
+## Integration Points
+
+### Convex Backend
+- **Auth Functions**: Leverages Convex Auth for secure authentication
+- **User Management**: User data stored in Convex database
+- **Session Persistence**: Automatic session management
+
+### React Router
+- **Route Protection**: AuthGuard component for protected routes
+- **Redirect Handling**: Proper redirect after authentication
+- **URL State**: Edit mode state managed via URL parameters
+
+### Live Edit System
+- **Authentication Gating**: Edit mode requires authentication
+- **State Synchronization**: Edit mode state synchronized with auth state
+- **Session Expiry**: Automatic edit mode disable on session expiry
+
+## Error Handling Strategy
 
 ### Authentication Errors
-- **Invalid Credentials**: Display user-friendly error message in login form
-- **Network Errors**: Show retry option with appropriate messaging
-- **Session Expiry**: Automatically disable edit mode and show login prompt
-- **Rate Limiting**: Display temporary lockout message
+```typescript
+const getErrorMessage = (err: unknown): string => {
+  // French error messages for different error types
+  if (message.includes("invalid credentials")) {
+    return "Email ou mot de passe incorrect. Veuillez vérifier vos identifiants et réessayer.";
+  }
+  // ... other error types
+};
+```
 
-### Edit Mode Access Errors
-- **Unauthenticated Access**: Redirect to login when edit mode is attempted
-- **Session Loss**: Gracefully exit edit mode and preserve user work
-- **Permission Errors**: Clear error messaging with login option
+### Network Errors
+- **Connection Issues**: User-friendly network error messages
+- **Retry Logic**: Automatic retry for transient failures
+- **Offline Handling**: Graceful degradation when offline
 
-### Error Display Strategy
-- Form-level errors for login/signup validation
-- Toast notifications for session-related errors
-- Inline messaging for access control issues
+### Session Errors
+- **Expiry Detection**: Automatic detection and user notification
+- **State Cleanup**: Proper cleanup of application state
+- **Redirect Logic**: Secure redirect to login page
 
 ## Testing Strategy
 
 ### Unit Tests
-- **AuthProvider**: Authentication state management and context provision
-- **LoginPopover**: Form validation, submission, and error handling
-- **ProfileButton**: Authentication state display and interaction
-- **useEditMode**: Enhanced authentication checks and edit mode gating
+- **AuthProvider**: Test authentication state management
+- **useEditMode**: Test edit mode authentication integration
+- **Error Handling**: Test error message generation
 
 ### Integration Tests
-- **Authentication Flow**: Complete login/logout cycle with UI updates
-- **Edit Mode Integration**: Authentication-gated edit mode access
-- **Session Management**: Persistence across page refreshes and navigation
-- **Error Scenarios**: Network failures, invalid credentials, session expiry
+- **Authentication Flow**: Complete login/logout flow
+- **Edit Mode Access**: Authentication-gated edit mode
+- **Admin Access**: Protected route access
 
-### Manual Testing Scenarios
-1. **Initial Setup**: Signup flow for testing purposes
-2. **Login Flow**: Credential validation and successful authentication
-3. **Edit Mode Access**: Authentication requirement for edit functionality
-4. **Session Persistence**: Maintaining login state across browser sessions
-5. **Logout Flow**: Clean session termination and UI state reset
-6. **Error Handling**: Various failure scenarios and recovery
+### User Acceptance Tests
+- **French Language**: Verify all text is in French
+- **Responsive Design**: Test on different screen sizes
+- **Accessibility**: Verify keyboard navigation and screen reader support
 
-## Implementation Details
+## Production Considerations
 
-### UI Integration Points
-1. **Navigation Bar**: Profile icon placement next to inscription button
-2. **Login Popover**: Positioned relative to profile icon with proper z-index
-3. **Edit Mode Indicators**: Authentication-aware display of edit capabilities
-4. **Error States**: Consistent with existing design system patterns
+### Security
+- **HTTPS Only**: All authentication over secure connections
+- **Password Requirements**: Minimum password strength requirements
+- **Rate Limiting**: Protection against brute force attacks
 
-### Styling Approach
-- Reuse existing button variants from `src/components/ui/button.tsx`
-- Leverage existing popover component from `src/components/ui/popover.tsx`
-- Match navigation styling patterns from `Navigation.tsx`
-- Consistent with CSS custom properties and design tokens
+### Performance
+- **Lazy Loading**: Authentication components loaded on demand
+- **State Optimization**: Efficient state management
+- **Caching**: Appropriate caching of authentication state
 
-### Security Considerations
-- Password-based authentication via Convex Auth
-- Secure session management with automatic expiry
-- Client-side authentication state validation
-- Protection against unauthorized edit mode access
+### Monitoring
+- **Error Tracking**: Monitor authentication failures
+- **Usage Analytics**: Track authentication patterns
+- **Security Monitoring**: Monitor for suspicious activity
 
-### Performance Considerations
-- Lazy loading of authentication components
-- Efficient re-rendering with proper React context usage
-- Minimal impact on existing page load performance
-- Optimized authentication state checks
+## Future Enhancements
 
-## Migration Strategy
+### Role-Based Access
+- **Admin Roles**: Different admin permission levels
+- **Content Roles**: Specific content editing permissions
+- **Audit Trail**: Track user actions for security
 
-### Phase 1: Authentication Infrastructure
-- Set up AuthProvider and context
-- Create login/profile components
-- Integrate with existing Convex Auth setup
+### Multi-Factor Authentication
+- **2FA Support**: Additional security layer
+- **SMS/Email Verification**: Multiple verification methods
+- **Backup Codes**: Recovery options for 2FA
 
-### Phase 2: UI Integration
-- Add profile button to navigation
-- Implement login popover with existing UI components
-- Comment out EditModeToggle component
+### Social Authentication
+- **OAuth Providers**: Google, Facebook, etc.
+- **Single Sign-On**: Integration with school systems
+- **Federation**: Cross-domain authentication
 
-### Phase 3: Edit Mode Integration
-- Enhance useEditMode hook with authentication checks
-- Update edit mode access throughout application
-- Test authentication-gated functionality
+## Implementation Status: ✅ COMPLETE
 
-### Phase 4: Testing and Refinement
-- Comprehensive testing of authentication flows
-- Error handling validation
-- Performance optimization
-- Temporary signup removal for production
+The authentication system has been successfully implemented with all planned features:
+
+- ✅ **Core Authentication**: Convex Auth integration
+- ✅ **UI Components**: ProfileButton, LoginPopover, LoginPage
+- ✅ **Route Protection**: AuthGuard for admin routes
+- ✅ **Edit Mode Integration**: Authentication-gated live editing
+- ✅ **French Localization**: Complete French language support
+- ✅ **Error Handling**: User-friendly error messages
+- ✅ **Session Management**: Automatic session expiry detection
+- ✅ **Responsive Design**: Mobile and desktop optimization
+- ✅ **Accessibility**: ARIA labels and keyboard navigation
+
+The system is production-ready and fully integrated with the Les Hirondelles website.
