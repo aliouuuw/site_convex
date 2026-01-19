@@ -89,6 +89,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   const showFallbackContent = (!currentSrc || hasError) && !!fallbackContent;
   const showPlaceholder = !showFallbackContent && (!isLoaded || (!currentSrc && !hasError));
+  const showErrorOverlay = hasError && !fallbackContent;
 
   if (showFallbackContent) {
     return (
@@ -108,7 +109,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           className={`absolute inset-0 bg-gray-200 animate-pulse ${
             placeholderClassName || ""
           }`}
-        />
+        >
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 border-4 border-white/60 border-t-white rounded-full animate-spin" />
+          </div>
+        </div>
+      )}
+      {showErrorOverlay && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-200 text-gray-600 text-sm">
+          Image indisponible
+        </div>
       )}
       {isInView && currentSrc && (
         <img

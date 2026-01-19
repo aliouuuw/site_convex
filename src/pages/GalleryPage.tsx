@@ -163,10 +163,18 @@ const GalleryPage: React.FC = () => {
                     <video
                       src={item.src}
                       className="w-full h-full object-cover"
-                      preload="none"
-                      poster={item.thumbnail}
+                      preload="metadata"
+                      poster={item.thumbnail && item.thumbnail !== item.src ? item.thumbnail : undefined}
                       muted
                       playsInline
+                      onLoadedMetadata={(event) => {
+                        if (!item.thumbnail || item.thumbnail === item.src) {
+                          event.currentTarget.currentTime = 0.1;
+                        }
+                      }}
+                      onSeeked={(event) => {
+                        event.currentTarget.pause();
+                      }}
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
                       <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
