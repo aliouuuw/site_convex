@@ -324,6 +324,19 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
     const [value, setValue] = useState(hydrated);
     const [hasChanges, setHasChanges] = useState(false);
 
+    const sanitizeRichText = (html: string) => {
+      if (!html) return '';
+      const hasMedia = /<(img|video|iframe|svg|figure|picture)\b/i.test(html);
+      const plainText = html
+        .replace(/<[^>]*>/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .trim();
+      if (!plainText && !hasMedia) {
+        return '';
+      }
+      return html;
+    };
+
     React.useEffect(() => {
       if (hydrated !== undefined && hydrated !== value) {
         setValue(hydrated);
@@ -335,8 +348,14 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
     const handleSave = async () => {
       if (!hasChanges) return;
       try {
-        console.log('Saving rich text content:', { id, value, page });
-        await updateContent({ id, content: value, type: 'text', page });
+        const sanitized = sanitizeRichText(value);
+        if (sanitized === hydrated) {
+          setHasChanges(false);
+          setValue(hydrated);
+          return;
+        }
+        console.log('Saving rich text content:', { id, value: sanitized, page });
+        await updateContent({ id, content: sanitized, type: 'richText', page });
         console.log('Rich text content saved successfully');
         setHasChanges(false);
       } catch (error) {

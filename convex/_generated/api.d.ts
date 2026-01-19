@@ -19,6 +19,7 @@ import type * as content from "../content.js";
 import type * as http from "../http.js";
 import type * as media from "../media.js";
 import type * as mediaUpload from "../mediaUpload.js";
+import type * as migrations from "../migrations.js";
 import type * as myFunctions from "../myFunctions.js";
 import type * as team from "../team.js";
 import type * as testimonials from "../testimonials.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   media: typeof media;
   mediaUpload: typeof mediaUpload;
+  migrations: typeof migrations;
   myFunctions: typeof myFunctions;
   team: typeof team;
   testimonials: typeof testimonials;

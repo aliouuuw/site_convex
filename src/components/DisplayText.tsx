@@ -17,15 +17,23 @@ export const DisplayText: React.FC<DisplayTextProps> = ({
 }) => {
   // Get content from Convex
   const content = useQuery(api.content.getContent, { id });
-  
-  // Use content from database if available, otherwise fallback to children
-  const currentContent = content?.content || (typeof children === 'string' ? children : '');
 
-  return (
-    <Component className={className}>
-      {currentContent}
-    </Component>
-  );
+  const looksLikeHtml = Boolean(content?.content && /<[^>]+>/.test(content.content));
+
+  if (content?.type === 'richText' || looksLikeHtml) {
+    return (
+      <Component
+        className={className}
+        dangerouslySetInnerHTML={{ __html: content?.content || '' }}
+      />
+    );
+  }
+
+  if (content?.content) {
+    return <Component className={className}>{content.content}</Component>;
+  }
+
+  return <Component className={className}>{children}</Component>;
 };
 
 export default DisplayText;

@@ -13,7 +13,7 @@ export default defineSchema({
   content: defineTable({
     id: v.string(),
     content: v.string(),
-    type: v.union(v.literal("text"), v.literal("image")),
+    type: v.union(v.literal("text"), v.literal("image"), v.literal("richText")),
     page: v.string(),
     lastModified: v.number(),
     mediaId: v.optional(v.id("media")),

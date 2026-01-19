@@ -104,11 +104,17 @@ export default function RichTextEditor({
     editable,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      onChange(html);
+      const text = editor.getText();
+      
+      // Sanitize: if only empty/whitespace HTML with no media, emit empty string
+      const hasMedia = /<(img|video|iframe|svg|figure|picture)\b/i.test(html);
+      const plainText = text.trim();
+      const sanitized = (!plainText && !hasMedia) ? '' : html;
+      
+      onChange(sanitized);
       
       // Update word and character counts
-      const text = editor.getText();
-      const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+      const words = plainText.split(/\s+/).filter(word => word.length > 0);
       setWordCount(words.length);
       setCharCount(text.length);
     },
