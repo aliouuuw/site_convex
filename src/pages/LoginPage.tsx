@@ -13,6 +13,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { signIn, signUp, isLoading, error, clearError, isAuthenticated } = useAuth();
+
+  const allowSignUp = String((import.meta.env as any).VITE_ENABLE_SIGNUP) === "true";
   
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -73,7 +75,9 @@ export default function LoginPage() {
     clearError();
     
     try {
-      if (formData.isSignUp) {
+      const isSignUp = allowSignUp && formData.isSignUp;
+
+      if (isSignUp) {
         await signUp(formData.email, formData.password);
       } else {
         await signIn(formData.email, formData.password);
@@ -90,6 +94,7 @@ export default function LoginPage() {
   };
 
   const toggleMode = () => {
+    if (!allowSignUp) return;
     setFormData(prev => ({ ...prev, isSignUp: !prev.isSignUp }));
     setFormError(null);
     clearError();
@@ -107,10 +112,10 @@ export default function LoginPage() {
             </div>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            {formData.isSignUp ? "Créer un compte" : "Bienvenue"}
+            {allowSignUp && formData.isSignUp ? "Créer un compte" : "Bienvenue"}
           </h2>
           <p className="text-gray-600">
-            {formData.isSignUp 
+            {allowSignUp && formData.isSignUp 
               ? "Créez un compte pour accéder au panneau d'administration" 
               : "Connectez-vous pour accéder au panneau d'administration"
             }
@@ -170,7 +175,7 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
-              {formData.isSignUp && (
+              {allowSignUp && formData.isSignUp && (
                 <p className="text-xs text-gray-500">
                   Le mot de passe doit contenir au moins 6 caractères
                 </p>
@@ -205,20 +210,21 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Mode Toggle */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={toggleMode}
-              className="w-full text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-              disabled={isLoading}
-            >
-              {formData.isSignUp 
-                ? "Vous avez déjà un compte ? Se connecter" 
-                : "Besoin d'un compte ? En créer un"
-              }
-            </button>
-          </div>
+          {allowSignUp && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={toggleMode}
+                className="w-full text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+                disabled={isLoading}
+              >
+                {formData.isSignUp 
+                  ? "Vous avez déjà un compte ? Se connecter" 
+                  : "Besoin d'un compte ? En créer un"
+                }
+              </button>
+            </div>
+          )}
 
           {/* Back to Home */}
           <div className="mt-4 text-center">
