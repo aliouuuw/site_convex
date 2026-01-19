@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import ContentRenderer from './ContentRenderer';
 
 interface DisplayTextProps {
   id: string;
@@ -18,22 +19,15 @@ export const DisplayText: React.FC<DisplayTextProps> = ({
   // Get content from Convex
   const content = useQuery(api.content.getContent, { id });
 
-  const looksLikeHtml = Boolean(content?.content && /<[^>]+>/.test(content.content));
-
-  if (content?.type === 'richText' || looksLikeHtml) {
-    return (
-      <Component
-        className={className}
-        dangerouslySetInnerHTML={{ __html: content?.content || '' }}
-      />
-    );
-  }
-
-  if (content?.content) {
-    return <Component className={className}>{content.content}</Component>;
-  }
-
-  return <Component className={className}>{children}</Component>;
+  return (
+    <ContentRenderer
+      content={content?.content}
+      type={content?.type}
+      fallback={children}
+      className={className}
+      as={Component}
+    />
+  );
 };
 
 export default DisplayText;

@@ -41,6 +41,7 @@ import { Input } from "@/components/ui/input";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { sanitizeRichText } from "../../shared/contentSanitizer";
 
 interface RichTextEditorProps {
   content: string;
@@ -105,16 +106,14 @@ export default function RichTextEditor({
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
       const text = editor.getText();
-      
+
       // Sanitize: if only empty/whitespace HTML with no media, emit empty string
-      const hasMedia = /<(img|video|iframe|svg|figure|picture)\b/i.test(html);
-      const plainText = text.trim();
-      const sanitized = (!plainText && !hasMedia) ? '' : html;
-      
+      const sanitized = sanitizeRichText(html, text);
+
       onChange(sanitized);
       
       // Update word and character counts
-      const words = plainText.split(/\s+/).filter(word => word.length > 0);
+      const words = text.trim().split(/\s+/).filter(word => word.length > 0);
       setWordCount(words.length);
       setCharCount(text.length);
     },

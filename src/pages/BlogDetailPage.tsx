@@ -4,6 +4,7 @@ import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import SEO from '../components/SEO';
 import OptimizedImage from '../components/OptimizedImage';
+import ContentRenderer from '../components/ContentRenderer';
 
 const formatDate = (timestamp: number) => {
   const options: Intl.DateTimeFormatOptions = {
@@ -194,17 +195,14 @@ const BlogDetailPage: React.FC = () => {
         <section className="bg-white pb-8">
           <div className="container mx-auto px-6 max-w-4xl">
             <article className="prose prose-lg max-w-none">
-              <div
+              <ContentRenderer
                 className="text-gray-700"
-                // TipTap outputs semantic HTML including <p>, <br>, <ul>/<ol>, etc.
-                // We should inject it as-is without transforming newlines to <br/>.
-                // Preserve whitespace and ensure long words wrap.
-                dangerouslySetInnerHTML={{
-                  __html:
-                    blogPost.contentHtml && blogPost.contentHtml.trim().length > 0
-                      ? blogPost.contentHtml
-                      : "<p>Aucun contenu disponible pour cet article.</p>",
-                }}
+                content={
+                  blogPost.contentHtml && blogPost.contentHtml.trim().length > 0
+                    ? blogPost.contentHtml
+                    : "<p>Aucun contenu disponible pour cet article.</p>"
+                }
+                type="richText"
                 style={{
                   whiteSpace: "normal",
                   overflowWrap: "anywhere",

@@ -7,6 +7,7 @@ import MediaSelector from './MediaSelector';
 import { Id } from '../../convex/_generated/dataModel';
 import RichTextEditor from './RichTextEditor';
 import { FaTrash } from 'react-icons/fa6';
+import { sanitizeRichText } from '../../shared/contentSanitizer';
 
 interface EditPanelProps {
   page: string;
@@ -323,19 +324,6 @@ export default function EditPanel({ page, isOpen, onClose }: EditPanelProps) {
     const hydrated = contentMap.get(id)?.content || '';
     const [value, setValue] = useState(hydrated);
     const [hasChanges, setHasChanges] = useState(false);
-
-    const sanitizeRichText = (html: string) => {
-      if (!html) return '';
-      const hasMedia = /<(img|video|iframe|svg|figure|picture)\b/i.test(html);
-      const plainText = html
-        .replace(/<[^>]*>/g, '')
-        .replace(/&nbsp;/g, ' ')
-        .trim();
-      if (!plainText && !hasMedia) {
-        return '';
-      }
-      return html;
-    };
 
     React.useEffect(() => {
       if (hydrated !== undefined && hydrated !== value) {

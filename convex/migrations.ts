@@ -1,19 +1,6 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-
-/**
- * Utility to check if rich text HTML is effectively empty (only empty tags, no real content).
- */
-function isEmptyRichText(html: string): boolean {
-  if (!html) return true;
-  const hasMedia = /<(img|video|iframe|svg|figure|picture)\b/i.test(html);
-  if (hasMedia) return false;
-  const plainText = html
-    .replace(/<[^>]*>/g, '')
-    .replace(/&nbsp;/g, ' ')
-    .trim();
-  return plainText.length === 0;
-}
+import { isEmptyRichText, looksLikeHtml } from "../shared/contentSanitizer";
 
 /**
  * Preview which content entries would be cleaned (dry run).
@@ -33,8 +20,8 @@ export const previewCleanEmptyRichText = query({
     const allContent = await ctx.db.query("content").collect();
     const toClean = allContent.filter((c) => {
       // Check if it's a richText type OR if it looks like HTML but is empty
-      const looksLikeHtml = /<[^>]+>/.test(c.content);
-      return (c.type === 'richText' || looksLikeHtml) && isEmptyRichText(c.content);
+      const htmlLike = looksLikeHtml(c.content);
+      return (c.type === 'richText' || htmlLike) && isEmptyRichText(c.content);
     });
     return toClean.map((c) => ({
       _id: c._id as string,
@@ -59,8 +46,8 @@ export const cleanEmptyRichText = mutation({
   handler: async (ctx) => {
     const allContent = await ctx.db.query("content").collect();
     const toClean = allContent.filter((c) => {
-      const looksLikeHtml = /<[^>]+>/.test(c.content);
-      return (c.type === 'richText' || looksLikeHtml) && isEmptyRichText(c.content);
+      const htmlLike = looksLikeHtml(c.content);
+      return (c.type === 'richText' || htmlLike) && isEmptyRichText(c.content);
     });
 
     const cleanedIds: string[] = [];
@@ -89,10 +76,7 @@ export const fixRichTextTypes = mutation({
   }),
   handler: async (ctx) => {
     const allContent = await ctx.db.query("content").collect();
-    const toFix = allContent.filter((c) => {
-      const looksLikeHtml = /<[^>]+>/.test(c.content);
-      return c.type === 'text' && looksLikeHtml;
-    });
+    const toFix = allContent.filter((c) => c.type === 'text' && looksLikeHtml(c.content));
 
     const fixedIds: string[] = [];
     for (const c of toFix) {
