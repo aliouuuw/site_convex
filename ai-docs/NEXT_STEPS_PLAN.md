@@ -31,6 +31,12 @@ The Les Hirondelles website now features a complete authentication system with:
 - ✅ **Timeline**: Timeline entries management
 - ✅ **Real-time Updates**: Live content synchronization
 
+### Phase 2.5: Gallery UI/UX Refresh (COMPLETE)
+- ✅ **/gallery Redesign**: Modern minimal layout (header, filters, masonry grid)
+- ✅ **Lightbox Modal**: Immersive modal aligned with site design (rounded container, refined controls)
+- ✅ **Modal Navigation**: Keyboard + previous/next navigation
+- ✅ **Header Overlay Fix**: Modal layering fixed (z-index above fixed navigation)
+
 ## Remaining Work (15%)
 
 ### Phase 3: Content Attribution & Enhancement
@@ -99,6 +105,39 @@ Enhanced media capabilities:
 - [ ] Enhance media library with search and filtering
 - [ ] Add media usage tracking
 - [ ] Implement media backup and recovery
+
+#### 1.b Performance & Media Loading (priority for overall UX) (3-5 days)
+```
+Performance improvements aligned with React Best Practices:
+├── Standardized optimized image component
+├── Lazy loading + placeholders (reduce layout shifts)
+├── Bundle splitting for heavy/admin-only code
+└── Preload on user intent for perceived speed
+```
+
+**Tasks:**
+- [ ] Create a shared `OptimizedImage` component
+  - Lazy loading (native + IntersectionObserver fallback)
+  - Placeholder (skeleton/blur) + fade-in
+  - Error fallback
+- [ ] Adopt `OptimizedImage` across the site (replace raw `<img>` usages)
+  - Home hero/slider
+  - Blog cards/detail
+  - Team and other media-heavy sections
+- [ ] Improve gallery loading behavior
+  - Use placeholders while images load
+  - Consider `content-visibility: auto` for long lists
+- [ ] Video loading strategy
+  - Use `preload="none"` for offscreen videos
+  - Load full video only when modal opens
+  - Ensure `poster` is always present (thumbnail generation)
+- [ ] Bundle size optimization
+  - Lazy load admin-only heavy modules (e.g. rich text editor)
+  - Defer non-critical third-party code
+  - Prefer direct imports over barrel imports where applicable
+- [ ] Preload on intent
+  - Preload modal bundle on hover/focus of a card (gallery)
+  - Preload routes/components on nav hover where beneficial
 
 #### 2. Rich Text Editing (3-5 days)
 ```
