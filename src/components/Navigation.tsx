@@ -1,9 +1,73 @@
-import { useState, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { FaChevronUp } from "react-icons/fa";
 import { ProfileButton } from "./ProfileButton";
 import { useEditMode } from "../hooks/useEditMode";
 import OptimizedImage from "./OptimizedImage";
+
+const warmRoute = (preload?: () => Promise<unknown>) => {
+  if (preload) {
+    void preload();
+  }
+};
+
+const PROGRAM_LINKS = [
+  {
+    name: "Préscolaire",
+    href: "/programs/preschool",
+    age: "3-5 ans",
+    preload: () => import("../pages/PreschoolPage"),
+  },
+  {
+    name: "Primaire",
+    href: "/programs/primary",
+    age: "6-10 ans",
+    preload: () => import("../pages/PrimaryPage"),
+  },
+  {
+    name: "Collège",
+    href: "/programs/middleschool",
+    age: "11-15 ans",
+    preload: () => import("../pages/MiddleschoolPage"),
+  },
+];
+
+const ABOUT_LINKS = [
+  {
+    name: "Notre Histoire",
+    href: "/histoire",
+    description: "Découvrez notre parcours et nos valeurs",
+    preload: () => import("../pages/AboutPage"),
+  },
+  {
+    name: "Notre Équipe",
+    href: "/equipe",
+    description: "Rencontrez nos enseignants",
+    preload: () => import("../pages/EquipePage"),
+  },
+  {
+    name: "Journal de l'école",
+    href: "/journal",
+    description: "Actualités et vie scolaire",
+    preload: () => import("../pages/BlogPage"),
+  },
+  {
+    name: "Galerie",
+    href: "/gallery",
+    description: "Aperçu de nos activités",
+    preload: () => import("../pages/GalleryPage"),
+  },
+  // {
+  //   name: "Installations",
+  //   href: "/facilities",
+  //   description: "Nos infrastructures modernes",
+  // },
+  // {
+  //   name: "Témoignages",
+  //   href: "/testimonials",
+  //   description: "Ce que disent nos parents",
+  // },
+];
 
 const Navigation = () => {
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
@@ -19,74 +83,7 @@ const Navigation = () => {
 
   useEffect(() => {
     setIsAdminPage(location.pathname.startsWith("/admin"));
-  }, [location]);
-
-  // Remove the old edit mode checking logic since we're now using the enhanced hook
-  // The useEditMode hook handles URL parameter checking internally
-
-  const warmRoute = (preload?: () => Promise<unknown>) => {
-    if (preload) {
-      void preload();
-    }
-  };
-
-  const programLinks = [
-    {
-      name: "Préscolaire",
-      href: "/programs/preschool",
-      age: "3-5 ans",
-      preload: () => import("../pages/PreschoolPage"),
-    },
-    {
-      name: "Primaire",
-      href: "/programs/primary",
-      age: "6-10 ans",
-      preload: () => import("../pages/PrimaryPage"),
-    },
-    {
-      name: "Collège",
-      href: "/programs/middleschool",
-      age: "11-15 ans",
-      preload: () => import("../pages/MiddleschoolPage"),
-    },
-  ];
-
-  const aboutLinks = [
-    {
-      name: "Notre Histoire",
-      href: "/histoire",
-      description: "Découvrez notre parcours et nos valeurs",
-      preload: () => import("../pages/AboutPage"),
-    },
-    {
-      name: "Notre Équipe",
-      href: "/equipe",
-      description: "Rencontrez nos enseignants",
-      preload: () => import("../pages/EquipePage"),
-    },
-    {
-      name: "Journal de l'école",
-      href: "/journal",
-      description: "Actualités et vie scolaire",
-      preload: () => import("../pages/BlogPage"),
-    },
-    {
-      name: "Galerie",
-      href: "/gallery",
-      description: "Aperçu de nos activités",
-      preload: () => import("../pages/GalleryPage"),
-    },
-    // {
-    //   name: "Installations",
-    //   href: "/facilities",
-    //   description: "Nos infrastructures modernes",
-    // },
-    // {
-    //   name: "Témoignages",
-    //   href: "/testimonials",
-    //   description: "Ce que disent nos parents",
-    // },
-  ];
+  }, [location.pathname]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[1000] bg-white/80 backdrop-blur-lg border-b border-gray-200">
@@ -157,7 +154,7 @@ const Navigation = () => {
                 }`}
               >
                 <div className="px-4 py-2">
-                  {aboutLinks.map((link) => (
+                  {ABOUT_LINKS.map((link) => (
                     <Link
                       key={link.href}
                       to={link.href}
@@ -226,7 +223,7 @@ const Navigation = () => {
                 }`}
               >
                 <div className="px-4 py-2">
-                  {programLinks.map((program) => (
+                  {PROGRAM_LINKS.map((program) => (
                     <Link
                       key={program.href}
                       to={program.href}
@@ -348,7 +345,7 @@ const Navigation = () => {
                 {/* Mobile About Dropdown Content */}
                 {isAboutOpen && (
                   <div className="mt-2 ml-4 space-y-2">
-                    {aboutLinks.map((link) => (
+                    {ABOUT_LINKS.map((link) => (
                       <Link
                         key={link.href}
                         to={link.href}
@@ -408,7 +405,7 @@ const Navigation = () => {
                 {/* Mobile Dropdown Content - Click Only */}
                 {isProgramsOpen && (
                   <div className="mt-2 ml-4 space-y-2">
-                    {programLinks.map((program) => (
+                    {PROGRAM_LINKS.map((program) => (
                       <Link
                         key={program.href}
                         to={program.href}
@@ -485,4 +482,4 @@ const Navigation = () => {
   );
 };
 
-export default Navigation;
+export default memo(Navigation);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import OptimizedImage from './OptimizedImage';
@@ -19,28 +19,31 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
   const isLoading = content === undefined;
   
   // Use content from database if available, otherwise fallback to default images
-  const currentImages = (() => {
+  const currentImages = useMemo(() => {
     if (content?.content) {
       try {
         const parsed = JSON.parse(content.content);
-        return Array.isArray(parsed) 
-          ? parsed.filter((img: any): img is string => img && typeof img === 'string')
-          : [];
+        return Array.isArray(parsed) ? parsed : [];
       } catch (error) {
         console.warn('Failed to parse slider images from Convex:', error);
         return defaultImages || [];
       }
     }
     return defaultImages || [];
-  })();
+  }, [content?.content, defaultImages]);
+
+  const validImages = useMemo(
+    () => currentImages.filter((img: unknown): img is string => typeof img === 'string'),
+    [currentImages]
+  );
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [firstImageLoaded, setFirstImageLoaded] = useState(false);
 
   // Preload first image for faster LCP
   useEffect(() => {
-    if (currentImages.length > 0) {
-      const firstImage = currentImages[0];
+    if (validImages.length > 0) {
+      const firstImage = validImages[0];
       const link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'image';
@@ -51,18 +54,18 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
         document.head.removeChild(link);
       };
     }
-  }, [currentImages]);
+  }, [validImages]);
 
   useEffect(() => {
-    if (currentImages.length === 0) return;
+    if (validImages.length === 0) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) =>
-        prevIndex === currentImages.length - 1 ? 0 : prevIndex + 1
+        prevIndex === validImages.length - 1 ? 0 : prevIndex + 1
       );
     }, 5000);
     return () => clearInterval(interval);
-  }, [currentImages.length]);
+  }, [validImages.length]);
 
   // Loading skeleton while fetching content
   if (isLoading) {
@@ -77,7 +80,7 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
   }
 
   // Empty state - elegant branded background (no emoji)
-  if (currentImages.length === 0) {
+  if (validImages.length === 0) {
     return (
       <div className={`w-full h-full relative overflow-hidden bg-gradient-to-br from-[var(--primary)] via-[var(--primary-dark,#003d6b)] to-[var(--accent)] ${className}`}>
         <div className="absolute inset-0 bg-[url('/images/logo.svg')] bg-center bg-no-repeat bg-[length:120px] opacity-10" />
@@ -94,7 +97,7 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
         </div>
       )}
       
-      {currentImages.filter((image: any): image is string => image && typeof image === 'string').map((image: string, index: number) => (
+      {validImages.map((image: string, index: number) => (
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
@@ -120,7 +123,7 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
 
       {/* Slide indicators */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
-        {currentImages.filter((image: any): image is string => image && typeof image === 'string').map((_: string, index: number) => (
+        {validImages.map((_: string, index: number) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
@@ -136,4 +139,4 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
   );
 };
 
-export default DisplayImageSlider;
+export default memo(DisplayImageSlider);

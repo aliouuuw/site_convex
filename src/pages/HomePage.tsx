@@ -19,6 +19,14 @@ const translate = (text: string) => {
   }
 };
 
+const formatDate = (timestamp: number) => {
+  return new Date(timestamp).toLocaleDateString("fr-FR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
+
 const schoolLevels = [
   {
     title: "Préscolaire",
@@ -51,15 +59,7 @@ const HomePage: React.FC = () => {
   const blogPosts = useQuery(api.blog.listPublishedBlogPosts, { limit: 4 });
   // Fetch visible testimonials for the testimonials section
   const testimonials = useQuery(api.testimonials.listVisibleTestimonials, { limit: 6 });
-  
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-  
+
   return (
     <div className="min-h-screen">
       <SEO 
