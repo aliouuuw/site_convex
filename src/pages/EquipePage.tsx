@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
+import OptimizedImage from '../components/OptimizedImage';
 import SEO from "../components/SEO";
 
 const EquipePage: React.FC = () => {
@@ -42,14 +43,18 @@ const EquipePage: React.FC = () => {
       >
         <div className="relative h-64">
           {member.photo ? (
-            <img
+            <OptimizedImage
               src={member.photo}
               alt={member.name}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback to initials if image fails to load
-                e.currentTarget.style.display = 'none';
-              }}
+              wrapperClassName="w-full h-full"
+              fallbackContent={
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <div className="text-4xl font-bold text-gray-400">
+                    {member.name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+                  </div>
+                </div>
+              }
             />
           ) : (
             <div className="w-full h-full bg-gray-200 flex items-center justify-center">

@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { FaChevronUp } from "react-icons/fa";
 import { ProfileButton } from "./ProfileButton";
 import { useEditMode } from "../hooks/useEditMode";
+import OptimizedImage from "./OptimizedImage";
 
 const Navigation = () => {
   const [isProgramsOpen, setIsProgramsOpen] = useState(false);
@@ -23,10 +24,31 @@ const Navigation = () => {
   // Remove the old edit mode checking logic since we're now using the enhanced hook
   // The useEditMode hook handles URL parameter checking internally
 
+  const warmRoute = (preload?: () => Promise<unknown>) => {
+    if (preload) {
+      void preload();
+    }
+  };
+
   const programLinks = [
-    { name: "Préscolaire", href: "/programs/preschool", age: "3-5 ans" },
-    { name: "Primaire", href: "/programs/primary", age: "6-10 ans" },
-    { name: "Collège", href: "/programs/middleschool", age: "11-15 ans" },
+    {
+      name: "Préscolaire",
+      href: "/programs/preschool",
+      age: "3-5 ans",
+      preload: () => import("../pages/PreschoolPage"),
+    },
+    {
+      name: "Primaire",
+      href: "/programs/primary",
+      age: "6-10 ans",
+      preload: () => import("../pages/PrimaryPage"),
+    },
+    {
+      name: "Collège",
+      href: "/programs/middleschool",
+      age: "11-15 ans",
+      preload: () => import("../pages/MiddleschoolPage"),
+    },
   ];
 
   const aboutLinks = [
@@ -34,21 +56,25 @@ const Navigation = () => {
       name: "Notre Histoire",
       href: "/histoire",
       description: "Découvrez notre parcours et nos valeurs",
+      preload: () => import("../pages/AboutPage"),
     },
     {
       name: "Notre Équipe",
       href: "/equipe",
       description: "Rencontrez nos enseignants",
+      preload: () => import("../pages/EquipePage"),
     },
     {
       name: "Journal de l'école",
       href: "/journal",
       description: "Actualités et vie scolaire",
+      preload: () => import("../pages/BlogPage"),
     },
     {
       name: "Galerie",
       href: "/gallery",
       description: "Aperçu de nos activités",
+      preload: () => import("../pages/GalleryPage"),
     },
     // {
     //   name: "Installations",
@@ -68,11 +94,15 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img
+            <OptimizedImage
               src="/images/logo.svg"
               alt="Les Hirondelles"
               width={30}
               height={40}
+              className="w-[30px] h-[40px]"
+              wrapperClassName="w-[30px] h-[40px]"
+              loading="eager"
+              priority
             />
             <span className="font-semibold text-lg">Les Hirondelles</span>
             {canEdit && (
@@ -87,6 +117,8 @@ const Navigation = () => {
             <NavLink
               to="/"
               className="text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+              onMouseEnter={() => warmRoute(() => import("../pages/HomePage"))}
+              onFocus={() => warmRoute(() => import("../pages/HomePage"))}
             >
               Accueil
             </NavLink>
@@ -130,6 +162,8 @@ const Navigation = () => {
                       key={link.href}
                       to={link.href}
                       className="group flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors focus:outline-none focus:bg-gray-50 focus:text-blue-600"
+                      onMouseEnter={() => warmRoute(link.preload)}
+                      onFocus={() => warmRoute(link.preload)}
                     >
                       <div className="flex flex-col h-[45px]">
                         <span className="font-medium text-gray-900 group-hover:text-[#00538d]">
@@ -197,6 +231,8 @@ const Navigation = () => {
                       key={program.href}
                       to={program.href}
                       className="group flex items-center justify-between w-full px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors focus:outline-none focus:bg-gray-50 focus:text-blue-600"
+                      onMouseEnter={() => warmRoute(program.preload)}
+                      onFocus={() => warmRoute(program.preload)}
                     >
                       <div className="flex flex-col h-[45px]">
                         <span className="font-medium text-gray-900 group-hover:text-[#00538d]">
@@ -228,6 +264,8 @@ const Navigation = () => {
             <NavLink
               to="/contact"
               className="text-gray-600 hover:text-gray-900 hover:underline transition-colors"
+              onMouseEnter={() => warmRoute(() => import("../pages/ContactPage"))}
+              onFocus={() => warmRoute(() => import("../pages/ContactPage"))}
             >
               Contact
             </NavLink>
@@ -239,6 +277,8 @@ const Navigation = () => {
               <Link
                 to="/inscription"
                 className="hidden lg:inline-flex btn btn-primary"
+                onMouseEnter={() => warmRoute(() => import("../pages/InscriptionPage"))}
+                onFocus={() => warmRoute(() => import("../pages/InscriptionPage"))}
               >
                 Inscription
               </Link>
@@ -283,6 +323,8 @@ const Navigation = () => {
                 to="/"
                 className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:underline"
                 onClick={() => setIsMobileMenuOpen(false)}
+                onMouseEnter={() => warmRoute(() => import("../pages/HomePage"))}
+                onFocus={() => warmRoute(() => import("../pages/HomePage"))}
               >
                 Accueil
               </NavLink>
@@ -315,6 +357,8 @@ const Navigation = () => {
                           setIsAboutOpen(false);
                           setIsMobileMenuOpen(false);
                         }}
+                        onMouseEnter={() => warmRoute(link.preload)}
+                        onFocus={() => warmRoute(link.preload)}
                       >
                         <div className="flex items-center gap-2">
                           <svg
@@ -373,6 +417,8 @@ const Navigation = () => {
                           setIsProgramsOpen(false);
                           setIsMobileMenuOpen(false);
                         }}
+                        onMouseEnter={() => warmRoute(program.preload)}
+                        onFocus={() => warmRoute(program.preload)}
                       >
                         <div className="flex items-center gap-2">
                           {/* Individual program icons */}
@@ -408,6 +454,8 @@ const Navigation = () => {
                 to="/contact"
                 className="px-4 py-2 text-gray-600 hover:text-gray-900 hover:underline"
                 onClick={() => setIsMobileMenuOpen(false)}
+                onMouseEnter={() => warmRoute(() => import("../pages/ContactPage"))}
+                onFocus={() => warmRoute(() => import("../pages/ContactPage"))}
               >
                 Contact
               </NavLink>
@@ -418,6 +466,8 @@ const Navigation = () => {
                     to="/inscription"
                     className="mx-4 btn btn-primary text-center hover:underline"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    onMouseEnter={() => warmRoute(() => import("../pages/InscriptionPage"))}
+                    onFocus={() => warmRoute(() => import("../pages/InscriptionPage"))}
                   >
                     Inscription
                   </Link>

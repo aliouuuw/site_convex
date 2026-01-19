@@ -3,6 +3,7 @@ import { FaPlay, FaTimes, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import SEO from "../components/SEO";
+import OptimizedImage from "../components/OptimizedImage";
 
 interface GalleryItem {
   type: string;
@@ -147,22 +148,25 @@ const GalleryPage: React.FC = () => {
               <div
                 key={index}
                 className="break-inside-avoid cursor-pointer group relative overflow-hidden rounded-lg"
+                style={{ contentVisibility: "auto", containIntrinsicSize: "320px" }}
                 onClick={() => openModal(index)}
               >
                 {item.type === "image" ? (
-                  <img
+                  <OptimizedImage
                     src={item.src}
                     alt={item.title}
                     className="w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    loading="lazy"
+                    wrapperClassName="w-full"
                   />
                 ) : (
                   <div className="relative aspect-video bg-gray-100">
                     <video
                       src={item.src}
                       className="w-full h-full object-cover"
-                      preload="metadata"
+                      preload="none"
+                      poster={item.thumbnail}
                       muted
+                      playsInline
                     />
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
                       <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
@@ -231,10 +235,13 @@ const GalleryPage: React.FC = () => {
             {/* Media content */}
             <div className="relative w-full flex items-center justify-center pt-2">
               {selectedItem.type === "image" ? (
-                <img
+                <OptimizedImage
                   src={selectedItem.src}
                   alt={selectedItem.title}
                   className="max-w-full max-h-[70vh] object-contain rounded-2xl"
+                  wrapperClassName="max-w-full max-h-[70vh]"
+                  loading="eager"
+                  priority
                 />
               ) : (
                 <div className="relative w-full flex items-center justify-center">

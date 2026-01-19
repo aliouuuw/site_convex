@@ -1,11 +1,12 @@
 import AdminLayout from "./AdminLayout";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
-import { useState, useEffect } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import RichTextEditor from "../../components/RichTextEditor";
 import MediaPicker from "../../components/MediaPicker";
+
+const RichTextEditor = lazy(() => import("../../components/RichTextEditor"));
 
 interface BlogFormData {
   title: string;
@@ -413,22 +414,24 @@ export default function BlogEditorPage() {
                   }
                 }}
                 onMouseDown={(e) => {
-                  // Prevent toolbar button clicks inside the editor area from bubbling to form
-                  // which could trigger a submit via implicit behavior.
                   e.stopPropagation();
                 }}
               >
-                <RichTextEditor
-                  content={formData.contentHtml}
-                  onChange={(content) => handleInputChange("contentHtml", content)}
-                  placeholder="Start writing your blog post content..."
-                  className="w-full"
-                />
+                <Suspense
+                  fallback={
+                    <div className="min-h-[300px] rounded-lg border border-gray-200 bg-gray-50 animate-pulse" />
+                  }
+                >
+                  <RichTextEditor
+                    content={formData.contentHtml}
+                    onChange={(content) => handleInputChange("contentHtml", content)}
+                    placeholder="Start writing your blog post content..."
+                  />
+                </Suspense>
               </div>
             </div>
           </div>
 
-          {/* Publishing Options */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Publishing Options</h2>
             <div className="space-y-4">

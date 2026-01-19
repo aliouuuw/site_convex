@@ -4,6 +4,7 @@ import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
+import OptimizedImage from '../components/OptimizedImage';
 import SEO from "../components/SEO";
 
 const formatDate = (timestamp: number | string) => {
@@ -110,13 +111,14 @@ const BlogPage: React.FC = () => {
               <div className="card overflow-hidden transition-all duration-300 hover:transform hover:-translate-y-1">
                 <div className="grid md:grid-cols-2 gap-0">
                   <div className="relative h-64 md:h-auto">
-                    <img
+                    <OptimizedImage
                       src={featuredPost.coverImageUrl || "/images/blog/default-blog.jpg"}
                       alt={featuredPost.title}
                       className="object-cover w-full h-full"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/blog/default-blog.jpg";
-                      }}
+                      wrapperClassName="w-full h-full"
+                      fallbackSrc="/images/blog/default-blog.jpg"
+                      loading="eager"
+                      priority
                     />
                   </div>
                   <div className="p-8 md:p-12 flex flex-col justify-center">
@@ -182,15 +184,14 @@ const BlogPage: React.FC = () => {
                   className="card overflow-hidden transition-all duration-300 hover:transform hover:-translate-y-1"
                 >
                   <div className="card-image">
-                    <img
+                    <OptimizedImage
                       src={post.coverImageUrl || "/images/blog/default-blog.jpg"}
                       alt={post.title}
                       width={400}
                       height={250}
                       className="w-full h-48 object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/blog/default-blog.jpg";
-                      }}
+                      wrapperClassName="w-full h-48"
+                      fallbackSrc="/images/blog/default-blog.jpg"
                     />
                   </div>
                   <div className="card-content p-6">

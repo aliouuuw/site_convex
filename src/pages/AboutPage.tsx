@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
+import OptimizedImage from '../components/OptimizedImage';
 import SEO from "../components/SEO";
 
 const AboutPage: React.FC = () => {
@@ -377,10 +378,11 @@ const AboutPage: React.FC = () => {
               <>
                 <div className="card overflow-hidden">
                   <div className="relative h-72 w-full">
-                    <img
+                    <OptimizedImage
                       src="/images/equipe/supervisor.jpg"
                       alt="Mme. NDIAYE Cheikh SY"
                       className="object-cover w-full h-full"
+                      wrapperClassName="w-full h-full"
                     />
                   </div>
                   <div className="p-8">
@@ -400,10 +402,11 @@ const AboutPage: React.FC = () => {
 
                 <div className="card overflow-hidden">
                   <div className="relative h-72 w-full">
-                    <img
+                    <OptimizedImage
                       src="/images/equipe/director.jpg"
                       alt="Mme. Ndiaye Fatou Dabo"
                       className="object-cover w-full h-full"
+                      wrapperClassName="w-full h-full"
                     />
                   </div>
                   <div className="p-8">
@@ -423,10 +426,11 @@ const AboutPage: React.FC = () => {
 
                 <div className="card overflow-hidden">
                   <div className="relative h-72 w-full">
-                    <img
+                    <OptimizedImage
                       src="/images/equipe/pedagogical-lead.jpg"
                       alt="M. Aliou GOUDIABY"
                       className="object-cover w-full h-full"
+                      wrapperClassName="w-full h-full"
                     />
                   </div>
                   <div className="p-8">
@@ -449,10 +453,18 @@ const AboutPage: React.FC = () => {
                 <div key={member._id} className="card overflow-hidden">
                   <div className="relative h-72 w-full">
                     {member.photo ? (
-                      <img
+                      <OptimizedImage
                         src={member.photo}
                         alt={member.name}
                         className="object-cover w-full h-full"
+                        wrapperClassName="w-full h-full"
+                        fallbackContent={
+                          <div className="w-full h-full bg-gray-300 flex items-center justify-center">
+                            <div className="text-6xl font-bold text-gray-600">
+                              {member.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+                            </div>
+                          </div>
+                        }
                       />
                     ) : (
                       <div className="w-full h-full bg-gray-300 flex items-center justify-center">

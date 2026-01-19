@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
+import OptimizedImage from './OptimizedImage';
 
 interface DisplayImageSliderProps {
   id: string;
@@ -15,6 +16,7 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
 }) => {
   // Get content from Convex
   const content = useQuery(api.content.getContent, { id });
+  const isLoading = content === undefined;
   
   // Use content from database if available, otherwise fallback to default images
   const currentImages = (() => {
@@ -33,6 +35,23 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
   })();
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
+
+  // Preload first image for faster LCP
+  useEffect(() => {
+    if (currentImages.length > 0) {
+      const firstImage = currentImages[0];
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = firstImage;
+      link.fetchPriority = 'high';
+      document.head.appendChild(link);
+      return () => {
+        document.head.removeChild(link);
+      };
+    }
+  }, [currentImages]);
 
   useEffect(() => {
     if (currentImages.length === 0) return;
@@ -45,21 +64,36 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
     return () => clearInterval(interval);
   }, [currentImages.length]);
 
-  // Don't render anything if no images
+  // Loading skeleton while fetching content
+  if (isLoading) {
+    return (
+      <div className={`w-full h-full relative overflow-hidden ${className}`}>
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] animate-pulse" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state - elegant branded background (no emoji)
   if (currentImages.length === 0) {
     return (
-      <div className={`w-full h-full relative overflow-hidden bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center ${className}`}>
-        <div className="text-center text-white">
-          <div className="text-6xl mb-4">🏫</div>
-          <h2 className="text-2xl font-bold mb-2">Les Hirondelles</h2>
-          <p className="text-lg opacity-90">Excellence en éducation</p>
-        </div>
+      <div className={`w-full h-full relative overflow-hidden bg-gradient-to-br from-[var(--primary)] via-[var(--primary-dark,#003d6b)] to-[var(--accent)] ${className}`}>
+        <div className="absolute inset-0 bg-[url('/images/logo.svg')] bg-center bg-no-repeat bg-[length:120px] opacity-10" />
       </div>
     );
   }
 
   return (
     <div className={`w-full h-full relative overflow-hidden ${className}`}>
+      {/* Shimmer placeholder while first image loads */}
+      {!firstImageLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] z-[1]">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+        </div>
+      )}
+      
       {currentImages.filter((image: any): image is string => image && typeof image === 'string').map((image: string, index: number) => (
         <div
           key={index}
@@ -67,11 +101,15 @@ export const DisplayImageSlider: React.FC<DisplayImageSliderProps> = ({
             index === currentIndex ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          <img
+          <OptimizedImage
             src={image}
             alt={`Slide ${index + 1}`}
             className="w-full h-full object-cover"
+            wrapperClassName="w-full h-full"
             style={{ filter: 'brightness(0.7)' }}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            priority={index === 0}
+            onLoad={index === 0 ? () => setFirstImageLoaded(true) : undefined}
             onError={(e) => {
               const target = e.target as HTMLImageElement;
               target.style.display = 'none';

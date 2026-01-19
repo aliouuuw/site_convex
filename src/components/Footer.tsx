@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import OptimizedImage from "./OptimizedImage";
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
@@ -18,11 +19,15 @@ const Footer: React.FC = () => {
             <div className="logo" style={{ marginBottom: "1.5rem" }}>
               {/* Logo */}
               <a href="/" className="flex items-center gap-3">
-                <img
+                <OptimizedImage
                   src="/images/logo.svg"
                   alt="Les Hirondelles"
                   width={30}
                   height={40}
+                  className="w-[30px] h-[40px]"
+                  wrapperClassName="w-[30px] h-[40px]"
+                  loading="eager"
+                  priority
                 />
                 <span className="font-semibold text-lg">Les Hirondelles</span>
               </a>

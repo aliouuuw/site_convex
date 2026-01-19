@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import SEO from '../components/SEO';
+import OptimizedImage from '../components/OptimizedImage';
 
 const formatDate = (timestamp: number) => {
   const options: Intl.DateTimeFormatOptions = {
@@ -171,13 +172,14 @@ const BlogDetailPage: React.FC = () => {
               <div className="lg:col-span-5 flex flex-col justify-center">
                 <div className="relative">
                   <div className="relative h-[400px] w-full">
-                    <img
+                    <OptimizedImage
                       src={blogPost.coverImageUrl || "/images/blog/default-blog.jpg"}
                       alt={blogPost.title}
                       className="object-cover w-full h-full"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/blog/default-blog.jpg";
-                      }}
+                      wrapperClassName="w-full h-full"
+                      fallbackSrc="/images/blog/default-blog.jpg"
+                      loading="eager"
+                      priority
                     />
                   </div>
                   <div className="absolute -top-6 -left-6 w-12 h-12 bg-accent"></div>

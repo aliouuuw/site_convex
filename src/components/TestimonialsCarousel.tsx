@@ -1,3 +1,5 @@
+import OptimizedImage from "./OptimizedImage";
+
 interface Testimonial {
   _id: string;
   quote: string;
@@ -28,10 +30,16 @@ export default function TestimonialsCarousel({ testimonials }: TestimonialsCarou
               </blockquote>
               <div className="testimonial-author">
                 {testimonial.imageUrl ? (
-                  <img
+                  <OptimizedImage
                     src={testimonial.imageUrl}
                     alt={testimonial.author}
                     className="author-avatar"
+                    wrapperClassName="author-avatar"
+                    fallbackContent={
+                      <div className="author-avatar-placeholder">
+                        {testimonial.author.charAt(0).toUpperCase()}
+                      </div>
+                    }
                   />
                 ) : (
                   <div className="author-avatar-placeholder">
