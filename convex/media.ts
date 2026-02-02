@@ -19,6 +19,8 @@ export const storeMediaRecord = mutation({
     thumbnailUrl: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     uploadedBy: v.optional(v.string()),
+    source: v.optional(v.union(v.literal("upload"), v.literal("youtube"))),
+    externalId: v.optional(v.string()),
   },
   returns: v.id("media"),
   handler: async (ctx, args) => {
@@ -32,6 +34,8 @@ export const storeMediaRecord = mutation({
       width: args.width,
       height: args.height,
       thumbnailUrl: args.thumbnailUrl,
+      source: args.source || "upload",
+      externalId: args.externalId,
       tags: args.tags,
       uploadedAt: new Date().toISOString(),
       uploadedBy: args.uploadedBy || "unknown",
@@ -57,6 +61,8 @@ export const getMedia = query({
       width: v.optional(v.number()),
       height: v.optional(v.number()),
       thumbnailUrl: v.optional(v.string()),
+      source: v.optional(v.union(v.literal("upload"), v.literal("youtube"))),
+      externalId: v.optional(v.string()),
       tags: v.optional(v.array(v.string())),
       uploadedAt: v.string(),
       uploadedBy: v.string(),
@@ -86,6 +92,8 @@ export const getMediaByUrl = query({
       width: v.optional(v.number()),
       height: v.optional(v.number()),
       thumbnailUrl: v.optional(v.string()),
+      source: v.optional(v.union(v.literal("upload"), v.literal("youtube"))),
+      externalId: v.optional(v.string()),
       tags: v.optional(v.array(v.string())),
       uploadedAt: v.string(),
       uploadedBy: v.string(),
@@ -132,6 +140,7 @@ export const searchMedia = query({
 
     let items;
     if (typeof args.tag === "string") {
+      const normalizedTag = args.tag.trim().toLowerCase();
       // For tag filtering, we need to scan all media and filter in memory
       // since Convex doesn't support array contains queries on indexes
       const allItems = await ctx.db
@@ -140,7 +149,9 @@ export const searchMedia = query({
         .collect();
       
       items = allItems
-        .filter(item => item.tags?.includes(args.tag as string))
+        .filter((item) =>
+          item.tags?.some((t) => t.trim().toLowerCase() === normalizedTag)
+        )
         .slice(0, limit);
     } else {
       items = await ctx.db

@@ -92,6 +92,10 @@ export default defineSchema({
     width: v.optional(v.number()),
     height: v.optional(v.number()),
     thumbnailUrl: v.optional(v.string()), // Video thumbnail URL
+    // Source of the media: 'upload' for Uploadthing files, 'youtube' for YouTube embeds
+    source: v.optional(v.union(v.literal("upload"), v.literal("youtube"))),
+    // External video ID (for YouTube embeds)
+    externalId: v.optional(v.string()),
     tags: v.optional(v.array(v.string())),
     uploadedAt: v.string(), // ISO timestamp
     uploadedBy: v.string(), // User ID

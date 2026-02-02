@@ -103,6 +103,7 @@ http.route({
           size,
           type,
           uploadedBy,
+          source: "upload",
         });
       } catch (e) {
         console.error("Failed to insert media record via mutation:", e);
