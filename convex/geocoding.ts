@@ -13,7 +13,7 @@ export const geocodeAddress = action({
     country: v.optional(v.string()),
     postalCode: v.optional(v.string()),
   },
-  handler: async (ctx, { addressLine1, addressLine2, city, country, postalCode }) => {
+  handler: async (_, { addressLine1, addressLine2, city, country, postalCode }) => {
     // Build full address string
     const parts = [
       addressLine1,
