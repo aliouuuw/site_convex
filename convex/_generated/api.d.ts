@@ -21,6 +21,7 @@ import type * as media from "../media.js";
 import type * as mediaUpload from "../mediaUpload.js";
 import type * as migrations from "../migrations.js";
 import type * as myFunctions from "../myFunctions.js";
+import type * as siteSettings from "../siteSettings.js";
 import type * as team from "../team.js";
 import type * as testimonials from "../testimonials.js";
 import type * as timeline from "../timeline.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   mediaUpload: typeof mediaUpload;
   migrations: typeof migrations;
   myFunctions: typeof myFunctions;
+  siteSettings: typeof siteSettings;
   team: typeof team;
   testimonials: typeof testimonials;
   timeline: typeof timeline;

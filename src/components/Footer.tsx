@@ -1,15 +1,20 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import OptimizedImage from "./OptimizedImage";
+import { useSiteSettings, getSocialLinks } from "../hooks/useSiteSettings";
 
 const Footer: React.FC = () => {
   const year = new Date().getFullYear();
   const location = useLocation();
+  const { settings, isLoading } = useSiteSettings();
   
   // Hide footer on admin pages
   if (location.pathname.startsWith("/admin")) {
     return null;
   }
+
+  // Get social links from settings
+  const socials = settings ? getSocialLinks(settings) : [];
 
   return (
     <footer className="footer">
@@ -58,27 +63,65 @@ const Footer: React.FC = () => {
           <div className="footer-section">
             <h4>Contact</h4>
             <ul className="footer-links">
-              <li>Dakar, Sénégal</li>
-              <li>+221 33 XXX XX XX</li>
-              <li>contact@leshirondelles.sn</li>
+              {isLoading ? (
+                <li>Chargement...</li>
+              ) : settings ? (
+                <>
+                  {(settings.city || settings.country) && (
+                    <li>{[settings.city, settings.country].filter(Boolean).join(", ")}</li>
+                  )}
+                  {settings.phoneMain && (
+                    <li>
+                      <a href={`tel:${settings.phoneMain.replace(/\s/g, "")}`}>
+                        {settings.phoneMain}
+                      </a>
+                    </li>
+                  )}
+                  {settings.emailGeneral && (
+                    <li>
+                      <a href={`mailto:${settings.emailGeneral}`}>
+                        {settings.emailGeneral}
+                      </a>
+                    </li>
+                  )}
+                </>
+              ) : (
+                <>
+                  <li>Dakar, Sénégal</li>
+                  <li>+221 33 XXX XX XX</li>
+                  <li>contact@leshirondelles.sn</li>
+                </>
+              )}
             </ul>
           </div>
 
           <div className="footer-section">
             <h4>Suivez-nous</h4>
             <ul className="footer-links">
-              <li>
-                <a href="#">Facebook</a>
-              </li>
-              <li>
-                <a href="#">Instagram</a>
-              </li>
-              <li>
-                <a href="#">LinkedIn</a>
-              </li>
-              <li>
-                <a href="https://wa.me/22177XXXXXX">WhatsApp</a>
-              </li>
+              {isLoading ? (
+                <li>Chargement...</li>
+              ) : socials.length > 0 ? (
+                socials.map((social, index) => (
+                  <li key={social.name + index}>
+                    <a href={social.url || "#"} target="_blank" rel="noopener noreferrer">
+                      {social.name}
+                    </a>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li><a href="#">Facebook</a></li>
+                  <li><a href="#">Instagram</a></li>
+                  <li><a href="#">LinkedIn</a></li>
+                </>
+              )}
+              {settings?.whatsAppUrl && (
+                <li>
+                  <a href={settings.whatsAppUrl} target="_blank" rel="noopener noreferrer">
+                    WhatsApp
+                  </a>
+                </li>
+              )}
             </ul>
           </div>
         </div>

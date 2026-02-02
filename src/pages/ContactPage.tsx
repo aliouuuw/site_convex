@@ -2,8 +2,15 @@ import React from 'react';
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from '../components/SEO';
+import { useSiteSettings, getSocialLinks, getBusinessHours, getSortedDepartments } from '../hooks/useSiteSettings';
 
 const ContactPage: React.FC = () => {
+  const { settings, isLoading } = useSiteSettings();
+  
+  // Get derived data from settings
+  const hours = settings ? getBusinessHours(settings) : [];
+  const socials = settings ? getSocialLinks(settings) : [];
+  const departments = settings ? getSortedDepartments(settings) : [];
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 pt-20">
       <SEO 
@@ -54,39 +61,36 @@ const ContactPage: React.FC = () => {
                 <div className="flex items-start gap-4">
                   <div className="text-2xl text-accent mt-1">🕒</div>
                   <div>
-                    <DisplayText 
-                      id="contact.hours.title" 
-                      as="h3" 
-                      className="font-semibold text-gray-900 mb-2"
-                    >
+                    <h3 className="font-semibold text-gray-900 mb-2">
                       Horaires d'ouverture
-                    </DisplayText>
-                    <div className="space-y-1 text-gray-700">
-                      <div className="flex justify-between">
-                        <DisplayText id="contact.hours.weekdays.label" as="span">
-                          Lundi - Vendredi:
-                        </DisplayText>
-                        <DisplayText id="contact.hours.weekdays.time" as="span" className="font-medium">
-                          8h00 - 17h00
-                        </DisplayText>
+                    </h3>
+                    {isLoading ? (
+                      <p className="text-gray-600">Chargement...</p>
+                    ) : hours.length > 0 ? (
+                      <div className="space-y-1 text-gray-700">
+                        {hours.map((hour, index) => (
+                          <div key={hour.label + index} className="flex justify-between">
+                            <span>{hour.label}:</span>
+                            <span className="font-medium">{hour.value}</span>
+                          </div>
+                        ))}
                       </div>
-                      <div className="flex justify-between">
-                        <DisplayText id="contact.hours.saturday.label" as="span">
-                          Samedi:
-                        </DisplayText>
-                        <DisplayText id="contact.hours.saturday.time" as="span" className="font-medium">
-                          8h00 - 12h00
-                        </DisplayText>
+                    ) : (
+                      <div className="space-y-1 text-gray-700">
+                        <div className="flex justify-between">
+                          <span>Lundi - Vendredi:</span>
+                          <span className="font-medium">8h00 - 17h00</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Samedi:</span>
+                          <span className="font-medium">8h00 - 12h00</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Dimanche:</span>
+                          <span className="font-medium">Fermé</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <DisplayText id="contact.hours.sunday.label" as="span">
-                          Dimanche:
-                        </DisplayText>
-                        <DisplayText id="contact.hours.sunday.time" as="span" className="font-medium">
-                          Fermé
-                        </DisplayText>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -133,62 +137,84 @@ const ContactPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Address */}
             <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
               <div className="text-4xl mb-4">📍</div>
               <h3 className="text-xl font-semibold mb-4 color-black">
                 Adresse
               </h3>
-              <DisplayText 
-                id="contact.info.address" 
-                as="p" 
-                className="text-gray-600"
-              >
-                Avenue Cheikh Anta Diop<br />
-                Dakar, Sénégal
-              </DisplayText>
+              {isLoading ? (
+                <p className="text-gray-600">Chargement...</p>
+              ) : settings?.addressLine1 ? (
+                <p className="text-gray-600">
+                  {settings.addressLine1}<br />
+                  {settings.city}{settings.city && settings.country ? ", " : ""}{settings.country}
+                </p>
+              ) : (
+                <p className="text-gray-600">
+                  Avenue Cheikh Anta Diop<br />
+                  Dakar, Sénégal
+                </p>
+              )}
             </div>
 
+            {/* Phone */}
             <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
               <div className="text-4xl mb-4">📞</div>
               <h3 className="text-xl font-semibold mb-4 color-black">
                 Téléphone
               </h3>
-              <DisplayText 
-                id="contact.info.phone" 
-                as="p" 
-                className="text-gray-600"
-              >
-                +221 33 XXX XX XX
-              </DisplayText>
+              {isLoading ? (
+                <p className="text-gray-600">Chargement...</p>
+              ) : settings?.phoneMain ? (
+                <p className="text-gray-600">
+                  <a href={`tel:${settings.phoneMain.replace(/\s/g, "")}`} className="hover:text-primary">
+                    {settings.phoneMain}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-gray-600">+221 33 XXX XX XX</p>
+              )}
             </div>
 
+            {/* Email */}
             <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
               <div className="text-4xl mb-4">✉️</div>
               <h3 className="text-xl font-semibold mb-4 color-black">
                 Email
               </h3>
-              <DisplayText 
-                id="contact.info.email" 
-                as="p" 
-                className="text-gray-600"
-              >
-                contact@leshirondelles.sn
-              </DisplayText>
+              {isLoading ? (
+                <p className="text-gray-600">Chargement...</p>
+              ) : settings?.emailGeneral ? (
+                <p className="text-gray-600">
+                  <a href={`mailto:${settings.emailGeneral}`} className="hover:text-primary">
+                    {settings.emailGeneral}
+                  </a>
+                </p>
+              ) : (
+                <p className="text-gray-600">contact@leshirondelles.sn</p>
+              )}
             </div>
 
+            {/* Hours Summary */}
             <div className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1">
               <div className="text-4xl mb-4">🕒</div>
               <h3 className="text-xl font-semibold mb-4 color-black">
                 Horaires
               </h3>
-              <DisplayText 
-                id="contact.info.hours" 
-                as="p" 
-                className="text-gray-600"
-              >
-                Lun-Ven: 8h-17h<br />
-                Sam: 8h-12h
-              </DisplayText>
+              {isLoading ? (
+                <p className="text-gray-600">Chargement...</p>
+              ) : hours.length >= 2 ? (
+                <p className="text-gray-600">
+                  {hours[0]?.label?.split(" - ")[1] || "Lun-Ven"}: {hours[0]?.value}<br />
+                  {hours[1]?.label?.split(" - ")[1] || "Sam"}: {hours[1]?.value}
+                </p>
+              ) : (
+                <p className="text-gray-600">
+                  Lun-Ven: 8h-17h<br />
+                  Sam: 8h-12h
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -270,99 +296,71 @@ const ContactPage: React.FC = () => {
             <div className="space-y-8">
               {/* Map Placeholder */}
               <div>
-                <DisplayText 
-                  id="contact.location.title" 
-                  as="h3" 
-                  className="text-2xl font-bold mb-4 color-black"
-                >
+                <h3 className="text-2xl font-bold mb-4 color-black">
                   Notre Localisation
-                </DisplayText>
+                </h3>
                 <div className="bg-gray-300 h-64 flex items-center justify-center text-gray-600">
                   <div className="text-center">
                     <div className="text-4xl mb-2">🗺️</div>
-                    <DisplayText id="contact.location.map.label" as="p">
-                      Carte interactive
-                    </DisplayText>
-                    <DisplayText id="contact.location.address" as="p" className="text-sm">
-                      Avenue Cheikh Anta Diop, Dakar
-                    </DisplayText>
+                    <p>Carte interactive</p>
+                    <p className="text-sm">
+                      {isLoading ? "Chargement..." : settings?.addressLine1 || "Avenue Cheikh Anta Diop, Dakar"}
+                    </p>
                   </div>
                 </div>
-                <DisplayText 
-                  id="contact.location.description" 
-                  as="p" 
-                  className="text-sm text-gray-600 mt-2"
-                >
-                  Face à l'Université Cheikh Anta Diop, près de la station Total
-                </DisplayText>
+                <p className="text-sm text-gray-600 mt-2">
+                  {isLoading ? "Chargement..." : settings?.addressLine2 || "Face à l'Université Cheikh Anta Diop, près de la station Total"}
+                </p>
               </div>
 
               {/* Department Contacts */}
               <div>
-                <DisplayText 
-                  id="contact.departments.title" 
-                  as="h3" 
-                  className="text-2xl font-bold mb-6 color-black"
-                >
+                <h3 className="text-2xl font-bold mb-6 color-black">
                   Contacts par Service
-                </DisplayText>
+                </h3>
                 <div className="space-y-4">
-                  <div className="card p-6">
-                    <DisplayText 
-                      id="contact.departments.direction.title" 
-                      as="h4" 
-                      className="font-semibold text-gray-900 mb-2"
-                    >
-                      Direction Générale
-                    </DisplayText>
-                    <DisplayText 
-                      id="contact.departments.direction.contact" 
-                      as="div" 
-                      className="text-sm text-gray-600 space-y-1"
-                    >
-                      <p>Mme. Aïssatou Diop</p>
-                      <p>direction@leshirondelles.sn</p>
-                      <p>+221 33 XXX XX XX</p>
-                    </DisplayText>
-                  </div>
-
-                  <div className="card p-6">
-                    <DisplayText 
-                      id="contact.departments.admission.title" 
-                      as="h4" 
-                      className="font-semibold text-gray-900 mb-2"
-                    >
-                      Admission
-                    </DisplayText>
-                    <DisplayText 
-                      id="contact.departments.admission.contact" 
-                      as="div" 
-                      className="text-sm text-gray-600 space-y-1"
-                    >
-                      <p>Service des Inscriptions</p>
-                      <p>inscription@leshirondelles.sn</p>
-                      <p>+221 77 XXX XX XX</p>
-                    </DisplayText>
-                  </div>
-
-                  <div className="card p-6">
-                    <DisplayText 
-                      id="contact.departments.viescolaire.title" 
-                      as="h4" 
-                      className="font-semibold text-gray-900 mb-2"
-                    >
-                      Vie Scolaire
-                    </DisplayText>
-                    <DisplayText 
-                      id="contact.departments.viescolaire.contact" 
-                      as="div" 
-                      className="text-sm text-gray-600 space-y-1"
-                    >
-                      <p>Mme. Fatoumata Sarr</p>
-                      <p>viescolaire@leshirondelles.sn</p>
-                      <p>+221 77 XXX XX XX</p>
-                    </DisplayText>
-                  </div>
+                  {isLoading ? (
+                    <p className="text-gray-600">Chargement...</p>
+                  ) : departments.length > 0 ? (
+                    departments.map((dept, index) => (
+                      <div key={dept.name + index} className="card p-6">
+                        <h4 className="font-semibold text-gray-900 mb-2">
+                          {dept.name}
+                        </h4>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          {dept.contactPerson && <p>{dept.contactPerson}</p>}
+                          {dept.email && <p>{dept.email}</p>}
+                          {dept.phone && <p>{dept.phone}</p>}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <>
+                      <div className="card p-6">
+                        <h4 className="font-semibold text-gray-900 mb-2">Direction Générale</h4>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <p>Mme. Aïssatou Diop</p>
+                          <p>direction@leshirondelles.sn</p>
+                          <p>+221 33 XXX XX XX</p>
+                        </div>
+                      </div>
+                      <div className="card p-6">
+                        <h4 className="font-semibold text-gray-900 mb-2">Admission</h4>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <p>inscription@leshirondelles.sn</p>
+                          <p>+221 77 XXX XX XX</p>
+                        </div>
+                      </div>
+                      <div className="card p-6">
+                        <h4 className="font-semibold text-gray-900 mb-2">Vie Scolaire</h4>
+                        <div className="text-sm text-gray-600 space-y-1">
+                          <p>Mme. Fatoumata Sarr</p>
+                          <p>viescolaire@leshirondelles.sn</p>
+                          <p>+221 77 XXX XX XX</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -393,74 +391,47 @@ const ContactPage: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <a
-              href="#"
-              className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1 group"
-            >
-              <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">
-                📘
-              </div>
-              <DisplayText 
-                id="contact.social.facebook.title" 
-                as="h3" 
-                className="text-xl font-semibold mb-2 color-black"
-              >
-                Facebook
-              </DisplayText>
-              <DisplayText 
-                id="contact.social.facebook.handle" 
-                as="p" 
-                className="text-gray-600"
-              >
-                @LesHirondellesSN
-              </DisplayText>
-            </a>
-
-            <a
-              href="#"
-              className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1 group"
-            >
-              <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">
-                📷
-              </div>
-              <DisplayText 
-                id="contact.social.instagram.title" 
-                as="h3" 
-                className="text-xl font-semibold mb-2 color-black"
-              >
-                Instagram
-              </DisplayText>
-              <DisplayText 
-                id="contact.social.instagram.handle" 
-                as="p" 
-                className="text-gray-600"
-              >
-                @leshirondelles_sn
-              </DisplayText>
-            </a>
-
-            <a
-              href="#"
-              className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1 group"
-            >
-              <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">
-                💼
-              </div>
-              <DisplayText 
-                id="contact.social.linkedin.title" 
-                as="h3" 
-                className="text-xl font-semibold mb-2 color-black"
-              >
-                LinkedIn
-              </DisplayText>
-              <DisplayText 
-                id="contact.social.linkedin.handle" 
-                as="p" 
-                className="text-gray-600"
-              >
-                Institution Les Hirondelles
-              </DisplayText>
-            </a>
+            {isLoading ? (
+              <div className="col-span-3 text-center py-12">Chargement...</div>
+            ) : socials.length > 0 ? (
+              socials.map((social, index) => (
+                <a
+                  key={social.name + index}
+                  href={social.url || "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1 group"
+                >
+                  <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">
+                    {social.icon || "🔗"}
+                  </div>
+                  <h3 className="text-xl font-semibold mb-2 color-black">
+                    {social.name}
+                  </h3>
+                  <p className="text-gray-600">
+                    {social.url?.replace(/https?:\/\/(www\.)?/, "").split("/")[0] || ""}
+                  </p>
+                </a>
+              ))
+            ) : (
+              <>
+                <a href="#" className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1 group">
+                  <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">�</div>
+                  <h3 className="text-xl font-semibold mb-2 color-black">Facebook</h3>
+                  <p className="text-gray-600">@LesHirondellesSN</p>
+                </a>
+                <a href="#" className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1 group">
+                  <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">📷</div>
+                  <h3 className="text-xl font-semibold mb-2 color-black">Instagram</h3>
+                  <p className="text-gray-600">@leshirondelles_sn</p>
+                </a>
+                <a href="#" className="card p-8 text-center transition-all duration-300 hover:transform hover:-translate-y-1 group">
+                  <div className="text-primary mb-6 flex justify-center group-hover:text-accent transition-colors text-3xl">💼</div>
+                  <h3 className="text-xl font-semibold mb-2 color-black">LinkedIn</h3>
+                  <p className="text-gray-600">Institution Les Hirondelles</p>
+                </a>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -485,17 +456,19 @@ const ContactPage: React.FC = () => {
             </DisplayText>
             <div className="flex flex-wrap justify-center gap-6">
               <a
-                href="tel:+22133XXXXXX"
+                href={settings?.phoneMain ? `tel:${settings.phoneMain.replace(/\s/g, "")}` : "tel:+22133XXXXXX"}
                 className="btn btn-accent flex items-center gap-2"
               >
-                📞 <DisplayText id="contact.cta.call.button">Appeler Maintenant</DisplayText>
+                📞 Appeler Maintenant
               </a>
-              <a
-                href="https://wa.me/22177XXXXXX"
-                className="flex items-center gap-2 font-family-poppins font-medium text-[0.875rem] px-[2rem] py-[1rem] tracking-[0.025em] text-white border-1 border-white hover:underline transition-all duration-300 translate-y-0 hover:translate-y-[-1px]"
-              >
-                💬 <DisplayText id="contact.cta.whatsapp.button">WhatsApp</DisplayText>
-              </a>
+              {settings?.whatsAppUrl && (
+                <a
+                  href={settings.whatsAppUrl}
+                  className="flex items-center gap-2 font-family-poppins font-medium text-[0.875rem] px-[2rem] py-[1rem] tracking-[0.025em] text-white border-1 border-white hover:underline transition-all duration-300 translate-y-0 hover:translate-y-[-1px]"
+                >
+                  💬 WhatsApp
+                </a>
+              )}
             </div>
           </div>
         </div>

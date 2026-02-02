@@ -115,4 +115,61 @@ export default defineSchema({
   })
     .index("by_visible_order", ["visible", "order"]) // list visible in order
     .index("by_order", ["order"]),
+
+  // Site Settings - Singleton pattern (ERP/CMS best practice)
+  // One row contains all site-wide configuration, fetched in a single query
+  site_settings: defineTable({
+    // -- Organization Info --
+    orgName: v.string(),
+    orgTagline: v.optional(v.string()),
+    orgDescription: v.optional(v.string()),
+    
+    // -- Contact: Address --
+    addressLine1: v.optional(v.string()),
+    addressLine2: v.optional(v.string()),
+    city: v.optional(v.string()),
+    country: v.optional(v.string()),
+    postalCode: v.optional(v.string()),
+    mapUrl: v.optional(v.string()), // Google Maps embed or link
+    mapCoordinates: v.optional(v.string()), // "lat,lng" format
+    
+    // -- Contact: Phone Numbers --
+    phoneMain: v.optional(v.string()),
+    phoneMobile: v.optional(v.string()),
+    phoneWhatsApp: v.optional(v.string()),
+    whatsAppUrl: v.optional(v.string()),
+    
+    // -- Contact: Emails --
+    emailGeneral: v.optional(v.string()),
+    emailDirection: v.optional(v.string()),
+    emailInscription: v.optional(v.string()),
+    emailVieScolaire: v.optional(v.string()),
+    
+    // -- Social Media --
+    socialFacebook: v.optional(v.string()), // URL
+    socialInstagram: v.optional(v.string()),
+    socialLinkedIn: v.optional(v.string()),
+    socialTwitter: v.optional(v.string()),
+    socialYouTube: v.optional(v.string()),
+    socialTikTok: v.optional(v.string()),
+    
+    // -- Business Hours (structured) --
+    hoursWeekdays: v.optional(v.string()), // e.g., "8h00 - 17h00"
+    hoursSaturday: v.optional(v.string()),
+    hoursSunday: v.optional(v.string()),
+    hoursNote: v.optional(v.string()), // special notes
+    
+    // -- Department Contacts (structured objects) --
+    departments: v.optional(v.array(v.object({
+      name: v.string(),
+      contactPerson: v.optional(v.string()),
+      email: v.optional(v.string()),
+      phone: v.optional(v.string()),
+      order: v.optional(v.number()),
+    }))),
+    
+    // -- Metadata --
+    updatedAt: v.number(),
+    updatedBy: v.optional(v.string()),
+  }),
 });

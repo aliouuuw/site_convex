@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaEdit, FaImages, FaUsers, FaQuoteLeft, FaHistory, FaSignOutAlt } from "react-icons/fa";
+import { FaEdit, FaImages, FaUsers, FaQuoteLeft, FaHistory, FaSignOutAlt, FaCog } from "react-icons/fa";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -16,6 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const teamMemberCount = useQuery(api.team.countTeamMembers) ?? 0;
   const testimonialsCount = useQuery(api.testimonials.listAllTestimonials, { limit: 1000 })?.length ?? 0;
   const timelineEntriesCount = useQuery(api.timeline.countTimelineEntries) ?? 0;
+  const hasSettings = useQuery(api.siteSettings.hasSettings) ?? false;
 
   const handleLogout = async () => {
     try {
@@ -48,6 +49,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { path: "/admin/timeline", label: "Chronologie", icon: <FaHistory className="text-lg" /> },
             { path: "/admin/media", label: "Bibliothèque média", icon: <FaImages className="text-lg" /> },
             { path: "/admin/team", label: "Membres de l'équipe", icon: <FaUsers className="text-lg" /> },
+            { path: "/admin/settings", label: "Paramètres", icon: <FaCog className="text-lg" /> },
           ].map((item) => (
             <Link
               key={item.path}
@@ -85,6 +87,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Entrées chronologie</span>
               <span className="font-medium">{timelineEntriesCount}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Paramètres</span>
+              <span className="font-medium">{hasSettings ? "✓" : "—"}</span>
             </div>
           </div>
         </div>

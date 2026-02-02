@@ -29,6 +29,7 @@ const TestimonialsAdminPage = lazy(
 const MediaAdminPage = lazy(() => import("./pages/admin/MediaAdminPage"));
 const TeamAdminPage = lazy(() => import("./pages/admin/TeamAdminPage"));
 const TimelineAdminPage = lazy(() => import("./pages/admin/TimelineAdminPage"));
+const SiteSettingsAdminPage = lazy(() => import("./pages/admin/SiteSettingsAdminPage"));
 
 export default function App() {
   return (
@@ -130,6 +131,14 @@ export default function App() {
                   element={
                     <AuthGuard requireAdmin={true}>
                       <TeamAdminPage />
+                    </AuthGuard>
+                  }
+                />
+                <Route
+                  path="/admin/settings"
+                  element={
+                    <AuthGuard requireAdmin={true}>
+                      <SiteSettingsAdminPage />
                     </AuthGuard>
                   }
                 />
