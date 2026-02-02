@@ -4,12 +4,21 @@ import { internal } from "./_generated/api";
 import { Resend } from "@convex-dev/resend";
 import { componentsGeneric } from "convex/server";
 
-// Initialize Resend client with test mode enabled for development
-// To send real emails, set testMode: false and configure RESEND_API_KEY env var
+const internalApi = internal as any;
+
+// Initialize Resend client
+// testMode: true = emails are logged but not sent (safe for dev)
+// testMode: false + RESEND_API_KEY set = real emails sent
 const components = componentsGeneric() as any;
 
 const resend = new Resend(components.resend, {
-  testMode: process.env.RESEND_TEST_MODE !== "false", // Default to test mode
+  testMode: process.env.RESEND_TEST_MODE !== "false",
+});
+
+// Log configuration on load
+console.log("[EMAIL] Resend configured:", {
+  testMode: process.env.RESEND_TEST_MODE !== "false",
+  hasApiKey: !!process.env.RESEND_API_KEY,
 });
 
 // ============== NEWSLETTER SUBSCRIPTIONS ==============
@@ -241,7 +250,7 @@ export const submitMessage = mutation({
     department: v.optional(v.string()),
   },
   handler: async (ctx, { name, email, phone, subject, message, department }) => {
-    const settings = await ctx.runQuery(internal.siteSettings.getSiteSettingsInternal, {});
+    const settings = await ctx.runQuery(internalApi.siteSettings.getSiteSettingsInternal, {});
 
     // Validate required fields
     if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
@@ -261,8 +270,9 @@ export const submitMessage = mutation({
     });
 
     // Send email notification to admin
-    // This runs asynchronously - doesn't block the mutation response
     const adminEmail = settings?.emailGeneral || settings?.emailDirection;
+    console.log("[CONTACT] Preparing to send email to:", adminEmail);
+    
     if (adminEmail) {
       const emailHtml = generateContactEmailHtml(
         name.trim(),
@@ -273,14 +283,20 @@ export const submitMessage = mutation({
         department || undefined
       );
 
-      // Use runMutation to trigger email sending
-      await ctx.runMutation(internal.email.sendContactNotificationEmail, {
+      // Use RESEND_FROM_EMAIL env var if set (must be from verified domain)
+      // Otherwise use Resend's test sender onboarding@resend.dev
+      const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+      
+      await ctx.runMutation(internalApi.email.sendContactNotificationEmail, {
         to: adminEmail,
-        from: `Formulaire Contact <${settings?.emailGeneral || "contact@leshirondelles.sn"}>`,
+        from: `Formulaire Contact <${fromEmail}>`,
         subject: `Nouveau message: ${subject.trim()}`,
         html: emailHtml,
         replyTo: email.toLowerCase().trim(),
+        messageId: id,
       });
+    } else {
+      console.warn("[CONTACT] No admin email configured, skipping email notification");
     }
 
     return { success: true, message: "Message envoyé avec succès", id };
@@ -289,6 +305,7 @@ export const submitMessage = mutation({
 
 /**
  * Internal: Send contact notification email via Resend
+ * Logs detailed info for debugging
  */
 export const sendContactNotificationEmail = internalMutation({
   args: {
@@ -297,21 +314,63 @@ export const sendContactNotificationEmail = internalMutation({
     subject: v.string(),
     html: v.string(),
     replyTo: v.optional(v.string()),
+    messageId: v.optional(v.id("contact_messages")),
   },
-  handler: async (ctx, { to, from, subject, html, replyTo }) => {
+  handler: async (ctx, { to, from, subject, html, replyTo, messageId }) => {
+    console.log("[EMAIL] Attempting to send email:", {
+      to,
+      from,
+      subject,
+      replyTo,
+      messageId,
+      testMode: process.env.RESEND_TEST_MODE !== "false",
+      hasApiKey: !!process.env.RESEND_API_KEY,
+    });
+
     try {
-      await resend.sendEmail(ctx, {
+      const result = await resend.sendEmail(ctx, {
         from,
         to,
         subject,
         html,
         replyTo: replyTo ? [replyTo] : undefined,
       });
-      console.log(`[EMAIL] Contact notification sent to ${to}`);
+      
+      console.log("[EMAIL] Successfully sent:", {
+        to,
+        messageId,
+        result,
+      });
+
+      // Update message with email status
+      if (messageId) {
+        await ctx.db.patch(messageId, {
+          emailSent: true,
+          emailSentAt: Date.now(),
+          emailError: undefined,
+          emailTo: to,
+        });
+      }
+
+      return { success: true, result };
     } catch (error) {
-      console.error("[EMAIL] Failed to send contact notification:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("[EMAIL] Failed to send:", {
+        to,
+        messageId,
+        error: errorMessage,
+      });
+
+      // Update message with error
+      if (messageId) {
+        await ctx.db.patch(messageId, {
+          emailSent: false,
+          emailError: errorMessage,
+        });
+      }
+
       // Don't throw - we don't want to fail the mutation if email fails
-      // The message is already saved in the DB
+      return { success: false, error: errorMessage };
     }
   },
 });
@@ -378,6 +437,54 @@ export const replyToMessage = mutation({
     // This would use an action to call an external email service
 
     return { success: true };
+  },
+});
+
+/**
+ * Admin: Resend email notification for a message
+ */
+export const resendNotification = mutation({
+  args: {
+    id: v.id("contact_messages"),
+    customEmail: v.optional(v.string()), // Optional: send to different email
+  },
+  handler: async (ctx, { id, customEmail }) => {
+    const message = await ctx.db.get(id);
+    if (!message) {
+      throw new Error("Message non trouvé");
+    }
+
+    // Get settings for default email
+    const settings = await ctx.runQuery(internalApi.siteSettings.getSiteSettingsInternal, {});
+    const adminEmail = customEmail || settings?.emailGeneral || settings?.emailDirection;
+
+    if (!adminEmail) {
+      throw new Error("Aucune adresse email configurée");
+    }
+
+    const emailHtml = generateContactEmailHtml(
+      message.name,
+      message.email,
+      message.subject,
+      message.message,
+      message.phone,
+      message.department
+    );
+
+    // Use RESEND_FROM_EMAIL env var if set (must be from verified domain)
+    // Otherwise use Resend's test sender onboarding@resend.dev
+    const fromEmail = process.env.RESEND_FROM_EMAIL || "onboarding@resend.dev";
+    
+    await ctx.runMutation(internalApi.email.sendContactNotificationEmail, {
+      to: adminEmail,
+      from: `Formulaire Contact <${fromEmail}>`,
+      subject: `Nouveau message: ${message.subject}`,
+      html: emailHtml,
+      replyTo: message.email,
+      messageId: id,
+    });
+
+    return { success: true, emailTo: adminEmail };
   },
 });
 

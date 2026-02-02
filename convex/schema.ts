@@ -197,6 +197,11 @@ export default defineSchema({
     repliedAt: v.optional(v.number()),
     replyMessage: v.optional(v.string()),
     notes: v.optional(v.string()), // internal notes for staff
+    // Email notification tracking
+    emailSent: v.optional(v.boolean()),
+    emailSentAt: v.optional(v.number()),
+    emailError: v.optional(v.string()),
+    emailTo: v.optional(v.string()), // which email address was notified
   })
     .index("by_status", ["status"])
     .index("by_receivedAt", ["receivedAt"])

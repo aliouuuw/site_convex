@@ -3,7 +3,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import AdminLayout from "./AdminLayout";
 import toast from "react-hot-toast";
-import { FaEnvelope, FaEnvelopeOpen, FaReply, FaArchive, FaTrash, FaFilter, FaSpinner } from "react-icons/fa";
+import { FaEnvelope, FaEnvelopeOpen, FaReply, FaArchive, FaTrash, FaFilter, FaSpinner, FaPaperPlane, FaExclamationTriangle, FaCheckCircle, FaRedo } from "react-icons/fa";
 import type { Id } from "../../../convex/_generated/dataModel";
 
 type MessageStatus = "new" | "read" | "replied" | "archived";
@@ -27,6 +27,9 @@ export default function MessagesAdminPage() {
   const [selectedMessage, setSelectedMessage] = useState<Id<"contact_messages"> | null>(null);
   const [replyText, setReplyText] = useState("");
   const [isReplying, setIsReplying] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
+  const [isResending, setIsResending] = useState(false);
+  const [showResendForm, setShowResendForm] = useState(false);
 
   const messages = useQuery(api.email.listMessages, { status: filterStatus, limit: 100 });
   const selectedMessageData = useQuery(
@@ -38,10 +41,13 @@ export default function MessagesAdminPage() {
   const replyToMessage = useMutation(api.email.replyToMessage);
   const archiveMessage = useMutation(api.email.archiveMessage);
   const deleteMessage = useMutation(api.email.deleteMessage);
+  const resendNotification = useMutation(api.email.resendNotification);
 
   const handleSelect = async (id: Id<"contact_messages">, status: string) => {
     setSelectedMessage(id);
     setReplyText("");
+    setShowResendForm(false);
+    setResendEmail("");
     if (status === "new") {
       await markAsRead({ id });
     }
@@ -72,6 +78,33 @@ export default function MessagesAdminPage() {
     await deleteMessage({ id });
     if (selectedMessage === id) setSelectedMessage(null);
     toast.success("Message supprimé");
+  };
+
+  const handleResend = async () => {
+    if (!selectedMessage) return;
+    setIsResending(true);
+    try {
+      const result = await resendNotification({
+        id: selectedMessage,
+        customEmail: resendEmail || undefined,
+      });
+      toast.success(`Email envoyé à ${result.emailTo}`);
+      setShowResendForm(false);
+      setResendEmail("");
+    } catch (error: any) {
+      toast.error(error.message || "Erreur lors de l'envoi");
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  const getEmailStatusIcon = (msg: any) => {
+    if (msg.emailSent === true) {
+      return <FaCheckCircle className="text-green-500" title="Email envoyé" />;
+    } else if (msg.emailSent === false || msg.emailError) {
+      return <FaExclamationTriangle className="text-red-500" title={`Erreur: ${msg.emailError || "Échec"}`} />;
+    }
+    return null;
   };
 
   return (
@@ -119,7 +152,7 @@ export default function MessagesAdminPage() {
                   Aucun message
                 </div>
               ) : (
-                messages.map((msg) => (
+                messages.map((msg: any) => (
                   <div
                     key={msg._id}
                     onClick={() => { void handleSelect(msg._id, msg.status); }}
@@ -136,9 +169,12 @@ export default function MessagesAdminPage() {
                         )}
                         <span className="font-medium text-gray-900">{msg.name}</span>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[msg.status as MessageStatus]}`}>
-                        {statusLabels[msg.status as MessageStatus]}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        {getEmailStatusIcon(msg)}
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[msg.status as MessageStatus]}`}>
+                          {statusLabels[msg.status as MessageStatus]}
+                        </span>
+                      </div>
                     </div>
                     <p className="text-sm text-gray-600 mt-1 truncate">{msg.subject}</p>
                     <p className="text-xs text-gray-400 mt-1">
@@ -172,6 +208,13 @@ export default function MessagesAdminPage() {
                   </div>
                   <div className="flex gap-2">
                     <button
+                      onClick={() => setShowResendForm(!showResendForm)}
+                      className="p-2 text-gray-400 hover:text-blue-600"
+                      title="Renvoyer l'email de notification"
+                    >
+                      <FaRedo />
+                    </button>
+                    <button
                       onClick={() => handleArchive(selectedMessageData._id)}
                       className="p-2 text-gray-400 hover:text-gray-600"
                       title="Archiver"
@@ -189,6 +232,68 @@ export default function MessagesAdminPage() {
                 </div>
 
                 <div className="p-4 flex-1 overflow-y-auto">
+                  {/* Email Status */}
+                  <div className="mb-4 p-3 rounded-lg text-sm">
+                    {selectedMessageData.emailSent === true ? (
+                      <div className="bg-green-50 text-green-700 flex items-center gap-2">
+                        <FaCheckCircle />
+                        <span>
+                          Email envoyé à <strong>{selectedMessageData.emailTo}</strong> le{" "}
+                          {selectedMessageData.emailSentAt
+                            ? new Date(selectedMessageData.emailSentAt).toLocaleString("fr-FR")
+                            : ""}
+                        </span>
+                      </div>
+                    ) : selectedMessageData.emailError ? (
+                      <div className="bg-red-50 text-red-700 flex items-center gap-2">
+                        <FaExclamationTriangle />
+                        <span>Erreur d'envoi: {selectedMessageData.emailError}</span>
+                      </div>
+                    ) : selectedMessageData.emailSent === false ? (
+                      <div className="bg-yellow-50 text-yellow-700 flex items-center gap-2">
+                        <FaExclamationTriangle />
+                        <span>Échec de l'envoi de l'email de notification</span>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 text-gray-600 flex items-center gap-2">
+                        <FaPaperPlane />
+                        <span>Statut d'envoi inconnu</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Resend Form */}
+                  {showResendForm && (
+                    <div className="mb-4 p-4 bg-blue-50 rounded-lg">
+                      <h4 className="font-medium text-blue-900 mb-2">Renvoyer l'email de notification</h4>
+                      <p className="text-sm text-blue-700 mb-3">
+                        L'email sera envoyé à l'adresse configurée dans les paramètres (ou celle saisie ci-dessous).
+                      </p>
+                      <input
+                        type="email"
+                        value={resendEmail}
+                        onChange={(e) => setResendEmail(e.target.value)}
+                        placeholder="Email personnalisé (optionnel)"
+                        className="w-full px-3 py-2 border border-blue-200 rounded-lg text-sm mb-2"
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => { void handleResend(); }}
+                          disabled={isResending}
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                        >
+                          <FaPaperPlane /> {isResending ? "Envoi..." : "Envoyer"}
+                        </button>
+                        <button
+                          onClick={() => setShowResendForm(false)}
+                          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300"
+                        >
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="bg-gray-50 rounded-lg p-4 text-gray-700 whitespace-pre-wrap">
                     {selectedMessageData.message}
                   </div>
