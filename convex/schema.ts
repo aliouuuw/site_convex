@@ -172,4 +172,33 @@ export default defineSchema({
     updatedAt: v.number(),
     updatedBy: v.optional(v.string()),
   }),
+
+  // Newsletter subscriptions
+  newsletter_subscriptions: defineTable({
+    email: v.string(),
+    name: v.optional(v.string()),
+    subscribedAt: v.number(),
+    status: v.union(v.literal("active"), v.literal("unsubscribed")),
+    source: v.optional(v.string()), // where they signed up from
+  })
+    .index("by_email", ["email"])
+    .index("by_status", ["status"]),
+
+  // Contact form messages
+  contact_messages: defineTable({
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    subject: v.string(),
+    message: v.string(),
+    department: v.optional(v.string()), // which department the message is for
+    status: v.union(v.literal("new"), v.literal("read"), v.literal("replied"), v.literal("archived")),
+    receivedAt: v.number(),
+    repliedAt: v.optional(v.number()),
+    replyMessage: v.optional(v.string()),
+    notes: v.optional(v.string()), // internal notes for staff
+  })
+    .index("by_status", ["status"])
+    .index("by_receivedAt", ["receivedAt"])
+    .index("by_email", ["email"]),
 });

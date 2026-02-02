@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaEdit, FaImages, FaUsers, FaQuoteLeft, FaHistory, FaSignOutAlt, FaCog } from "react-icons/fa";
+import { FaEdit, FaImages, FaUsers, FaQuoteLeft, FaHistory, FaSignOutAlt, FaCog, FaEnvelope, FaNewspaper } from "react-icons/fa";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useAuth } from "../../contexts/AuthContext";
@@ -17,6 +17,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const testimonialsCount = useQuery(api.testimonials.listAllTestimonials, { limit: 1000 })?.length ?? 0;
   const timelineEntriesCount = useQuery(api.timeline.countTimelineEntries) ?? 0;
   const hasSettings = useQuery(api.siteSettings.hasSettings) ?? false;
+  const newMessagesCount = useQuery(api.email.countMessages, { status: "new" }) ?? 0;
+  const activeSubscribersCount = useQuery(api.email.countSubscriptions, { status: "active" }) ?? 0;
 
   const handleLogout = async () => {
     try {
@@ -49,6 +51,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { path: "/admin/timeline", label: "Chronologie", icon: <FaHistory className="text-lg" /> },
             { path: "/admin/media", label: "Bibliothèque média", icon: <FaImages className="text-lg" /> },
             { path: "/admin/team", label: "Membres de l'équipe", icon: <FaUsers className="text-lg" /> },
+            { path: "/admin/messages", label: "Messages", icon: <FaEnvelope className="text-lg" />, badge: newMessagesCount > 0 ? newMessagesCount : undefined },
+            { path: "/admin/newsletter", label: "Newsletter", icon: <FaNewspaper className="text-lg" /> },
             { path: "/admin/settings", label: "Paramètres", icon: <FaCog className="text-lg" /> },
           ].map((item) => (
             <Link
@@ -62,6 +66,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               {item.icon}
               <span>{item.label}</span>
+              {(item as any).badge && (
+                <span className="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                  {(item as any).badge}
+                </span>
+              )}
             </Link>
           ))}
         </nav>
@@ -91,6 +100,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Paramètres</span>
               <span className="font-medium">{hasSettings ? "✓" : "—"}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Nouveaux messages</span>
+              <span className={`font-medium ${newMessagesCount > 0 ? "text-red-600" : ""}`}>{newMessagesCount}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Abonnés newsletter</span>
+              <span className="font-medium">{activeSubscribersCount}</span>
             </div>
           </div>
         </div>

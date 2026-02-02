@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.81",
+    "@convex-dev/resend": "^0.2.3",
     "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-slot": "^1.2.3",
     "@tiptap/extension-blockquote": "^3.0.9",
@@ -42,7 +43,7 @@
     "@uploadthing/react": "^7.3.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "convex": "^1.23.0",
+    "convex": "^1.31.7",
     "lucide-react": "^0.536.0",
     "react": "^19.0.0",
     "react-colorful": "^5.6.1",

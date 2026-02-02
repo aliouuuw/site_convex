@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import AdminLayout from "./AdminLayout";
 import toast from "react-hot-toast";
-import { FaBuilding, FaMapMarkerAlt, FaPhone, FaEnvelope, FaShareAlt, FaClock, FaUsers, FaSave } from "react-icons/fa";
+import { FaBuilding, FaMapMarkerAlt, FaPhone, FaEnvelope, FaShareAlt, FaClock, FaUsers, FaSave, FaGlobe, FaSpinner, FaCheckCircle } from "react-icons/fa";
 
-type TabId = "org" | "address" | "phones" | "emails" | "social" | "hours" | "departments";
+type TabId = "org" | "address" | "phones" | "emails" | "social" | "hours" | "departments" | "geocoding";
 
 interface Department {
   name: string;
@@ -18,6 +18,7 @@ interface Department {
 const tabs: { id: TabId; label: string; icon: React.ReactNode }[] = [
   { id: "org", label: "Organisation", icon: <FaBuilding /> },
   { id: "address", label: "Adresse", icon: <FaMapMarkerAlt /> },
+  { id: "geocoding", label: "Géocodage", icon: <FaGlobe /> },
   { id: "phones", label: "Téléphones", icon: <FaPhone /> },
   { id: "emails", label: "Emails", icon: <FaEnvelope /> },
   { id: "social", label: "Réseaux sociaux", icon: <FaShareAlt /> },
@@ -30,9 +31,12 @@ export default function SiteSettingsAdminPage() {
   const hasSettings = useQuery(api.siteSettings.hasSettings);
   const initializeSettings = useMutation(api.siteSettings.initializeSettings);
   const updateAllSettings = useMutation(api.siteSettings.updateAllSettings);
+  const geocodeAddress = useAction(api.geocoding.geocodeAddress);
+  const updateMapCoordinates = useMutation(api.geocoding.updateMapCoordinates);
 
   const [activeTab, setActiveTab] = useState<TabId>("org");
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [departments, setDepartments] = useState<Department[]>([]);
 
@@ -118,6 +122,38 @@ export default function SiteSettingsAdminPage() {
 
   const removeDepartment = (index: number) => {
     setDepartments(departments.filter((_, i) => i !== index));
+  };
+
+  const handleGeocode = async () => {
+    setIsGeocoding(true);
+    try {
+      const result = await geocodeAddress({
+        addressLine1: formData.addressLine1,
+        addressLine2: formData.addressLine2,
+        city: formData.city,
+        country: formData.country,
+        postalCode: formData.postalCode,
+      });
+
+      if (result.success && result.coordinates) {
+        await updateMapCoordinates({
+          mapCoordinates: result.coordinates,
+          mapUrl: result.mapEmbedUrl,
+        });
+        setFormData((prev) => ({
+          ...prev,
+          mapCoordinates: result.coordinates,
+          mapUrl: result.mapEmbedUrl || prev.mapUrl,
+        }));
+        toast.success(`Coordonnées trouvées: ${result.coordinates}`);
+      } else {
+        toast.error(result.message || "Impossible de géocoder l'adresse");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Erreur lors du géocodage");
+    } finally {
+      setIsGeocoding(false);
+    }
   };
 
   if (settings === undefined) {
@@ -249,6 +285,97 @@ export default function SiteSettingsAdminPage() {
                   placeholder="https://maps.google.com/..."
                 />
               </div>
+            </div>
+          </div>
+        );
+
+      case "geocoding":
+        return (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <FaGlobe className="text-primary" /> Géocodage de l'adresse
+            </h3>
+            <p className="text-sm text-gray-500">
+              Configurez les coordonnées GPS pour afficher la carte sur la page de contact.
+            </p>
+
+            {formData.mapCoordinates && (
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <FaCheckCircle className="text-blue-600 mt-0.5" />
+                  <div className="text-sm text-blue-800">
+                    <p className="font-medium">Coordonnées configurées</p>
+                    <p className="mt-1">La carte s'affichera correctement sur la page de contact. Le géocodage automatique est optionnel.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="border-t pt-4 space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-gray-700">Option 1 : Coordonnées manuelles (recommandé)</h4>
+              </div>
+              <p className="text-sm text-gray-500 mb-4">
+                Entrez directement les coordonnées GPS depuis Google Maps ou un autre service.
+              </p>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Coordonnées GPS (lat,lng)</label>
+                <input
+                  type="text"
+                  value={formData.mapCoordinates || ""}
+                  onChange={(e) => handleInputChange("mapCoordinates", e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="14.7167,-17.4677"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">URL Google Maps (optionnel)</label>
+                <input
+                  type="url"
+                  value={formData.mapUrl || ""}
+                  onChange={(e) => handleInputChange("mapUrl", e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  placeholder="https://maps.google.com/..."
+                />
+              </div>
+            </div>
+
+            <div className="border-t pt-4 space-y-4">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-medium text-gray-700">Option 2 : Géocodage automatique</h4>
+              </div>
+              <p className="text-sm text-gray-500 mb-4">
+                Essayez de trouver automatiquement les coordonnées à partir de l'adresse (fonctionne uniquement si l'adresse existe dans OpenStreetMap).
+              </p>
+
+              <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                <h5 className="font-medium text-gray-700 text-sm">Adresse à géocoder :</h5>
+                <p className="text-sm text-gray-600">
+                  {[formData.addressLine1, formData.addressLine2, formData.city, formData.country]
+                    .filter(Boolean)
+                    .join(", ") || "Aucune adresse saisie"}
+                </p>
+              </div>
+
+              <button
+                onClick={() => { void handleGeocode(); }}
+                disabled={isGeocoding || !formData.addressLine1}
+                className="w-full px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isGeocoding ? (
+                  <>
+                    <FaSpinner className="animate-spin" /> Géocodage en cours...
+                  </>
+                ) : (
+                  <>
+                    <FaGlobe /> Essayer le géocodage automatique
+                  </>
+                )}
+              </button>
+
+              <p className="text-xs text-gray-500">
+                ⚠️ Note : Le géocodage peut échouer si l'adresse n'est pas dans OpenStreetMap. Les codes Plus (ex: PG4H+P5Q) ne sont pas supportés.
+              </p>
             </div>
           </div>
         );

@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalQuery } from "./_generated/server";
 
 // Department object validator
 const departmentValidator = v.object({
@@ -52,6 +52,22 @@ const DEFAULT_SETTINGS = {
     { name: "Vie Scolaire", contactPerson: "Mme. Fatoumata Sarr", email: "viescolaire@leshirondelles.sn", phone: "+221 77 XXX XX XX", order: 3 },
   ],
 };
+
+// ============== INTERNAL QUERIES (for other Convex functions) ==============
+
+/**
+ * Internal: Get site settings (for use by other Convex functions)
+ */
+export const getSiteSettingsInternal = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const settings = await ctx.db.query("site_settings").first();
+    if (!settings) {
+      return null;
+    }
+    return settings;
+  },
+});
 
 // ============== PUBLIC QUERIES ==============
 

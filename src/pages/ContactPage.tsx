@@ -2,6 +2,9 @@ import React from 'react';
 import DisplayText from '../components/DisplayText';
 import DisplayImage from '../components/DisplayImage';
 import SEO from '../components/SEO';
+import ContactForm from '../components/ContactForm';
+import NewsletterSignup from '../components/NewsletterSignup';
+import LocationMap from '../components/LocationMap';
 import { useSiteSettings, getSocialLinks, getBusinessHours, getSortedDepartments } from '../hooks/useSiteSettings';
 
 const ContactPage: React.FC = () => {
@@ -229,88 +232,31 @@ const ContactPage: React.FC = () => {
               <h2 className="text-3xl font-bold mb-8 color-black">
                 Envoyez-nous un message
               </h2>
-              <form className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Nom complet *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full px-4 py-3 border border-gray-300 focus:border-primary focus:outline-none transition-colors"
-                      placeholder="Votre nom complet"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Nom de l'enfant
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-3 border border-gray-300 focus:border-primary focus:outline-none transition-colors"
-                      placeholder="Nom de votre enfant"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Sujet *
-                  </label>
-                  <select
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 focus:border-primary focus:outline-none transition-colors"
-                  >
-                    <option value="">Choisissez un sujet</option>
-                    <option value="admission">Demande d'admission</option>
-                    <option value="information">Demande d'information</option>
-                    <option value="visite">Planifier une visite</option>
-                    <option value="rdv">Prendre rendez-vous</option>
-                    <option value="autre">Autre</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Message *
-                  </label>
-                  <textarea
-                    required
-                    rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 focus:border-primary focus:outline-none transition-colors resize-none"
-                    placeholder="Décrivez votre demande en détail..."
-                  ></textarea>
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full btn btn-primary flex items-center justify-center gap-2"
-                >
-                  ✈️ <DisplayText id="contact.form.submit">Envoyer le message</DisplayText>
-                </button>
-              </form>
+              <ContactForm departments={departments} />
             </div>
 
             {/* Map & Additional Info */}
             <div className="space-y-8">
-              {/* Map Placeholder */}
+              {/* Newsletter Signup */}
+              <NewsletterSignup source="contact_page" />
+              {/* Interactive Map */}
               <div>
                 <h3 className="text-2xl font-bold mb-4 color-black">
                   Notre Localisation
                 </h3>
-                <div className="bg-gray-300 h-64 flex items-center justify-center text-gray-600">
-                  <div className="text-center">
-                    <div className="text-4xl mb-2">🗺️</div>
-                    <p>Carte interactive</p>
-                    <p className="text-sm">
-                      {isLoading ? "Chargement..." : settings?.addressLine1 || "Avenue Cheikh Anta Diop, Dakar"}
-                    </p>
+                {isLoading ? (
+                  <div className="bg-gray-200 h-64 flex items-center justify-center rounded-lg">
+                    <p className="text-gray-500">Chargement de la carte...</p>
                   </div>
-                </div>
-                <p className="text-sm text-gray-600 mt-2">
-                  {isLoading ? "Chargement..." : settings?.addressLine2 || "Face à l'Université Cheikh Anta Diop, près de la station Total"}
-                </p>
+                ) : (
+                  <LocationMap
+                    coordinates={settings?.mapCoordinates}
+                    address={settings?.addressLine1 || "Avenue Cheikh Anta Diop, Dakar"}
+                    addressDetails={settings?.addressLine2}
+                    mapUrl={settings?.mapUrl}
+                    height="h-72"
+                  />
+                )}
               </div>
 
               {/* Department Contacts */}

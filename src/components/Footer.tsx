@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import OptimizedImage from "./OptimizedImage";
+import NewsletterSignup from "./NewsletterSignup";
 import { useSiteSettings, getSocialLinks } from "../hooks/useSiteSettings";
 
 const Footer: React.FC = () => {
@@ -123,6 +124,14 @@ const Footer: React.FC = () => {
                 </li>
               )}
             </ul>
+          </div>
+
+          <div className="footer-section">
+            <h4>Newsletter</h4>
+            <p style={{ color: "var(--gray-400)", fontSize: "0.875rem", marginBottom: "1rem" }}>
+              Recevez nos actualités
+            </p>
+            <NewsletterSignup variant="footer" source="footer" />
           </div>
         </div>
 
