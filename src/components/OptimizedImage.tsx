@@ -130,7 +130,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           }`}
           loading={priority ? "eager" : loading}
           decoding={decoding}
-          fetchpriority={priority ? "high" : undefined}
+          fetchPriority={priority ? "high" : undefined}
           onLoad={handleLoad}
           onError={handleError}
           {...rest}
