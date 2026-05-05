@@ -19,6 +19,7 @@ import type * as mediaActions from "../mediaActions.js";
 import type * as mediaUpload from "../mediaUpload.js";
 import type * as migrations from "../migrations.js";
 import type * as myFunctions from "../myFunctions.js";
+import type * as r2 from "../r2.js";
 import type * as siteSettings from "../siteSettings.js";
 import type * as team from "../team.js";
 import type * as testimonials from "../testimonials.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   mediaUpload: typeof mediaUpload;
   migrations: typeof migrations;
   myFunctions: typeof myFunctions;
+  r2: typeof r2;
   siteSettings: typeof siteSettings;
   team: typeof team;
   testimonials: typeof testimonials;
@@ -75,58 +77,6 @@ export declare const internal: FilterApi<
 >;
 
 export declare const components: {
-  r2: {
-    lib: {
-      deleteMetadata: FunctionReference<
-        "mutation",
-        "internal",
-        { bucket: string; key: string },
-        null
-      >;
-      deleteObject: FunctionReference<
-        "mutation",
-        "internal",
-        { accessKeyId: string; bucket: string; endpoint: string; key: string; secretAccessKey: string },
-        null
-      >;
-      deleteR2Object: FunctionReference<
-        "action",
-        "internal",
-        { accessKeyId: string; bucket: string; endpoint: string; key: string; secretAccessKey: string },
-        null
-      >;
-      getMetadata: FunctionReference<
-        "query",
-        "internal",
-        { accessKeyId: string; bucket: string; endpoint: string; key: string; secretAccessKey: string },
-        { bucket: string; bucketLink: string; contentType?: string; key: string; lastModified: string; link: string; sha256?: string; size?: number; url: string } | null
-      >;
-      listMetadata: FunctionReference<
-        "query",
-        "internal",
-        { accessKeyId: string; bucket: string; cursor?: string; endpoint: string; limit?: number; secretAccessKey: string },
-        { continueCursor: string; isDone: boolean; page: Array<{ bucket: string; bucketLink: string; contentType?: string; key: string; lastModified: string; link: string; sha256?: string; size?: number; url: string }>; pageStatus?: null | "SplitRecommended" | "SplitRequired"; splitCursor?: null | string }
-      >;
-      store: FunctionReference<
-        "action",
-        "internal",
-        { accessKeyId: string; bucket: string; endpoint: string; secretAccessKey: string; url: string },
-        any
-      >;
-      syncMetadata: FunctionReference<
-        "action",
-        "internal",
-        { accessKeyId: string; bucket: string; endpoint: string; key: string; onComplete?: string; secretAccessKey: string },
-        null
-      >;
-      upsertMetadata: FunctionReference<
-        "mutation",
-        "internal",
-        { bucket: string; contentType?: string; key: string; lastModified: string; link: string; sha256?: string; size?: number },
-        { isNew: boolean }
-      >;
-    };
-  };
   resend: {
     lib: {
       cancelEmail: FunctionReference<
@@ -273,6 +223,130 @@ export declare const components: {
             | "failed";
         },
         null
+      >;
+    };
+  };
+  r2: {
+    lib: {
+      deleteMetadata: FunctionReference<
+        "mutation",
+        "internal",
+        { bucket: string; key: string },
+        null
+      >;
+      deleteObject: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          accessKeyId: string;
+          bucket: string;
+          endpoint: string;
+          key: string;
+          secretAccessKey: string;
+        },
+        null
+      >;
+      deleteR2Object: FunctionReference<
+        "action",
+        "internal",
+        {
+          accessKeyId: string;
+          bucket: string;
+          endpoint: string;
+          key: string;
+          secretAccessKey: string;
+        },
+        null
+      >;
+      getMetadata: FunctionReference<
+        "query",
+        "internal",
+        {
+          accessKeyId: string;
+          bucket: string;
+          endpoint: string;
+          key: string;
+          secretAccessKey: string;
+        },
+        {
+          bucket: string;
+          bucketLink: string;
+          contentType?: string;
+          key: string;
+          lastModified: string;
+          link: string;
+          sha256?: string;
+          size?: number;
+          url: string;
+        } | null
+      >;
+      listMetadata: FunctionReference<
+        "query",
+        "internal",
+        {
+          accessKeyId: string;
+          bucket: string;
+          cursor?: string;
+          endpoint: string;
+          limit?: number;
+          secretAccessKey: string;
+        },
+        {
+          continueCursor: string;
+          isDone: boolean;
+          page: Array<{
+            bucket: string;
+            bucketLink: string;
+            contentType?: string;
+            key: string;
+            lastModified: string;
+            link: string;
+            sha256?: string;
+            size?: number;
+            url: string;
+          }>;
+          pageStatus?: null | "SplitRecommended" | "SplitRequired";
+          splitCursor?: null | string;
+        }
+      >;
+      store: FunctionReference<
+        "action",
+        "internal",
+        {
+          accessKeyId: string;
+          bucket: string;
+          endpoint: string;
+          secretAccessKey: string;
+          url: string;
+        },
+        any
+      >;
+      syncMetadata: FunctionReference<
+        "action",
+        "internal",
+        {
+          accessKeyId: string;
+          bucket: string;
+          endpoint: string;
+          key: string;
+          onComplete?: string;
+          secretAccessKey: string;
+        },
+        null
+      >;
+      upsertMetadata: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          bucket: string;
+          contentType?: string;
+          key: string;
+          lastModified: string;
+          link: string;
+          sha256?: string;
+          size?: number;
+        },
+        { isNew: boolean }
       >;
     };
   };

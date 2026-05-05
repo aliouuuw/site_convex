@@ -55,6 +55,7 @@ export const getMedia = query({
     v.object({
       _id: v.id("media"),
       url: v.string(),
+      r2Key: v.optional(v.string()),
       name: v.string(),
       title: v.optional(v.string()),
       size: v.number(),
@@ -117,6 +118,8 @@ export const getMediaByUrl = query({
 export const updateMediaRecord = mutation({
   args: {
     id: v.id("media"),
+    url: v.optional(v.string()),
+    r2Key: v.optional(v.string()),
     alt: v.optional(v.string()),
     width: v.optional(v.number()),
     height: v.optional(v.number()),

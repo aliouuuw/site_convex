@@ -4,6 +4,32 @@ import { api } from "./_generated/api";
 import { r2 } from "./r2";
 
 /**
+ * Generate a presigned R2 upload URL so the browser can PUT a file
+ * directly to Cloudflare R2 without going through Convex storage.
+ *
+ * Returns:
+ *  - key:       R2 object key (UUID)
+ *  - uploadUrl: presigned PUT URL (valid 15 min)
+ *  - publicUrl: permanent public URL (if R2_PUBLIC_URL is set) or 7-day signed URL
+ */
+export const generateR2UploadUrl = action({
+  args: {},
+  returns: v.object({
+    key: v.string(),
+    uploadUrl: v.string(),
+    publicUrl: v.string(),
+  }),
+  handler: async (_ctx) => {
+    const { key, url: uploadUrl } = await r2.generateUploadUrl();
+    const publicBase = process.env.R2_PUBLIC_URL;
+    const publicUrl = publicBase
+      ? `${publicBase.replace(/\/$/, "")}/${key}`
+      : await r2.getUrl(key, { expiresIn: 7 * 24 * 60 * 60 });
+    return { key, uploadUrl, publicUrl };
+  },
+});
+
+/**
  * Delete a media record and its corresponding R2 object.
  * Must be called from the client via useAction (not useMutation)
  * because r2.deleteObject requires action context.
