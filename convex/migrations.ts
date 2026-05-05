@@ -122,7 +122,7 @@ export const migrateMediaUrls = mutation({
     for (const c of allContent) {
       if (c.content.includes(oldBase)) {
         await ctx.db.patch(c._id, {
-          content: c.content.replaceAll(oldBase, newBase),
+          content: c.content.split(oldBase).join(newBase),
         });
         contentUpdated++;
       }
