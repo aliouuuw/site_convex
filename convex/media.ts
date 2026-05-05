@@ -8,6 +8,7 @@ import { v } from "convex/values";
 export const storeMediaRecord = mutation({
   args: {
     url: v.string(),
+    r2Key: v.optional(v.string()),
     storageId: v.optional(v.id("_storage")),
     name: v.string(),
     title: v.optional(v.string()),
@@ -26,6 +27,7 @@ export const storeMediaRecord = mutation({
   handler: async (ctx, args) => {
     const id = await ctx.db.insert("media", {
       url: args.url,
+      r2Key: args.r2Key,
       name: args.name,
       title: args.title,
       size: args.size,

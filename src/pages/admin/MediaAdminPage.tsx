@@ -1,5 +1,5 @@
 import AdminLayout from "./AdminLayout";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
@@ -419,7 +419,7 @@ export default function MediaAdminPage() {
   const [editingMedia, setEditingMedia] = useState<any>(null);
 
   const media = useQuery(api.media.searchMedia, { limit: 50 });
-  const deleteMediaMutation = useMutation(api.media.deleteMedia);
+  const deleteMediaAction = useAction(api.mediaActions.deleteMediaWithR2);
 
   const handleUpload = () => {
     setEditingMedia(null);
@@ -439,7 +439,7 @@ export default function MediaAdminPage() {
     if (!deleteConfirm.media) return;
 
     try {
-      await deleteMediaMutation({ id: deleteConfirm.media._id });
+      await deleteMediaAction({ id: deleteConfirm.media._id });
       toast.success("Media deleted successfully!");
       setDeleteConfirm({ isOpen: false, media: null });
     } catch (error: any) {

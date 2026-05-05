@@ -2,6 +2,7 @@ import { httpRouter } from "convex/server";
 import { auth } from "./auth";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
+import { r2 } from "./r2";
 
 const http = httpRouter();
 
@@ -71,15 +72,21 @@ http.route({
       const arrayBuffer = await file.arrayBuffer();
       const blob = new Blob([arrayBuffer], { type: file.type || "application/octet-stream" });
 
-      // store returns an Id<"_storage"> in http actions
-      const storageId = await ctx.storage.store(blob);
-      const url = await ctx.storage.getUrl(storageId);
-
       const uploadedAt = new Date().toISOString();
       const size = (file as any).size || arrayBuffer.byteLength;
       const name = (file as any).name || "file";
       const mime = file.type || "application/octet-stream";
       const type = mime.startsWith("image/") ? "image" as const : "video" as const;
+
+      // Upload blob to Cloudflare R2; r2.store returns the object key
+      const r2Key = await r2.store(ctx, blob, { type: mime });
+
+      // Use a permanent public URL when R2_PUBLIC_URL env var is configured,
+      // otherwise fall back to a 7-day presigned URL.
+      const publicBase = process.env.R2_PUBLIC_URL;
+      const url = publicBase
+        ? `${publicBase.replace(/\/$/, "")}/${r2Key}`
+        : await r2.getUrl(r2Key, { expiresIn: 7 * 24 * 60 * 60 });
 
       // Try to get authenticated user id if available
       let uploadedBy = "unknown";
@@ -98,7 +105,8 @@ http.route({
       let mediaId = null;
       try {
         mediaId = await ctx.runMutation(api.media.storeMediaRecord, {
-          url: url || "",
+          url: url ?? "",
+          r2Key,
           name,
           size,
           type,
@@ -111,7 +119,7 @@ http.route({
 
       const result = {
         success: true,
-        storageId,
+        r2Key,
         mediaId,
         url,
         name,

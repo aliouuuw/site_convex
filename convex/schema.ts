@@ -81,9 +81,10 @@ export default defineSchema({
     .index("by_featured", ["featured"])
     .index("by_order", ["order"]),
 
-  // Media library entries backed by Uploadthing
+  // Media library entries backed by Cloudflare R2
   media: defineTable({
-    url: v.string(), // Uploadthing file URL
+    url: v.string(), // Public or signed R2 file URL
+    r2Key: v.optional(v.string()), // Cloudflare R2 object key (for deletion / URL refresh)
     name: v.string(), // Original filename
     title: v.optional(v.string()), // Custom title for the media
     size: v.number(), // File size in bytes
@@ -92,7 +93,7 @@ export default defineSchema({
     width: v.optional(v.number()),
     height: v.optional(v.number()),
     thumbnailUrl: v.optional(v.string()), // Video thumbnail URL
-    // Source of the media: 'upload' for Uploadthing files, 'youtube' for YouTube embeds
+    // Source of the media: 'upload' for R2 uploads, 'youtube' for YouTube embeds
     source: v.optional(v.union(v.literal("upload"), v.literal("youtube"))),
     // External video ID (for YouTube embeds)
     externalId: v.optional(v.string()),
