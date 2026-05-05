@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from "convex/react";
+import React, { useState } from 'react';
+import { useQuery, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import MediaPicker from './MediaPicker';
 import toast from 'react-hot-toast';
@@ -23,8 +23,10 @@ export default function MediaSelector({
   const [selectedTab, setSelectedTab] = useState<'upload' | 'library'>('upload');
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set());
   const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const media = useQuery(api.media.searchMedia, { limit: 50 });
+  const deleteMediaWithR2 = useAction(api.mediaActions.deleteMediaWithR2);
 
   const handleImageLoad = (mediaId: string) => {
     setLoadedImages(prev => new Set(prev).add(mediaId));
@@ -51,6 +53,22 @@ export default function MediaSelector({
     if (uploadData.length > 0) {
       onSelect(uploadData[0]);
       setShowMediaLibrary(false);
+    }
+  };
+
+  const handleDeleteMedia = async (item: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm(`Delete "${item.title || item.name}"? This cannot be undone.`)) return;
+    setDeletingId(item._id);
+    try {
+      await deleteMediaWithR2({ id: item._id });
+      if (selectedImage?._id === item._id) setSelectedImage(null);
+      toast.success('Media deleted');
+    } catch (err) {
+      toast.error('Failed to delete media');
+      console.error(err);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -247,7 +265,18 @@ export default function MediaSelector({
                                 </div>
                               )}
                               
-                              {/* Hover overlay for loaded images */}
+                              {/* Delete button */}
+                              <button
+                                type="button"
+                                onClick={(e) => void handleDeleteMedia(item, e)}
+                                disabled={deletingId === item._id}
+                                className="absolute top-1 right-1 z-30 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs shadow transition-colors disabled:opacity-50"
+                                title="Delete"
+                              >
+                                {deletingId === item._id ? '…' : '×'}
+                              </button>
+
+                            {/* Hover overlay for loaded images */}
                               {loadedImages.has(item._id) && selectedImage?._id !== item._id && (
                                 <div className="absolute inset-0 bg-black/0 hover:bg-black/40 transition-colors flex items-center justify-center z-20 group">
                                   <button type="button" className="opacity-0 group-hover:opacity-100 bg-white text-primary px-3 py-1 rounded text-sm font-medium transition-opacity">

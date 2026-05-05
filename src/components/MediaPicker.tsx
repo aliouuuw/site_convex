@@ -29,18 +29,84 @@ export default function MediaPicker({
   const generateR2UploadUrl = useAction(api.mediaActions.generateR2UploadUrl);
   const storeMediaRecord = useMutation(api.media.storeMediaRecord);
 
-  const uploadFileToR2 = async (file: File, maxRetries = 2) => {
+  const MAX_UPLOAD_DIMENSION = 1920;
+  const WEBP_QUALITY = 0.85;
+
+  const processImageFile = (file: File): Promise<{ file: File; width?: number; height?: number }> => {
+    return new Promise((resolve) => {
+      if (!file.type.startsWith("image/")) {
+        resolve({ file }); // passthrough for non-images
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+
+        let { naturalWidth: w, naturalHeight: h } = img;
+
+        // Resize if any dimension exceeds max
+        if (w > MAX_UPLOAD_DIMENSION || h > MAX_UPLOAD_DIMENSION) {
+          const scale = Math.min(MAX_UPLOAD_DIMENSION / w, MAX_UPLOAD_DIMENSION / h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve({ file }); // fallback to original
+          return;
+        }
+        ctx.drawImage(img, 0, 0, w, h);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              resolve({ file });
+              return;
+            }
+            const processed = new File([blob], file.name.replace(/\.[^.]+$/, "").concat(".webp"), {
+              type: "image/webp",
+            });
+            console.log(`Resized ${file.name}: ${(file.size / 1024).toFixed(0)}KB -> ${(processed.size / 1024).toFixed(0)}KB, ${img.naturalWidth}x${img.naturalHeight} -> ${w}x${h}`);
+            resolve({ file: processed, width: w, height: h });
+          },
+          "image/webp",
+          WEBP_QUALITY
+        );
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        resolve({ file });
+      };
+
+      img.src = url;
+    });
+  };
+
+  const uploadFileToR2 = async (rawFile: File, maxRetries = 2) => {
+    const { file, width, height } = await processImageFile(rawFile);
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         // 1. Get presigned R2 upload URL from Convex action
         const { key: r2Key, uploadUrl, publicUrl } = await generateR2UploadUrl();
 
-        // 2. PUT file directly to R2
+        // 2. PUT file directly to R2 with cache headers so Cloudflare CDN caches aggressively
         console.log(`Uploading to R2 (attempt ${attempt + 1}): ${file.name}`);
         const res = await fetch(uploadUrl, {
           method: "PUT",
           body: file,
-          headers: { "Content-Type": file.type || "application/octet-stream" },
+          headers: {
+            "Content-Type": file.type || "application/octet-stream",
+            "Cache-Control": "public, max-age=31536000, immutable",
+          },
         });
 
         if (!res.ok) {
@@ -49,7 +115,7 @@ export default function MediaPicker({
           throw new Error(`R2 upload failed (${res.status}): ${text.slice(0, 200)}`);
         }
 
-        // 3. Save media metadata in Convex
+        // 3. Save media metadata in Convex (including dimensions for layout-shift prevention)
         const mime = file.type || "application/octet-stream";
         const mediaType = mime.startsWith("image/") ? "image" as const : "video" as const;
         const mediaId = await storeMediaRecord({
@@ -59,6 +125,7 @@ export default function MediaPicker({
           size: file.size,
           type: mediaType,
           source: "upload",
+          ...(width !== undefined && height !== undefined ? { width, height } : {}),
         });
 
         console.log("Upload complete:", { r2Key, publicUrl, mediaId });

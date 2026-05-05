@@ -60,6 +60,26 @@ const convex = new ConvexClient(CONVEX_URL);
 console.log(`📡 Connected to Convex: ${CONVEX_URL}`);
 console.log(`🪣 R2 bucket: ${R2_BUCKET}`);
 console.log(`🌐 R2 public URL: ${R2_PUBLIC_URL || "(none — will use signed URLs)"}`);
+console.log(`🔑 R2 access key: ${R2_ACCESS_KEY_ID.slice(0, 6)}…${R2_ACCESS_KEY_ID.slice(-4)} (${R2_ACCESS_KEY_ID.length} chars)`);
+console.log(`🔒 R2 secret key length: ${R2_SECRET_ACCESS_KEY.length} chars`);
+
+try {
+  const testKey = `migration-smoke-test-${crypto.randomUUID()}.txt`;
+  await r2Client.send(new PutObjectCommand({
+    Bucket: R2_BUCKET,
+    Key: testKey,
+    Body: new TextEncoder().encode("ok"),
+    ContentType: "text/plain",
+  }));
+  console.log(`✅ R2 smoke test upload succeeded: ${testKey}`);
+} catch (err: any) {
+  console.error("❌ R2 smoke test upload failed before migration.");
+  console.error(`   ${err?.message ?? String(err)}`);
+  console.error("");
+  console.error("Check that R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY are from the same active Cloudflare R2 API token,");
+  console.error("and that the token has Object Read & Write access to the leshirondelles bucket.");
+  process.exit(1);
+}
 
 // Fetch all media records
 const allMedia: any[] = await convex.query(api.media.searchMedia, { limit: 1000 });
