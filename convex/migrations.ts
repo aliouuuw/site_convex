@@ -65,6 +65,74 @@ export const cleanEmptyRichText = mutation({
 });
 
 /**
+ * Preview media URL migration from r2.dev to custom domain (dry run).
+ */
+export const previewMigrateMediaUrls = query({
+  args: {
+    oldBase: v.string(),
+    newBase: v.string(),
+  },
+  returns: v.array(
+    v.object({
+      _id: v.string(),
+      name: v.string(),
+      oldUrl: v.string(),
+      newUrl: v.string(),
+    })
+  ),
+  handler: async (ctx, { oldBase, newBase }) => {
+    const allMedia = await ctx.db.query("media").collect();
+    const toMigrate = allMedia.filter((m) => m.url.startsWith(oldBase));
+    return toMigrate.map((m) => ({
+      _id: m._id as string,
+      name: m.name,
+      oldUrl: m.url,
+      newUrl: m.url.replace(oldBase, newBase),
+    }));
+  },
+});
+
+/**
+ * Rewrite media URLs from old domain to new custom domain.
+ * Also rewrites content table entries that reference the old media URL.
+ */
+export const migrateMediaUrls = mutation({
+  args: {
+    oldBase: v.string(),
+    newBase: v.string(),
+  },
+  returns: v.object({
+    mediaUpdated: v.number(),
+    contentUpdated: v.number(),
+  }),
+  handler: async (ctx, { oldBase, newBase }) => {
+    // Rewrite media table
+    const allMedia = await ctx.db.query("media").collect();
+    let mediaUpdated = 0;
+    for (const m of allMedia) {
+      if (m.url.startsWith(oldBase)) {
+        await ctx.db.patch(m._id, { url: m.url.replace(oldBase, newBase) });
+        mediaUpdated++;
+      }
+    }
+
+    // Rewrite content table (image URLs stored as content)
+    const allContent = await ctx.db.query("content").collect();
+    let contentUpdated = 0;
+    for (const c of allContent) {
+      if (c.content.includes(oldBase)) {
+        await ctx.db.patch(c._id, {
+          content: c.content.replaceAll(oldBase, newBase),
+        });
+        contentUpdated++;
+      }
+    }
+
+    return { mediaUpdated, contentUpdated };
+  },
+});
+
+/**
  * Fix content type for entries that contain HTML but are marked as 'text'.
  * This ensures DisplayText renders them correctly.
  */
