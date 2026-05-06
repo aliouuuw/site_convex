@@ -364,8 +364,8 @@ const HomePage: React.FC = () => {
                         src={blogPosts[0].coverImageUrl}
                         alt={blogPosts[0].title}
                         className="w-full h-full object-cover"
-                        width={100}
-                        height={100}
+                        width={800}
+                        height={500}
                       />
                     ) : (
                       <DisplayImage
@@ -373,8 +373,8 @@ const HomePage: React.FC = () => {
                         src="/images/news-featured.jpg"
                         alt="Actualité"
                         className="w-full h-full object-cover"
-                        width={100}
-                        height={100}
+                        width={800}
+                        height={500}
                       />
                     )}
                     <div className="news-category">{blogPosts[0].category || "Actualité"}</div>

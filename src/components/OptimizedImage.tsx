@@ -35,9 +35,16 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   const [isInView, setIsInView] = useState(!shouldLazyLoad || supportsLazy || priority);
   const [currentSrc, setCurrentSrc] = useState(src);
+  // Start as loaded if the image is already cached (complete before React mounts)
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [triedFallback, setTriedFallback] = useState(false);
+
+  useEffect(() => {
+    if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) {
+      setIsLoaded(true);
+    }
+  }, [currentSrc]);
 
   useEffect(() => {
     setCurrentSrc(src);
@@ -125,7 +132,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           ref={imgRef}
           src={currentSrc}
           alt={alt}
-          className={`${className || ""} transition-opacity duration-500 ${
+          className={`${className || ""} transition-opacity duration-200 ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
           loading={priority ? "eager" : loading}
